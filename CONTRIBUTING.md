@@ -1,0 +1,13 @@
+# Contributing to SkyLens
+
+Use `main` for stable reviewed work; create a short-lived `feature/...`, `fix/...` or `research/...` branch for substantial changes. Preserve historical cohorts, metadata and native model hashes unless a separate documented experiment justifies a change. Never lower serving gates or restore intervals to make a demo pass.
+
+Run the [portable checks](docs/INSTALLATION.md#portable-checks) after a source-only clone. With authorized local research data/artifacts/checkpoints, also run the full suite, frontend build, `run.ps1` and HTTP matrix. See [installation](docs/INSTALLATION.md). Clearly distinguish contract tests, native-model HTTP checks and actual browser QA. Synthetic fixtures belong in temporary test directories and must never enter training or a research report's observation counts.
+
+Before committing, inspect `git status --short`, `git diff` and `git diff --cached`. After acquisition/report replay run `python scripts/sanitize_registry.py` so individual source examples remain local. Run `python scripts/repository_guard.py --staged` and `git diff --cached --check`. Before **every push**, run `python scripts/repository_guard.py --history` to inspect the entire current branch ancestry and review new data/license/private-information risks. The focused scanner does not replace human review. Never stage secrets, `.env`, raw data, quote evidence, PNRs, account information, native models or large generated outputs. If a real secret ever enters history, stop publication, rotate it and arrange reviewed history cleanup; a later deletion does not remove it from history.
+
+Use conventional commit messages, for example `fix(data): reject contradictory quote timestamps`. Push verified milestones with `git push -u origin <branch>`; never force-push or overwrite remote work. Use a pull request for review; do not expose private quote evidence in issues or screenshots. Completion tags require all applicable acceptance checks, including honest disclosure of blocked work. Do not create a Phase 3 completion tag while source acquisition/browser/GitHub delivery remain unresolved.
+
+Enable the included pre-push hook in each clone with `git config core.hooksPath .githooks`. It scans each pushed commit ancestry and blocks local `archive/*` branches. Never use `--no-verify` to bypass it. Hooks are local Git configuration and are not installed automatically by cloning.
+
+Report defects with reproduction steps, software versions and redacted error types. Include no token or private payload. Review source terms before any acquisition. The INR-0 budget excludes paid APIs, paid runners and compulsory subscriptions; do not enable billing or Git LFS spending.

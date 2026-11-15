@@ -45,12 +45,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--staged", action="store_true")
     parser.add_argument("--history", action="store_true")
+    parser.add_argument("--ref", default="HEAD", help="HEAD or a full commit SHA to inspect before push")
     args = parser.parse_args()
+    if args.ref != "HEAD" and not re.fullmatch(r"[0-9a-f]{40}", args.ref):
+        parser.error("--ref must be HEAD or a full commit SHA")
     failures = []
     count = 0
     largest = (0, "")
     if args.history:
-        objects = git("rev-list", "--objects", "HEAD").decode().splitlines()
+        objects = git("rev-list", "--objects", args.ref).decode().splitlines()
         entries = [(line.split(" ", 1)[1], line.split(" ", 1)[0])
                    for line in objects if " " in line]
     else:

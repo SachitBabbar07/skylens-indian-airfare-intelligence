@@ -136,7 +136,7 @@ Use separate chronological training, tuning-validation, calibration and final-te
 
 Computed from the actual private quote store, not unit-test fixtures.
 
-{table([quality], list(quality))}
+{table([{'measure': k, 'value': v} for k, v in quality.items()], ['measure', 'value'])}
 
 No source passed the access/retention/reuse gate during Phase 3. No quote CSV was ingested, so currency-verified totals, known taxes, known passenger basis and genuine return targets each number **zero**. Missingness percentages, acceptance rates and duplication rates are undefined with no actual input; zero rows is not a 100% quality score. The header-only template is not evidence. Synthetic software fixtures live only in temporary test directories and never enter this store or training.
 

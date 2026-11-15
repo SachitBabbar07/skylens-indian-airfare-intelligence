@@ -2,9 +2,20 @@
 
 Computed from the actual private quote store, not unit-test fixtures.
 
-| raw_rows | malformed_rows | duplicate_snapshots | conflicted_rows_excluded | retained_unique_snapshots | verified_targets | research_only_or_unusable | unique_itineraries | collection_days_ist | itinerary_days | genuine_round_trip_targets | training_automatically_enabled |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | False |
+| measure | value |
+| --- | --- |
+| raw_rows | 0 |
+| malformed_rows | 0 |
+| duplicate_snapshots | 0 |
+| conflicted_rows_excluded | 0 |
+| retained_unique_snapshots | 0 |
+| verified_targets | 0 |
+| research_only_or_unusable | 0 |
+| unique_itineraries | 0 |
+| collection_days_ist | 0 |
+| itinerary_days | 0 |
+| genuine_round_trip_targets | 0 |
+| training_automatically_enabled | False |
 
 No source passed the access/retention/reuse gate during Phase 3. No quote CSV was ingested, so currency-verified totals, known taxes, known passenger basis and genuine return targets each number **zero**. Missingness percentages, acceptance rates and duplication rates are undefined with no actual input; zero rows is not a 100% quality score. The header-only template is not evidence. Synthetic software fixtures live only in temporary test directories and never enter this store or training.
 

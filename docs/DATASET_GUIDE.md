@@ -1,4 +1,12 @@
 # Dataset guide
+
+## Phase 3 quote intake and Git distribution
+
+No genuine new quote has been acquired. [Source access](../reports/quote_source_access_audit.md) distinguishes live offers, sandbox data, cached indicative prices, tracking, surveys and historical files. The [quote collection guide](QUOTE_COLLECTION_GUIDE.md) provides an empty CSV and permission/evidence workflow. Unknown currency, taxes, fees, passenger basis or journey meaning cannot enter the new all-in single-adult INR target. One-way and actual return quotes remain separate. The quote store is private and never read by the existing training code.
+
+Git distributes original code, research findings, schema/hash/license metadata, aggregate metrics/coverage and configuration. Original archives, raw/processed/interim data, native model binaries, individual prediction/exclusion outputs, example explanations, full third-party source cards/README/code snapshots, local checkpoints, screenshots and quote evidence remain local. The MIT code license does not relicense data or grant acquisition/ML rights. See [reconstruction](INSTALLATION.md#source-only-research-reconstruction) and the licensing report for source attribution and restrictions. Detailed original file profiles/source cards are local audit artifacts; reacquire them only where permitted.
+
+## Historical sources
 Use reports/dataset_discovery_report.md and dataset_comparison.csv for every assessed candidate, source URL, license declaration and rejection reason. Actual schemas, hashes, row counts and missing values are in data/metadata/file_profiles.json; immutable raw archives are retained locally.
 
 Yash Dharme's 2023 raw source provides seven cities, three sufficiently represented cabin classes and a booking date, but all queries belong to one collection day. PromptCloud provides broader geography across three collection days, without cabin and standardized price definitions. These are separate research cohorts, never a pooled INR target.

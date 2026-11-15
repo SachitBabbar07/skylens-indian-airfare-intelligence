@@ -1,0 +1,14 @@
+{
+  "checkout": {
+    "tag": "v7.0.1",
+    "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1"
+  },
+  "setup-python": {
+    "tag": "v7.1.0",
+    "sha": "6d4fd22b20465ccc0f7354476588e8df7c9ca0e0"
+  },
+  "setup-node": {
+    "tag": "v7.1.0",
+    "sha": "949feb2413d6458794dcd2491c4babbbce0c15c1"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "health_status": 200,
+  "frontend_status": 200,
+  "compiled_assets_checked": 2,
+  "profiles_checked": 592,
+  "failures": [],
+  "browser_visual_qa": "Not performed: browser permission declined"
+}

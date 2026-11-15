@@ -1,4 +1,6 @@
 # Project walkthrough
+
+Phase 3 adds `src/skylens/quotes.py`, an offline intake beside the historical ML pipeline. It checks source permission, preserves raw/evidence hashes and separates verified candidates, research-only rows and malformed quarantine. It does not feed `train.py` or the API. The [collection guide](QUOTE_COLLECTION_GUIDE.md) and [final findings](../reports/phase3_final_findings.md) explain why no genuine quote, new airport or new model was claimed. For a source-only clone, start with [installation](INSTALLATION.md).
 SkyLens is a local historical research application. A verified current INR total-fare predictor could not be established. Unknown currency, tax/passenger scope and booking journey type stay visible; source units are never labeled rupees.
 
 **Research.** scripts/discover.py snapshots catalog searches; inspect_sources.py saves original cards; acquire.py downloads free versioned archives and a commit-pinned airport master. This solves traceability: every file can be identified by URL, version, hash and actual row count. Mirrored datasets do not add independent evidence.

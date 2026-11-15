@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default="http://127.0.0.1:8000")
+    parser.add_argument("--output", type=Path, default=ROOT / "reports/phase2_http_integration.json")
     args = parser.parse_args()
     failures, expected_errors = [], []
     prediction_checks = explanation_checks = 0
@@ -96,7 +97,7 @@ def main():
         "currency_display_source_check": "Frontend result labels source fare units; API currency null.",
         "browser_console_and_mobile_layout": "unverified",
     }
-    (ROOT / "reports/phase2_http_integration.json").write_text(
+    args.output.write_text(
         json.dumps(result, indent=2), encoding="utf-8")
     print(json.dumps({key: value for key, value in result.items()
                       if key not in ["expected_invalid_requests", "compiled_assets_checked"]}, indent=2))

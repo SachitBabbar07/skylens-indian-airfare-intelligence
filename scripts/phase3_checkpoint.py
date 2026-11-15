@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
+    if (ROOT / "data/metadata/phase3_checkpoint.json").exists():
+        raise FileExistsError("The historical Phase 3 checkpoint already exists; do not overwrite it.")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     dest = ROOT / "backups" / f"phase3_{stamp}"
     dest.mkdir(parents=True)

@@ -1,7 +1,29 @@
 # SkyLens
 
+Indian domestic airfare intelligence: historical estimation, airport coverage and native model explanations. FastAPI + React/TypeScript + CatBoost, with source-specific research cohorts and explicit limits.
+
+> **Phase 3:** offline quote intake, evidence/permission gates and repeated-day sampling are implemented. Genuine new verified quotes: **0**. No retraining or airport expansion; seven research-eligible airports, 592 exact profiles, currency unknown for the historical models, intervals withheld. This is not a current INR fare or booking service. See [current findings](reports/phase3_final_findings.md).
+
+## Start here
+
+- [Installation, source-only CI and artifact reconstruction](docs/INSTALLATION.md)
+- [Architecture walkthrough](docs/PROJECT_WALKTHROUGH.md), [data guide](docs/DATASET_GUIDE.md), [model guide](docs/ML_MODEL_GUIDE.md)
+- [API](docs/API_GUIDE.md), [frontend](docs/FRONTEND_GUIDE.md), [explanations](docs/EXPLAINABILITY_GUIDE.md)
+- [Quote entry instructions](docs/QUOTE_COLLECTION_GUIDE.md), [source access audit](reports/quote_source_access_audit.md), [sampling plan](reports/quote_collection_plan.md)
+- [Contributing](CONTRIBUTING.md), [changelog](CHANGELOG.md), [GitHub delivery status](reports/github_delivery_report.md)
+
+## Checks without datasets
+
+Install `requirements-ci.txt` in Python 3.12, then run `python -m pytest tests/test_quotes.py tests/test_portable_contract.py -q`. Run `npm --prefix frontend ci` and `npm --prefix frontend run build` for the production UI. The [GitHub workflow](.github/workflows/ci.yml) uses synthetic software fixtures in temporary directories, never synthetic training data; it downloads no fare datasets. An actual remote CI result is reported only after a successful run, in the delivery report.
+
+Raw/processed data, native models, private quote evidence and audit backups stay local. A clone is a reproducible **source** checkout; restoring exact artifacts or explicitly fitting a new research reconstruction is a separate step. No dependency automatically collects live fares, retrains at startup, or pays a service.
+
+## License and attribution
+
+Original code/documentation use the [MIT license](LICENSE). Third-party data, airport metadata, dependencies and learned artifacts retain their own rights; see [provenance](reports/dataset_licensing_and_provenance.md). The code license grants no airline collection, archive, redistribution or ML-use permission. Source URL/version/hash/schema/license summaries remain in the [registry](data/metadata/dataset_registry.json) and [frozen acquisition manifest](config/sources.json); individual source examples/full third-party snapshots are local only.
+
 <!-- SKYLENS_PHASE2_NOTICE -->
-> **Current audit:** 48 tests pass; models and original data are preserved.
+> **Phase 2 baseline:** 48 tests passed; models and original data were preserved.
 > Served intervals are withheld because the holdout does not validate the accepted
 > input range. Currency/full fare scope remain unknown; browser QA is blocked.
 > See [phase-two findings](docs/PHASE2_FINDINGS.md) for the current status.
@@ -19,21 +41,7 @@ From this repository root, with free Python 3.12, Node 22+ and uv:
 .\run.ps1
 ```
 
-Open http://127.0.0.1:8000. API reference: http://127.0.0.1:8000/docs. The trained artifacts and datasets already exist in this workspace; setup does not retrain. To reconstruct a source-only checkout:
-
-```powershell
-.venv\Scripts\python.exe scripts\discover.py
-.venv\Scripts\python.exe scripts\inspect_sources.py
-.venv\Scripts\python.exe scripts\acquire.py
-$env:PYTHONPATH = 'src'
-.venv\Scripts\python.exe -m skylens.prepare
-.venv\Scripts\python.exe -m skylens.train
-.venv\Scripts\python.exe -m skylens.report
-.venv\Scripts\python.exe -m pytest -q --junitxml=reports/test_results.xml
-npm --prefix frontend ci
-npm --prefix frontend run build
-.\run.ps1
-```
+Open http://127.0.0.1:8000. API reference: http://127.0.0.1:8000/docs. The trained artifacts and datasets already exist in the original workspace; setup does not retrain. A source-only checkout needs separately authorized data/artifact reconstruction. Follow [installation](docs/INSTALLATION.md#source-only-research-reconstruction) before acquisition or training; these optional research commands change generated local files and are not required to install the quote importer or run portable CI.
 
 Separate frontend development: start the API and run `npm --prefix frontend run dev`. Vite proxies API endpoints to port 8000. CORS allows only configured local origins. `.env.example` documents SKYLENS_CORS_ORIGINS, read from the process environment (the file is not automatically loaded). No account, paid API or secret is needed. Acquisition needs internet; subsequent inference is local. No cloud publication was performed.
 
