@@ -22,6 +22,8 @@ Raw/processed data, native models, private quote evidence and audit backups stay
 
 ## License and attribution
 
+The source repository is public by the owner's choice; the application runs locally. Raw datasets, native model binaries and private quote evidence remain excluded from Git.
+
 Original code/documentation use the [MIT license](LICENSE). Third-party data, airport metadata, dependencies and learned artifacts retain their own rights; see [provenance](reports/dataset_licensing_and_provenance.md). The code license grants no airline collection, archive, redistribution or ML-use permission. Source URL/version/hash/schema/license summaries remain in the [registry](data/metadata/dataset_registry.json) and [frozen acquisition manifest](config/sources.json); individual source examples/full third-party snapshots are local only.
 
 <!-- SKYLENS_PHASE2_NOTICE -->

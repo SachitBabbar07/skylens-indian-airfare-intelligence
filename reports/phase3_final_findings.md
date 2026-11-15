@@ -37,7 +37,7 @@ Original raw/processed/interim data and all model files were compared with the P
 
 ## GitHub backup
 
-[SachitBabbar07/skylens-indian-airfare-intelligence](https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence) is **PRIVATE**, with `main` as default branch. Milestone pushes, matching remote commit, uploaded source/docs and GitHub-rendered README were verified. The [delivery report](github_delivery_report.md) contains identity/authentication, branches, commits, exclusions, reconstruction and clone/pull/contribution instructions. No secret, raw dataset, quote evidence, model binary, backup or local audit branch was uploaded.
+[SachitBabbar07/skylens-indian-airfare-intelligence](https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence) was created private and is now **PUBLIC by the owner's explicit confirmation**, with `main` as default branch. Milestone pushes, uploaded source/docs and GitHub-rendered README were verified. The [delivery report](github_delivery_report.md) records the visibility change, authentication, branches, exclusions and reconstruction instructions. No secret, raw dataset, quote evidence, model binary, backup or local audit branch was uploaded.
 
 Hosted Actions jobs are **skipped by the zero-spend gate**, as explicitly requested by the user after billing availability could not be confirmed. No CI pass is claimed. No completion tag was created; quote-source acquisition remains an open dependency.
 

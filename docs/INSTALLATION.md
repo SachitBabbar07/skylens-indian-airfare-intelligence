@@ -15,6 +15,10 @@ Open `http://127.0.0.1:8000` and `/docs`. `run.ps1` loads existing native model 
 
 ## Portable checks
 
+The owner has made the source repository public. The existing hosted-CI gate
+remains disabled under the owner's earlier instruction; publication does not
+automatically enable it. Public cloning needs no GitHub login.
+
 A source-only clone intentionally contains no raw/processed data, native model binary, private quote evidence or local audit backup. Install just the portable test dependencies when model work is unnecessary:
 
 ```powershell

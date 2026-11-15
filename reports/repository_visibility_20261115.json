@@ -1,0 +1,11 @@
+{
+  "repository": "SachitBabbar07/skylens-indian-airfare-intelligence",
+  "url": "https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence",
+  "initial_delivery_visibility": "PRIVATE",
+  "current_visibility": "PUBLIC",
+  "authorization": "Owner explicitly confirmed public visibility on 2026-11-15",
+  "visibility_changed_by_agent": false,
+  "default_branch": "main",
+  "hosted_ci": "remains gated per prior owner instruction",
+  "historical_receipts": "Private visibility in the earlier timestamped receipts records the initial delivery state."
+}
