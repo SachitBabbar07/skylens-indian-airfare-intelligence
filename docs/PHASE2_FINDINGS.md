@@ -1,5 +1,10 @@
 ## Phase-two findings — 15 November 2026
 
+Follow-up: the earlier browser restriction described below was resolved after
+the user updated permissions. Both origins now pass the documented desktop/mobile
+[browser QA follow-up](../reports/browser_qa_followup_20261115.md). Phase 2 numbers
+below remain the historical baseline; the current Python suite has 102 tests.
+
 The existing trained models and original data are preserved. The baseline again
 passed 40 tests; the current suite passes 48. HTTP QA passed 1,776 predictions
 and 592 real explanations across all 592 offered profiles, plus expected invalid
@@ -18,8 +23,8 @@ requests. The existing run.ps1 workflow and production build pass.
   is at lead days 41–50, outside the accepted 1–35 fitting range. Offline coverage
   remains available but cannot validate an accepted scenario's range.
 - The seven clock-rounding failures are fixed without weakening real bounds.
-- Browser access is still denied by a saved permission setting. Visual/mobile/
-  interactive QA, console and browser network checks remain unverified.
+- Browser access was denied at the Phase 2 audit. That restriction was later
+  resolved; see the current authorized browser follow-up linked above.
 
 Read [currency](../reports/fare_currency_audit.md), [fare semantics](../reports/fare_semantics_audit.md),
 [airport eligibility](../reports/airport_serving_eligibility_audit.md),

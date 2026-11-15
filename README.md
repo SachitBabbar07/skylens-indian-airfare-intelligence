@@ -14,7 +14,7 @@ Indian domestic airfare intelligence: historical estimation, airport coverage an
 
 ## Checks without datasets
 
-Current local verification: **102 tests passed**, including the original 48; clean remote clone: **54 portable tests passed** plus production build. Hosted CI remains deliberately skipped under the user's zero-spend decision. Browser QA still needs the saved localhost permission to be allowed. Detailed evidence is in the [delivery report](reports/github_delivery_report.md).
+Current local verification: **102 tests passed**, including the original 48; clean remote clone: **54 portable tests passed** plus production build. Authorized desktop/mobile browser QA now passes on ports 8000 and 5173, including native predictions and outage recovery. See [browser findings and genuine screenshots](reports/browser_qa_followup_20261115.md). Hosted CI stays skipped under the user's zero-spend decision. Repository details are in the [delivery report](reports/github_delivery_report.md).
 
 Install `requirements-ci.txt` in Python 3.12, then run `python -m pytest tests/test_quotes.py tests/test_portable_contract.py -q`. Run `npm --prefix frontend ci` and `npm --prefix frontend run build` for the production UI. The [GitHub workflow](.github/workflows/ci.yml) uses synthetic software fixtures in temporary directories, never synthetic training data; it downloads no fare datasets. An actual remote CI result is reported only after a successful run, in the delivery report.
 
@@ -27,7 +27,7 @@ Original code/documentation use the [MIT license](LICENSE). Third-party data, ai
 <!-- SKYLENS_PHASE2_NOTICE -->
 > **Phase 2 baseline:** 48 tests passed; models and original data were preserved.
 > Served intervals are withheld because the holdout does not validate the accepted
-> input range. Currency/full fare scope remain unknown; browser QA is blocked.
+> input range. Currency/full fare scope remain unknown; browser QA was blocked at this baseline and has since passed the linked follow-up.
 > See [phase-two findings](docs/PHASE2_FINDINGS.md) for the current status.
 <!-- SKYLENS_PHASE2_NOTICE_END -->
 
@@ -92,7 +92,7 @@ FastAPI validates schema, categories, joint support and numeric bounds. It hashe
 React + TypeScript + Vite offers searchable airports, dependent scenario fields, real model results and SHAP, a coverage directory and measured model tables. Backend metadata supplies every available option. A minimum 50 training observations is required per route/airline/class/stops profile, with observed numeric bounds; it is a conservative research heuristic, not a reliability theorem. Unsupported routes are blocked. Calendar-date inputs are omitted because current/future dates cannot be supported. API failure never falls back to fictional sample prices.
 
 ## Checks and reproducibility
-Forty automated tests passed, including real model output, SHAP additivity, quote separation, corruption handling, invalid inputs and support rejection. The TypeScript/Vite production build passed. Browser permission was declined; browser interaction, mobile overflow and visual QA remain unverified. Run tests with `.venv\Scripts\python.exe -m pytest -q`; results are saved in reports/test_results.xml.
+The original Phase 1 suite had 40 tests; the current suite has 102 passing tests, including native prediction/SHAP, separation, corruption handling and support rejection. The production build and authorized desktop/mobile browser follow-up passed. Run `.venv\Scripts\python.exe -m pytest -q`; see the current browser report linked above.
 
 Python packages are pinned in requirements.txt, npm in package-lock.json. Model metadata includes parameters, seed, dataset and artifact hashes, dates and metrics. Native artifacts/raw data are kept locally but ignored by Git to avoid unnecessary large-data redistribution. A source-only checkout must rerun acquisition/preparation/training. Never commit secrets or replace missing authentic fares with synthetic training rows.
 
@@ -100,10 +100,10 @@ Python packages are pinned in requirements.txt, npm in package-lock.json. Model 
 Start with [walkthrough](docs/PROJECT_WALKTHROUGH.md), [datasets](docs/DATASET_GUIDE.md), [pipeline](docs/DATA_PIPELINE_GUIDE.md), [models](docs/ML_MODEL_GUIDE.md), [SHAP](docs/EXPLAINABILITY_GUIDE.md), [API](docs/API_GUIDE.md), [frontend](docs/FRONTEND_GUIDE.md), [edge cases](docs/EDGE_CASES_AND_VALIDATION.md) and [viva preparation](docs/VIVA_PREPARATION.md). Reports and figures provide actual evidence.
 
 ## Remaining work and future improvements
-A verified total-ticket service needs legitimately licensed quotes with currency, tax/passenger basis, real journey types and repeated query days. Wider serving needs more joint route evidence, compatible independent validation and current airline/airport verification. Real return fares are needed before round trips. First Class needs sufficient samples. Residual-interval shortfalls and external drift remain visible. Browser QA must still be completed. This deliverable is a working local research application, not a validated nationwide live-price service.
+A verified total-ticket service needs legitimately licensed quotes with currency, tax/passenger basis, real journey types and repeated query days. Wider serving needs more joint route evidence, compatible independent validation and current airline/airport verification. Real return fares are needed before round trips. First Class needs sufficient samples. Residual-interval shortfalls and external drift remain visible. Desktop/mobile viewport QA has passed; physical-device and cross-browser checks remain additional work. This deliverable is a working local research application, not a validated nationwide live-price service.
 
 
-Additional executed checks: 592 advertised profiles passed real HTTP prediction with 0 failures; 2 compiled frontend assets and the HTML page returned HTTP 200. All 26 original file hashes match. Frozen-version acquisition was rerun successfully without raw overwrites. These checks do not replace the declined browser QA.
+Additional executed checks: 592 advertised profiles passed real HTTP prediction with 0 failures; 2 compiled frontend assets and the HTML page returned HTTP 200. All 26 original file hashes match. Frozen-version acquisition was rerun successfully without raw overwrites. These historical HTTP checks were later supplemented by authorized browser QA.
 
 
 ## Additional cabin architecture diagnostic
@@ -137,8 +137,8 @@ requests. The existing run.ps1 workflow and production build pass.
   is at lead days 41–50, outside the accepted 1–35 fitting range. Offline coverage
   remains available but cannot validate an accepted scenario's range.
 - The seven clock-rounding failures are fixed without weakening real bounds.
-- Browser access is still denied by a saved permission setting. Visual/mobile/
-  interactive QA, console and browser network checks remain unverified.
+- Browser access was denied at the Phase 2 audit. That restriction was later
+  resolved; see the current authorized browser follow-up linked above.
 
 Read [currency](reports/fare_currency_audit.md), [fare semantics](reports/fare_semantics_audit.md),
 [airport eligibility](reports/airport_serving_eligibility_audit.md),

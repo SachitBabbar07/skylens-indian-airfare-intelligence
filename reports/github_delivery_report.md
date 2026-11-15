@@ -1,5 +1,12 @@
 # GitHub delivery status
 
+**Browser QA follow-up, 15 November 2026:** permissions now allow both localhost
+origins. Desktop/mobile flows passed after fixing documentation proxying and
+blank-number warnings. Tests remain 102 passing; model/data hashes are unchanged.
+See [browser findings and screenshots](browser_qa_followup_20261115.md). The original
+source receipt below remains pinned to its Phase 3 implementation revision;
+the browser follow-up is a subsequent verified milestone on the same private main.
+
 Local version control is initialized at `D:\SkyLens` on `main`. GitHub CLI v2.104.0 was obtained from its official release and checked against published SHA-256. The existing Git Credential Manager authorization successfully identifies the personal account **SachitBabbar07** (user ID 244026342). Credentials are passed only in a CLI child-process environment, never written to this project or displayed. The CLI warns about absent `read:org`; no organization access is needed or requested. Personal repository operations have succeeded with the existing `repo`/`workflow` scopes. The integration is installed but exposes no repository tools to this running chat.
 
 Repository created, pushed and independently read back: [SachitBabbar07/skylens-indian-airfare-intelligence](https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence), owner **SachitBabbar07**, visibility **PRIVATE**, default branch **main**. REST and GraphQL checks found no existing repository before creation. Normal fast-forward milestone pushes succeeded; no completion tag or force push was used.
@@ -12,10 +19,10 @@ Repository created, pushed and independently read back: [SachitBabbar07/skylens-
 | Remote | `origin=https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence.git` for fetch/push |
 | Published branch | `main`, tracking `origin/main`; no other remote branch |
 | Local branches | `main`, `archive/local-phase2-baseline` (never uploaded) |
-| History | Five verified implementation/delivery commits, followed by the final audit-record commit; six published commits in total. One additional original pre-upload snapshot is retained locally. |
+| History | Initial Phase 3 delivery: six published commits. The browser follow-up adds a subsequent verified milestone; inspect the live main tip for current history. One original pre-upload snapshot remains local. |
 | Validated implementation revision | `30e1a2efca23770221f5550607c678663618cc3f` — Vite security patch; the following audit-record commit contains this report. See `git log -1` or the live main branch for the final delivery tip, also supplied in chat. |
 | Remote integrity | `git ls-remote` and GitHub REST commit SHA matched the local implementation revision; default branch/owner/private visibility read back independently |
-| README/docs | Remote README HTML rendered through GitHub's API; README, installation and quote guide blob hashes matched local Git. 101 local Markdown links checked without missing targets. Browser visual QA remains separate. |
+| README/docs | Remote README HTML and source-document blob hashes were verified at initial delivery. Local Markdown links are checked after updates. Desktop/mobile browser QA has since passed the linked follow-up. |
 | Data/artifact exclusion | Remote tree contains no raw/processed/quote payloads, native model binaries, backup archives or local tools. 159 files at the validated source revision; final audit files follow. |
 | Secret/size review | Staged and full current-branch ancestry scans: zero findings. Largest uploaded blob 255,191 bytes; no blob exceeds 5 MiB. Pre-push hook executed on milestone pushes. This focused scanner is supplemented by diff/license/privacy review. |
 | Local tests | 102 passed: original 48 plus 54 portable software checks; no failure/error/skip, one upstream deprecation warning |

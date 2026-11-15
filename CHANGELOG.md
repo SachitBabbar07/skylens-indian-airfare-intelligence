@@ -1,5 +1,11 @@
 # Changelog
 
+## Browser QA follow-up — 2026-11-15
+
+- Verified both authorized localhost origins through the in-app browser, including desktop/mobile layouts, native estimates/SHAP, coverage, validation and actual outage/retry recovery.
+- Fixed frontend documentation/OpenAPI proxy routes and React warnings from clearing numeric fields; preserved required-field validation and model-serving rules.
+- Corrected text separators, added genuine browser screenshots and updated the QA status. Python suite: 102 passed; production build passed; original data/models unchanged. Hosted CI remains gated.
+
 ## Phase 3 — 2026-11-15
 
 - Updated Vite 6.3.5 to the patched 6.4.6 within the existing major version after a clean-install audit found a vulnerable development-tool package. Regenerated lockfile, passed build and repeated npm audit: zero reported vulnerabilities. Compiled application assets are byte-identical; model/data/application source are unchanged by this patch.

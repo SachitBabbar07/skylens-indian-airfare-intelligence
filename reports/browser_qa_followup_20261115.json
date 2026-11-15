@@ -1,0 +1,176 @@
+{
+  "recorded_at_utc": "2026-11-15T13:23:35.006Z",
+  "browser": "Authorized ChatGPT in-app browser",
+  "origins": {
+    "http://127.0.0.1:8000": "allowed; production app and real prediction verified",
+    "http://127.0.0.1:5173": "allowed; dev app, prediction and documentation verified"
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "document_client_width": 1425,
+      "document_scroll_width": 1425
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "document_client_width": 375,
+      "document_scroll_width": 375
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "document_client_width": 345,
+      "document_scroll_width": 345
+    }
+  ],
+  "passed_flows": [
+    "research acknowledgement gates submit",
+    "real model output on both origins",
+    "13 SHAP contributions and additive calculation",
+    "keyboard airport autocomplete and Escape",
+    "mouse selection of destination on mobile viewport",
+    "unsupported PNQ unavailable in estimator",
+    "dependent airline/cabin/stops profiles",
+    "numeric required/range validation",
+    "blank numeric fields after fix produce no console errors",
+    "out-of-domain departure time rejected with HTTP 422 and no price",
+    "network cohort with zero profiles is unavailable",
+    "coverage counts/search/no-match/pagination",
+    "mobile table scroll contained within page",
+    "methodology metrics and interval-withholding labels",
+    "API documentation and live health HTTP 200",
+    "actual startup and prediction loading states",
+    "backend stopped: clear error and Retry connection",
+    "original run.ps1 restarted; Retry recovered real predictions"
+  ],
+  "reproduced_and_fixed": [
+    {
+      "issue": "frontend /docs navigation returned SPA instead of Swagger",
+      "fix": "proxy /docs, /openapi.json and /fare-semantics to backend",
+      "retest": "Swagger rendered; live /health returned HTTP 200"
+    },
+    {
+      "issue": "clearing numeric fields emitted React NaN value warning",
+      "fix": "render non-finite editing values as an empty required field",
+      "retest": "fresh-page keyboard clearing of both fields: no console warnings/errors"
+    },
+    {
+      "issue": "question-mark text separators",
+      "fix": "consistent airport separator and explicit nominal; not served label",
+      "retest": "updated text visible"
+    }
+  ],
+  "expected_failure_tests": [
+    {
+      "status": 422,
+      "path": "/predict",
+      "reason": "deliberately unsupported departure time"
+    },
+    {
+      "status": 500,
+      "path": "/health via Vite",
+      "reason": "deliberately stopped backend; recovered to HTTP 200"
+    }
+  ],
+  "final_console": {
+    "frontend": [],
+    "backend": [],
+    "documentation": []
+  },
+  "limitations": [
+    "Responsive viewport checks, not physical iOS/Android devices or Safari.",
+    "Full browser Network/HAR capture is not exposed; HTTP response UI and backend/Vite request logs were inspected."
+  ],
+  "screenshots_local": [
+    ".tools/browser-qa/desktop-estimator.jpg",
+    ".tools/browser-qa/mobile-estimator.jpg",
+    ".tools/browser-qa/mobile-coverage.jpg",
+    ".tools/browser-qa/mobile-methodology.jpg",
+    ".tools/browser-qa/backend-unavailable.jpg",
+    ".tools/browser-qa/backend-recovered.jpg"
+  ],
+  "security_restrictions_bypassed": false,
+  "supplementary_http_checks": [
+    {
+      "url": "http://127.0.0.1:8000/health",
+      "status": 200,
+      "expected_content": true
+    },
+    {
+      "url": "http://127.0.0.1:8000/docs",
+      "status": 200,
+      "expected_content": true
+    },
+    {
+      "url": "http://127.0.0.1:8000/openapi.json",
+      "status": 200,
+      "expected_content": true
+    },
+    {
+      "url": "http://127.0.0.1:8000/fare-semantics",
+      "status": 200,
+      "expected_content": true
+    },
+    {
+      "url": "http://127.0.0.1:5173/health",
+      "status": 200,
+      "expected_content": true
+    },
+    {
+      "url": "http://127.0.0.1:5173/docs",
+      "status": 200,
+      "expected_content": true
+    },
+    {
+      "url": "http://127.0.0.1:5173/openapi.json",
+      "status": 200,
+      "expected_content": true
+    },
+    {
+      "url": "http://127.0.0.1:5173/fare-semantics",
+      "status": 200,
+      "expected_content": true
+    }
+  ],
+  "regression": {
+    "python_tests": {
+      "tests": 102,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    "upstream_deprecation_warnings": 1,
+    "frontend_production_build": "passed; updated bundle exercised on port 8000",
+    "frozen_data_model_files_checked": 56,
+    "all_frozen_files_unchanged": true,
+    "launch_script_unchanged": true,
+    "retraining_performed": false,
+    "services_left_running": [
+      "http://127.0.0.1:8000",
+      "http://127.0.0.1:5173"
+    ],
+    "hosted_ci": "gated per user instruction"
+  },
+  "published_screenshots": [
+    {
+      "path": "docs/screenshots/desktop-estimator.jpg",
+      "content_dimensions": [
+        1425,
+        891
+      ],
+      "sha256": "22fd7204a884bb89b1dd9da0c51721e889b7d4cd083e91199c658cb412c6ade3",
+      "exif_metadata_present": false
+    },
+    {
+      "path": "docs/screenshots/mobile-estimator.jpg",
+      "content_dimensions": [
+        375,
+        812
+      ],
+      "sha256": "063557074ac947a25a979ad798634f20de742c596482b9e5bef9149a2839f8b6",
+      "exif_metadata_present": false
+    }
+  ]
+}

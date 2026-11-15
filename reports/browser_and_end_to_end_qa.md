@@ -1,6 +1,16 @@
 # Browser and end-to-end QA — 15 November 2026
 
-## Browser result: blocked, not passed
+## Current follow-up: authorized browser QA passed
+
+After the user updated permissions, both localhost origins opened successfully.
+Desktop/mobile viewports, native predictions/SHAP, airport search, validation,
+coverage, methodology, loading and outage/retry recovery were tested. The frontend
+documentation proxy and numeric-field React warnings were fixed. Final normal-flow
+console captures were empty; deliberate 422/outage 500 responses were inspected.
+See the [complete follow-up and genuine screenshots](browser_qa_followup_20261115.md).
+The earlier denial below is retained as historical Phase 2 evidence.
+
+## Earlier Phase 2 browser result: blocked, not passed
 
 The supported computer-use API first looked for an existing localhost tab, then
 attempted to create an in-app browser tab for http://127.0.0.1:8000. The native

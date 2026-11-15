@@ -39,13 +39,13 @@ Original raw/processed/interim data and all model files were compared with the P
 
 [SachitBabbar07/skylens-indian-airfare-intelligence](https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence) is **PRIVATE**, with `main` as default branch. Milestone pushes, matching remote commit, uploaded source/docs and GitHub-rendered README were verified. The [delivery report](github_delivery_report.md) contains identity/authentication, branches, commits, exclusions, reconstruction and clone/pull/contribution instructions. No secret, raw dataset, quote evidence, model binary, backup or local audit branch was uploaded.
 
-Hosted Actions jobs are **skipped by the zero-spend gate**, as explicitly requested by the user after billing availability could not be confirmed. Two actual runs were inspected; no CI pass is claimed. No completion tag was created while browser QA and source acquisition dependencies remain open.
+Hosted Actions jobs are **skipped by the zero-spend gate**, as explicitly requested by the user after billing availability could not be confirmed. No CI pass is claimed. No completion tag was created; quote-source acquisition remains an open dependency.
 
-## Browser limitation and required action
+## Authorized browser follow-up
 
-The supported in-app browser retry was denied again: **a saved user permission setting blocks `http://127.0.0.1:8000`; the origin approval gate did not grant access**. No alternate browser, raw CDP, indirect browser execution or policy change was attempted. Desktop/mobile layout, airport autocomplete/keyboard behavior, journey/form interactions, loading/failure UI, rendered explanations and browser console remain unverified.
+The earlier permission denial was resolved after the user updated the saved permissions. Both `http://127.0.0.1:8000` and `http://127.0.0.1:5173` now open through the authorized in-app browser. Desktop and mobile viewport flows, real estimates/SHAP, airport search, validation, directory/methodology and loading/outage/retry recovery passed. The frontend documentation proxy and blank-number React warning were fixed and retested. No browser security restriction was bypassed.
 
-The user or administrator must change the saved deny permission for the exact origin `http://127.0.0.1:8000` to allow browser access in the authorized environment, then request a QA retry. Filesystem/network permission does not change that browser policy. No screenshot is claimed.
+See [the follow-up report and genuine screenshots](browser_qa_followup_20261115.md). Final healthy-flow console captures were empty; deliberate HTTP 422 and outage-related HTTP 500 responses were inspected separately. A complete Network/HAR interface is unavailable, so response inspection used the live Swagger panel and correlated server logs. Physical mobile devices and other browser engines remain untested. No localhost permission issue remains observed.
 
 ## What remains unsupported
 
