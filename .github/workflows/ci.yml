@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   backend:
+    if: ${{ vars.SKYLENS_CI_ZERO_SPEND_CONFIRMED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -34,6 +35,7 @@ jobs:
       - run: python scripts/check_docs.py
 
   frontend:
+    if: ${{ vars.SKYLENS_CI_ZERO_SPEND_CONFIRMED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
