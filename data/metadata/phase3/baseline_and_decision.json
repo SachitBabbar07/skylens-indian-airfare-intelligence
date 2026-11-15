@@ -1,0 +1,147 @@
+{
+  "recorded_at_utc": "2026-11-15T07:28:00.945705+00:00",
+  "checkpoint": {
+    "created_at_utc": "20261115T070212Z",
+    "checkpoint_dir": "backups/phase3_20261115T070212Z",
+    "file_count": 267,
+    "baseline_tests": 48,
+    "archive_sha256": "d0816b136afc7a3fce071d6ef0583b656f00767a59fa263726fc7f3e49490845"
+  },
+  "unchanged_data_model_files": 56,
+  "all_unchanged": true,
+  "models": [
+    {
+      "model": "cabin_2023",
+      "sha256": "feaeadb9f82931f8aa048bf686ac0db7c9b178d3aa46fd219237a4e4df6b737f",
+      "n": 88773,
+      "mae": 2339.7568244890613,
+      "rmse": 4376.351778545567,
+      "r2": 0.9470333889343409,
+      "median_absolute_error": 998.1894818040819,
+      "mape_percent": 13.7101340167778,
+      "p90_absolute_error": 6142.717596390066,
+      "inference_ms_per_row": 0.0013238529733125015
+    },
+    {
+      "model": "network_2020",
+      "sha256": "9c98ad32b7f445cf5900cd9362554d2a2422de44893568537e27aa320480a8ff",
+      "n": 5445,
+      "mae": 2764.6631279673315,
+      "rmse": 4664.675451433455,
+      "r2": 0.4266470115210942,
+      "median_absolute_error": 1583.1306671615594,
+      "mape_percent": 23.07643595693641,
+      "p90_absolute_error": 6464.828674996453,
+      "inference_ms_per_row": 0.002241248852370544
+    }
+  ],
+  "eligible_airports": [
+    "AMD",
+    "BLR",
+    "BOM",
+    "CCU",
+    "DEL",
+    "HYD",
+    "MAA"
+  ],
+  "minimum_profile_support": 50,
+  "quote_summary": {
+    "raw_rows": 0,
+    "malformed_rows": 0,
+    "duplicate_snapshots": 0,
+    "conflicted_rows_excluded": 0,
+    "retained_unique_snapshots": 0,
+    "verified_targets": 0,
+    "research_only_or_unusable": 0,
+    "unique_itineraries": 0,
+    "collection_days_ist": 0,
+    "itinerary_days": 0,
+    "genuine_round_trip_targets": 0,
+    "training_automatically_enabled": false
+  },
+  "retraining_performed": false,
+  "prediction_intervals": "withheld_unvalidated_serving_domain",
+  "prediction_request_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "model_id": {
+        "enum": [
+          "cabin_2023",
+          "network_2020"
+        ],
+        "title": "Model Id",
+        "type": "string"
+      },
+      "origin": {
+        "pattern": "^[A-Z]{3}$",
+        "title": "Origin",
+        "type": "string"
+      },
+      "destination": {
+        "pattern": "^[A-Z]{3}$",
+        "title": "Destination",
+        "type": "string"
+      },
+      "airline": {
+        "maxLength": 120,
+        "minLength": 1,
+        "title": "Airline",
+        "type": "string"
+      },
+      "cabin_class": {
+        "maxLength": 40,
+        "minLength": 1,
+        "title": "Cabin Class",
+        "type": "string"
+      },
+      "journey_type": {
+        "const": "single_direction_record",
+        "default": "single_direction_record",
+        "title": "Journey Type",
+        "type": "string"
+      },
+      "days_left": {
+        "maximum": 365,
+        "minimum": 0,
+        "title": "Days Left",
+        "type": "integer"
+      },
+      "duration_minutes": {
+        "exclusiveMinimum": 0,
+        "maximum": 4320,
+        "title": "Duration Minutes",
+        "type": "number"
+      },
+      "stops": {
+        "maximum": 4,
+        "minimum": 0,
+        "title": "Stops",
+        "type": "integer"
+      },
+      "departure_hour": {
+        "exclusiveMaximum": 24,
+        "minimum": 0,
+        "title": "Departure Hour",
+        "type": "number"
+      },
+      "research_acknowledged": {
+        "title": "Research Acknowledged",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "model_id",
+      "origin",
+      "destination",
+      "airline",
+      "cabin_class",
+      "days_left",
+      "duration_minutes",
+      "stops",
+      "departure_hour",
+      "research_acknowledged"
+    ],
+    "title": "PredictionRequest",
+    "type": "object"
+  }
+}

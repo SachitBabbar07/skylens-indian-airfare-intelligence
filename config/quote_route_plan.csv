@@ -1,0 +1,13 @@
+route,cabin_2023_rows_excluding_First,network_2020_rows,later_challenge_rows,stratum
+DEL-BOM,19085,0,0,both eligible historically
+BOM-BLR,15629,0,0,both eligible historically
+BLR-HYD,12317,62,71,both eligible historically
+HYD-MAA,9242,43,80,both eligible historically
+MAA-CCU,7980,0,0,both eligible historically
+CCU-AMD,4580,0,0,both eligible historically
+AMD-DEL,8877,50,68,both eligible historically
+BOM-PNQ,0,54,66,extension research only
+DEL-GAU,0,32,63,extension research only
+BLR-COK,0,63,85,extension research only
+DEL-IXZ,0,43,42,extension research only
+DEL-JAI,0,19,25,extension research only

@@ -7,6 +7,8 @@ from fastapi.testclient import TestClient
 
 from backend.app.main import app
 
+pytestmark = pytest.mark.local_data
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
