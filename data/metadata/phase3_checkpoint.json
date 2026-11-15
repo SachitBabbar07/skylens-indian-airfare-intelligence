@@ -1,0 +1,7 @@
+{
+  "created_at_utc": "20261115T070212Z",
+  "checkpoint_dir": "backups/phase3_20261115T070212Z",
+  "file_count": 267,
+  "baseline_tests": 48,
+  "archive_sha256": "d0816b136afc7a3fce071d6ef0583b656f00767a59fa263726fc7f3e49490845"
+}

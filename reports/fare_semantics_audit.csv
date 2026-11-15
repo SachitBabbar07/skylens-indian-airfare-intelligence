@@ -1,0 +1,4 @@
+cohort,target,currency,taxes_fees,passenger_basis,booking_journey_type,cabin_labels,collection_days,travel_dates,collection_status
+cabin_2023,source-recorded listing fare,unknown,unknown,unknown,unknown; directional record only,"Business, Economy, Premium Economy",1,2023-01-16 to 2023-03-06,single static query snapshot
+network_2020,source-recorded listing fare,unknown,unknown,unknown,unknown; directional record only,Unspecified,3,2020-01-02 to 2020-02-29,static sample of timestamped crawls
+network_external_2020,source-recorded listing fare,unknown,unknown,unknown,unknown; directional record only,Unspecified,1,2020-04-16 to 2020-04-27,static sample of timestamped crawls

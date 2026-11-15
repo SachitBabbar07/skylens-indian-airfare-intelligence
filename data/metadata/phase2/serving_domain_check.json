@@ -1,0 +1,38 @@
+{
+  "cabin_2023": {
+    "fitting_lead_range": [
+      1,
+      35
+    ],
+    "calibration_lead_range": [
+      36,
+      40
+    ],
+    "test_lead_range": [
+      41,
+      50
+    ],
+    "test_rows": 88773,
+    "test_rows_inside_current_serving_domain": 0,
+    "eligible_cells": 592,
+    "largest_fitting_profile": 1714
+  },
+  "network_2020": {
+    "fitting_lead_range": [
+      0,
+      28
+    ],
+    "calibration_lead_range": [
+      0,
+      28
+    ],
+    "test_lead_range": [
+      0,
+      28
+    ],
+    "test_rows": 5445,
+    "test_rows_inside_current_serving_domain": 0,
+    "eligible_cells": 0,
+    "largest_fitting_profile": 17
+  }
+}

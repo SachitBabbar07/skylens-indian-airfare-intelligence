@@ -1,0 +1,6 @@
+# Feature engineering
+Shared training/inference schema: origin, destination, airline, cabin_class, stops, duration_minutes, days_left, departure_hour, distance_km, origin_lat, origin_lon, destination_lat, destination_lon. See src/skylens/features.py.
+
+Carrier, airport and class labels preserve source meaning. Network cabin stays Unspecified. Duration parses explicit hours/minutes; missing/invalid values are excluded rather than guessed. Lead time uses the actual booking day or crawl timestamp converted from UTC to Asia/Kolkata. Departure hour is a decimal local clock hour. Haversine distance uses pinned OurAirports coordinates and a 6,371 km Earth radius; it is a geographic approximation, not flown itinerary length.
+
+Calendar-date/season/weekend features were not added because short periods and single-snapshot confounding cannot justify current-date forecasts. Fuel, holidays, demand, baggage and refundability are not invented. Targets, price statistics and quote IDs are excluded. Both source models remain isolated; pooling would mix unverified definitions. Cabin classes are pooled within their source for sufficient evidence, while First is excluded as sparse. Confirmed one-way/return architectures cannot be compared without verified journey labels.

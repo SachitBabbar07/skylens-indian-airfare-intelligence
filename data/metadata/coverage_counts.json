@@ -1,0 +1,11 @@
+{
+  "indian_airfield_records": 661,
+  "with_iata": 165,
+  "scheduled_flag": 120,
+  "fare_airports": 88,
+  "fare_origins": 66,
+  "fare_destinations": 82,
+  "fare_routes": 720,
+  "production_eligible_airports": 0,
+  "without_fare_evidence": 573
+}

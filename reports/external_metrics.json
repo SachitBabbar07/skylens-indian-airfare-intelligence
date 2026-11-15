@@ -1,0 +1,11 @@
+{
+  "label": "Research drift challenge only; same collector, unknown target scope and currency",
+  "removed_exact_overlap": 0,
+  "n": 22735,
+  "mae": 2550.005394714928,
+  "rmse": 3076.7413122904336,
+  "r2": -0.12828445889536932,
+  "median_absolute_error": 2279.783518964715,
+  "mape_percent": 47.04425597664145,
+  "p90_absolute_error": 4832.6235267436605
+}

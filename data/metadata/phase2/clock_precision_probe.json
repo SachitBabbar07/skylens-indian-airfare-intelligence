@@ -1,0 +1,140 @@
+{
+  "cases": 592,
+  "failures": 7,
+  "failure_examples": [
+    {
+      "inputs": {
+        "origin": "BLR",
+        "destination": "AMD",
+        "airline": "Indigo",
+        "cabin_class": "Economy",
+        "stops": 0,
+        "model_id": "cabin_2023",
+        "duration_minutes": 125.0,
+        "days_left": 1,
+        "departure_hour": 1.6666666666666665,
+        "research_acknowledged": true
+      },
+      "stored_hour": 1.6666666666666667,
+      "status": 422,
+      "detail": {
+        "detail": "departure hour must be within this historical combination's observed range: 1.66667\u201321."
+      }
+    },
+    {
+      "inputs": {
+        "origin": "BLR",
+        "destination": "CCU",
+        "airline": "Indigo",
+        "cabin_class": "Economy",
+        "stops": 1,
+        "model_id": "cabin_2023",
+        "duration_minutes": 275.0,
+        "days_left": 1,
+        "departure_hour": 1.6666666666666665,
+        "research_acknowledged": true
+      },
+      "stored_hour": 1.6666666666666667,
+      "status": 422,
+      "detail": {
+        "detail": "departure hour must be within this historical combination's observed range: 1.66667\u201323.8333."
+      }
+    },
+    {
+      "inputs": {
+        "origin": "DEL",
+        "destination": "BLR",
+        "airline": "Indigo",
+        "cabin_class": "Economy",
+        "stops": 1,
+        "model_id": "cabin_2023",
+        "duration_minutes": 270.0,
+        "days_left": 1,
+        "departure_hour": 1.9166666666666665,
+        "research_acknowledged": true
+      },
+      "stored_hour": 1.9166666666666667,
+      "status": 422,
+      "detail": {
+        "detail": "departure hour must be within this historical combination's observed range: 1.91667\u201323.25."
+      }
+    },
+    {
+      "inputs": {
+        "origin": "DEL",
+        "destination": "CCU",
+        "airline": "Indigo",
+        "cabin_class": "Economy",
+        "stops": 1,
+        "model_id": "cabin_2023",
+        "duration_minutes": 260.0,
+        "days_left": 1,
+        "departure_hour": 1.9166666666666665,
+        "research_acknowledged": true
+      },
+      "stored_hour": 1.9166666666666667,
+      "status": 422,
+      "detail": {
+        "detail": "departure hour must be within this historical combination's observed range: 1.91667\u201322.5."
+      }
+    },
+    {
+      "inputs": {
+        "origin": "DEL",
+        "destination": "HYD",
+        "airline": "Indigo",
+        "cabin_class": "Economy",
+        "stops": 0,
+        "model_id": "cabin_2023",
+        "duration_minutes": 130.0,
+        "days_left": 1,
+        "departure_hour": 1.9166666666666665,
+        "research_acknowledged": true
+      },
+      "stored_hour": 1.9166666666666667,
+      "status": 422,
+      "detail": {
+        "detail": "departure hour must be within this historical combination's observed range: 1.91667\u201322.5."
+      }
+    },
+    {
+      "inputs": {
+        "origin": "DEL",
+        "destination": "MAA",
+        "airline": "Indigo",
+        "cabin_class": "Economy",
+        "stops": 1,
+        "model_id": "cabin_2023",
+        "duration_minutes": 305.0,
+        "days_left": 1,
+        "departure_hour": 1.9166666666666665,
+        "research_acknowledged": true
+      },
+      "stored_hour": 1.9166666666666667,
+      "status": 422,
+      "detail": {
+        "detail": "departure hour must be within this historical combination's observed range: 1.91667\u201323.9167."
+      }
+    },
+    {
+      "inputs": {
+        "origin": "MAA",
+        "destination": "BOM",
+        "airline": "SpiceJet",
+        "cabin_class": "Economy",
+        "stops": 1,
+        "model_id": "cabin_2023",
+        "duration_minutes": 285.0,
+        "days_left": 1,
+        "departure_hour": 19.083333333333332,
+        "research_acknowledged": true
+      },
+      "stored_hour": 19.08333333333333,
+      "status": 422,
+      "detail": {
+        "detail": "departure hour must be within this historical combination's observed range: 19.0833\u201319.0833."
+      }
+    }
+  ],
+  "method": "HTTP requests with documented HH:mm-to-hour conversion; no browser used"
+}

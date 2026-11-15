@@ -1,0 +1,22 @@
+{
+  "required_reports_present": 21,
+  "learning_guides": 9,
+  "figures": 32,
+  "automated_tests": 40,
+  "test_failures": 0,
+  "http_integration": {
+    "health_status": 200,
+    "frontend_status": 200,
+    "compiled_assets_checked": 2,
+    "profiles_checked": 592,
+    "failures": [],
+    "browser_visual_qa": "Not performed: browser permission declined"
+  },
+  "raw_integrity": {
+    "verified_original_files": 26,
+    "all_hashes_match": true
+  },
+  "frontend_build": "passed TypeScript + Vite",
+  "browser_qa": "blocked by declined permission",
+  "scope": "research only; no verified INR total, genuine one-way/return/multi-city or reliable nationwide serving"
+}

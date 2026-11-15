@@ -1,0 +1,5 @@
+cohort,category,held_airports,training_rows,iterations,evaluation_scope,n,mae,rmse,r2,median_absolute_error,mape_percent,p90_absolute_error
+network_2020,one_unseen_endpoint,BOM|BLR,5113,250,development only; not a final-artifact or deployment claim,1890,2372.3128364620543,3777.7060306098833,0.5220393999651578,1550.3402683894274,23.45661146208937,5006.339153093985
+network_2020,both_endpoints_unseen,BOM|BLR,5113,250,development only; not a final-artifact or deployment claim,25,1998.985441094019,2672.306881979424,0.5637171712589425,1322.9236722695005,27.102308326387863,4963.322006034269
+cabin_2023,one_unseen_endpoint,BOM|DEL,111549,250,development only; not a final-artifact or deployment claim,175362,4679.331377342629,7772.344723134359,0.8620801172311807,2565.8129836363496,22.35071746607032,11299.592350550156
+cabin_2023,both_endpoints_unseen,BOM|DEL,111549,250,development only; not a final-artifact or deployment claim,25057,5045.975068158948,8130.792346706723,0.8034043525390266,2883.24180042684,26.179721068464428,12520.483775166258

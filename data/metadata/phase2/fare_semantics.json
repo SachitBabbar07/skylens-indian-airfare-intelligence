@@ -1,0 +1,75 @@
+{
+  "cabin_2023": {
+    "source": "yashdharme36/airfare-ml-predicting-flight-fares",
+    "currency": null,
+    "currency_status": "undocumented",
+    "mixed_currency_status": "cannot rule out or test",
+    "price_scope": "unknown",
+    "passenger_basis": "unknown",
+    "booking_journey_type": "unknown",
+    "record_shape": "single_direction_record",
+    "cabin_labels": [
+      "Business",
+      "Economy",
+      "Premium Economy"
+    ],
+    "collection_dates": [
+      "2023-01-15"
+    ],
+    "travel_dates": [
+      "2023-01-16",
+      "2023-03-06"
+    ],
+    "source_price_field": "Price",
+    "official_card_snapshot": "data\\metadata\\phase2\\card_yashdharme36__airfare-ml-predicting-flight-fares.json",
+    "production_eligible": false
+  },
+  "network_2020": {
+    "source": "promptcloud/easemytrip-flight-fare-details-2020",
+    "currency": null,
+    "currency_status": "undocumented",
+    "mixed_currency_status": "cannot rule out or test",
+    "price_scope": "unknown",
+    "passenger_basis": "unknown",
+    "booking_journey_type": "unknown",
+    "record_shape": "single_direction_record",
+    "cabin_labels": [
+      "Unspecified"
+    ],
+    "collection_dates": [
+      "2020-01-01",
+      "2020-01-13",
+      "2020-02-01"
+    ],
+    "travel_dates": [
+      "2020-01-02",
+      "2020-02-29"
+    ],
+    "source_price_field": "Fare",
+    "official_card_snapshot": "data\\metadata\\phase2\\card_promptcloud__easemytrip-flight-fare-details-2020.json",
+    "production_eligible": false
+  },
+  "network_external_2020": {
+    "source": "promptcloud/easemytrip-flight-fare-travel-listings",
+    "currency": null,
+    "currency_status": "undocumented",
+    "mixed_currency_status": "cannot rule out or test",
+    "price_scope": "unknown",
+    "passenger_basis": "unknown",
+    "booking_journey_type": "unknown",
+    "record_shape": "single_direction_record",
+    "cabin_labels": [
+      "Unspecified"
+    ],
+    "collection_dates": [
+      "2020-04-01"
+    ],
+    "travel_dates": [
+      "2020-04-16",
+      "2020-04-27"
+    ],
+    "source_price_field": "Fare",
+    "official_card_snapshot": "data\\metadata\\phase2\\card_promptcloud__easemytrip-flight-fare-travel-listings.json",
+    "production_eligible": false
+  }
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "source": "viveksharmar/flight-price-data",
+    "source_url": "https://www.kaggle.com/datasets/viveksharmar/flight-price-data",
+    "download_url": "https://www.kaggle.com/api/v1/datasets/download/viveksharmar/flight-price-data?datasetVersionNumber=1",
+    "retrieved_at_utc": "2026-11-15T06:14:27.067295+00:00",
+    "license": "MIT",
+    "version": 1,
+    "path": "data\\raw\\phase2\\viveksharmar__flight-price-data\\original.zip",
+    "sha256": "09488b18b75d6930a3038b981006ed3d7fe767784240afd95f1748083605e31b",
+    "bytes": 117911,
+    "role": "audit_only_not_training",
+    "training_eligible": false
+  },
+  {
+    "source": "sshriya08/flight-price-prediction-dataset",
+    "source_url": "https://www.kaggle.com/datasets/sshriya08/flight-price-prediction-dataset",
+    "download_url": "https://www.kaggle.com/api/v1/datasets/download/sshriya08/flight-price-prediction-dataset?datasetVersionNumber=1",
+    "retrieved_at_utc": "2026-11-15T06:14:30.363072+00:00",
+    "license": "Attribution 4.0 International (CC BY 4.0)",
+    "version": 1,
+    "path": "data\\raw\\phase2\\sshriya08__flight-price-prediction-dataset\\original.zip",
+    "sha256": "ef799e67becf39d8d22d558b22b8961a7f6d3abec3f8694c9ea79aadb034702a",
+    "bytes": 3135841,
+    "role": "audit_only_not_training",
+    "training_eligible": false
+  },
+  {
+    "source": "ankushsonar/flight-price-dataset-india-2019",
+    "source_url": "https://www.kaggle.com/datasets/ankushsonar/flight-price-dataset-india-2019",
+    "download_url": "https://www.kaggle.com/api/v1/datasets/download/ankushsonar/flight-price-dataset-india-2019?datasetVersionNumber=1",
+    "retrieved_at_utc": "2026-11-15T06:14:32.535176+00:00",
+    "license": "CC0: Public Domain",
+    "version": 1,
+    "path": "data\\raw\\phase2\\ankushsonar__flight-price-dataset-india-2019\\original.zip",
+    "sha256": "e93a7eaa5262b4b4d7ca2cfc2c64b78a2acb880c7c18857bad68e43372817f3a",
+    "bytes": 152762,
+    "role": "audit_only_not_training",
+    "training_eligible": false
+  },
+  {
+    "source": "prithvirajshukla/flight-fare-prediction",
+    "source_url": "https://www.kaggle.com/datasets/prithvirajshukla/flight-fare-prediction",
+    "download_url": "https://www.kaggle.com/api/v1/datasets/download/prithvirajshukla/flight-fare-prediction?datasetVersionNumber=1",
+    "retrieved_at_utc": "2026-11-15T06:14:34.905033+00:00",
+    "license": "MIT",
+    "version": 1,
+    "path": "data\\raw\\phase2\\prithvirajshukla__flight-fare-prediction\\original.zip",
+    "sha256": "3f9ae0481e4a2ba1d86f4d9e70c444e4d657fa565be8281444af03d9f62675d5",
+    "bytes": 502944,
+    "role": "audit_only_not_training",
+    "training_eligible": false
+  }
+]

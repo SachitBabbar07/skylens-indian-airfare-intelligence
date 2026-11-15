@@ -1,0 +1,52 @@
+{
+  "immutable_files_checked": 47,
+  "all_original_data_and_models_unchanged": true,
+  "evaluation": {
+    "cabin_2023": {
+      "recomputed_metrics": {
+        "n": 88773,
+        "mae": 2339.7568244890613,
+        "rmse": 4376.351778545567,
+        "r2": 0.9470333889343409,
+        "median_absolute_error": 998.1894818040819,
+        "mape_percent": 13.7101340167778,
+        "p90_absolute_error": 6142.717596390066
+      },
+      "native_prediction_sample_matches": true,
+      "split_disjointness": {
+        "train/validation": true,
+        "train/calibration": true,
+        "train/test": true,
+        "validation/calibration": true,
+        "validation/test": true,
+        "calibration/test": true
+      },
+      "processed_hash_matches_lineage": true
+    },
+    "network_2020": {
+      "recomputed_metrics": {
+        "n": 5445,
+        "mae": 2764.6631279673315,
+        "rmse": 4664.675451433455,
+        "r2": 0.4266470115210942,
+        "median_absolute_error": 1583.1306671615594,
+        "mape_percent": 23.07643595693641,
+        "p90_absolute_error": 6464.828674996453
+      },
+      "native_prediction_sample_matches": true,
+      "split_disjointness": {
+        "train/validation": true,
+        "train/calibration": true,
+        "train/test": true,
+        "validation/calibration": true,
+        "validation/test": true,
+        "calibration/test": true
+      },
+      "processed_hash_matches_lineage": true
+    }
+  },
+  "observed_airports": 88,
+  "research_eligible_airports": 7,
+  "research_ineligible_airports": 81,
+  "production_eligible_airports": 0
+}

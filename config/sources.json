@@ -1,0 +1,128 @@
+{
+  "fare_sources": {
+    "shubhambathwal/flight-price-prediction": {
+      "version": 2,
+      "source_updated": "2022-02-25T17:58:19.347Z",
+      "archive_sha256": "295e67ef7c8049301969862ef264d44d40811fc8ebb5b6783c90c87484dea146",
+      "files": [
+        {
+          "filename": "business.csv",
+          "sha256": "171e9cb53b1432198b8124800276037de29905cf3d7601a49f3e035d7e447617"
+        },
+        {
+          "filename": "Clean_Dataset.csv",
+          "sha256": "c27377aa4451d4427794523f3292dd2c2dc312f29c6d880aef4df1dcf1aaf7a3"
+        },
+        {
+          "filename": "economy.csv",
+          "sha256": "f785d63ab5ff6f428c55b683847bef3d7d8e29ccb41ff444fe73c2c5c4b2508c"
+        }
+      ]
+    },
+    "yashdharme36/airfare-ml-predicting-flight-fares": {
+      "version": 1,
+      "source_updated": "2023-03-16T16:44:29.337Z",
+      "archive_sha256": "f33010cc2f08f016bcf7cc5c52cd060397e6d37761810415e8b2154ebfa32ef0",
+      "files": [
+        {
+          "filename": "Cleaned_dataset.csv",
+          "sha256": "7a614a733563e2aae7cbedf4d6383b5384f4901b16f741d1cd0172d057324e92"
+        },
+        {
+          "filename": "Scraped_dataset.csv",
+          "sha256": "09a51c999ef26a132f38879224bc97f710fe926d86874b43f43e00291a917d36"
+        }
+      ]
+    },
+    "iamavyukt/goibibo-flight-data": {
+      "version": 1,
+      "source_updated": "2024-10-17T14:42:37.177Z",
+      "archive_sha256": "64f260287625e08b550d586c03d81e023cdf7502798a7a40e6e26ce3c33e4edf",
+      "files": [
+        {
+          "filename": "goibibo_flights_data.csv",
+          "sha256": "7a2a6c75e6d615cae6322fb4a2cf837959ed9e2c25cff88f63836e3ff185cde6"
+        }
+      ]
+    },
+    "shraddha4ever20/indian-domestic-flights-dataset-20192025": {
+      "version": 1,
+      "source_updated": "2026-01-18T10:15:07.36Z",
+      "archive_sha256": "50a17b4c3e943d3cf7c762fc0478fab33ea9ad346db90d745723e09f600b2598",
+      "files": [
+        {
+          "filename": "flights.csv",
+          "sha256": "9031af427f4f60d8ff1102284931c24b5abaa241e95672fcf0598a1b22d10e0a"
+        }
+      ]
+    },
+    "andrewgeorgeissac/flight-price-data-of-indian-cities-makemytrip": {
+      "version": 1,
+      "source_updated": "2023-08-29T16:33:19.3Z",
+      "archive_sha256": "8be70b4788a704529d4ee61d074af571b7727526e0f8a296043159741a99613b",
+      "files": [
+        {
+          "filename": "flight_data_BOM_BLR.csv",
+          "sha256": "6ab5cdaba2117254d8472d7212208755b0541e416618f5de6f4ab0fda4393709"
+        },
+        {
+          "filename": "flight_data_DEL_BLR.csv",
+          "sha256": "59ed72e614431a3c01eb140ff539b0ec4414ae8e51115964dc8aadadda0e110b"
+        },
+        {
+          "filename": "flight_data_DEL_BOM.csv",
+          "sha256": "af4193af3c053b4d1f424b5d54f1ca4dc3d8955f4ffe3d19bd626df7908c7772"
+        },
+        {
+          "filename": "flight_data_DEL_CCU.csv",
+          "sha256": "85ae3ee9fbe249a31b98a27287da25c6bd0e9e1ac503db2476be9383330a0bc5"
+        },
+        {
+          "filename": "flight_data_DEL_HYD.csv",
+          "sha256": "761a069b69c3e656bdabb1b4de6ec7ac99585874fcee14da8b376b5966f9c5f4"
+        }
+      ]
+    },
+    "sumitjaiswar/indian-domestic-flights-data": {
+      "version": 1,
+      "source_updated": "2025-10-05T17:25:06.557Z",
+      "archive_sha256": "9ab2356a8a8fd1f6759c8177570b246499309922348052b661084365231a4ce2",
+      "files": [
+        {
+          "filename": "india flights.csv",
+          "sha256": "fe52ead5b9dd3523964328d3c78feeb814040e248d3107b0704b4c5c7eb52e6e"
+        }
+      ]
+    },
+    "promptcloud/easemytrip-flight-fare-details-2020": {
+      "version": 1,
+      "source_updated": "2020-12-24T19:25:39.25Z",
+      "archive_sha256": "95c0eccbb8135c38f3f3ed75e3da671d96fb6197a6955536f93c84e6fcb076a3",
+      "files": [
+        {
+          "filename": "marketing_sample_for_easemytrip_in-easemytrip_flight_fares_data__20200101_20200229__30k_data.csv",
+          "sha256": "26bd9612e043cdd13b21d3dcdefb921f9f2a31bcbea73a8b95c4cdb42bfbe4cf"
+        }
+      ]
+    },
+    "promptcloud/easemytrip-flight-fare-travel-listings": {
+      "version": 1,
+      "source_updated": "2021-02-04T06:22:04.783Z",
+      "archive_sha256": "92e7e54e505ef6d96976af0cf1c568baf9488d9f81d651a856ba46877fd877f7",
+      "files": [
+        {
+          "filename": "marketing_sample_for_easemytrip_in-easemytrip_flights_fares__20200401_20200630__30k_data.csv",
+          "sha256": "9cea675fe7cf75c9a44f3b1ea53bad94992130152d101b537458aeafc629f182"
+        }
+      ]
+    }
+  },
+  "ourairports": {
+    "commit": "873df94470d9c8f4fdfe8b41bf7976fe7992297c",
+    "files": {
+      "airports.csv": "5b3b48a429c8513853ff13a51a03282d1ef159ddf347f40203ff66b583574e8b",
+      "regions.csv": "9220d6582b804cfdec8432e5bb21456699c9df8969bf5d8886beb62ff0b1318b",
+      "LICENSE": "6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e"
+    }
+  }
+}

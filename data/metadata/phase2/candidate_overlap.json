@@ -1,0 +1,42 @@
+{
+  "viveksharmar": {
+    "rows": 10683,
+    "same_order_common_key_fraction": 1.0,
+    "key": [
+      "Airline",
+      "Source",
+      "Destination",
+      "Price"
+    ]
+  },
+  "ankushsonar": {
+    "rows": 10683,
+    "same_order_common_key_fraction": 1.0,
+    "key": [
+      "Airline",
+      "Source",
+      "Destination",
+      "Price"
+    ]
+  },
+  "sshriya08": {
+    "rows": 6062,
+    "origin_labels": [
+      "Bangalore",
+      "Delhi",
+      "Goa",
+      "Kolkata",
+      "Mumbai"
+    ],
+    "destination_labels": [
+      "Bangalore",
+      "Delhi",
+      "Goa",
+      "Mumbai",
+      "kolkata"
+    ],
+    "booking_days": 2,
+    "added_booking_hour_column": true,
+    "booking_hour_provenance": "not documented in dataset card"
+  }
+}

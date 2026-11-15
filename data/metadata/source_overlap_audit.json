@@ -1,0 +1,11 @@
+{
+  "rows_compared": 300261,
+  "same_order_flight_fraction": 1.0,
+  "same_origin_fraction": 1.0,
+  "same_destination_fraction": 1.0,
+  "date_shift_days": {
+    "500": 300261
+  },
+  "rounded_price_times_1_01_fraction": 0.6816103323441939,
+  "exact_price_match_fraction": 0.0
+}

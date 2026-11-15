@@ -1,0 +1,48 @@
+{
+  "checkpoint": {
+    "checkpoint_dir": "D:\\SkyLens\\backups\\phase2_20261115T060914Z",
+    "archive_sha256": "b77c88fc3ad83deb3abbbeb219590c1a6079b1f1276c31f69c1fb40c7eb67b44"
+  },
+  "baseline_tests": 40,
+  "current_tests": 48,
+  "original_immutable_files_verified": 47,
+  "model_binaries_and_metadata_changed": false,
+  "research_eligible_airports": 7,
+  "observed_airports": 88,
+  "production_eligible_airports": 0,
+  "new_training_rows": 0,
+  "full_model_retraining": false,
+  "audit_only_new_distributions": 4,
+  "changed_baseline_files": [
+    ".gitignore",
+    "README.md",
+    "docs/API_GUIDE.md",
+    "docs/EDGE_CASES_AND_VALIDATION.md",
+    "docs/FRONTEND_GUIDE.md",
+    "docs/ML_MODEL_GUIDE.md",
+    "docs/PROJECT_WALKTHROUGH.md",
+    "docs/VIVA_PREPARATION.md",
+    "reports/airport_coverage_report.md",
+    "reports/final_project_report.md",
+    "reports/model_evaluation_report.md",
+    "reports/route_coverage_report.md",
+    "scripts/acquire.py",
+    "scripts/finalize_evidence.py",
+    "scripts/smoke.py",
+    "backend/app/main.py",
+    "backend/app/schemas.py",
+    "backend/app/services.py",
+    "data/metadata/dataset_registry.json",
+    "frontend/dist/index.html",
+    "frontend/src/main.tsx",
+    "src/skylens/report.py"
+  ],
+  "generated_assets_replaced_and_preserved_in_checkpoint": [
+    "frontend/dist/assets/index-Dl9TANvn.js"
+  ],
+  "http_prediction_requests": 1776,
+  "http_explanation_requests": 592,
+  "http_unexpected_failures": 0,
+  "intervals": "withheld_unvalidated_serving_domain",
+  "browser_qa": "blocked by saved permission policy"
+}

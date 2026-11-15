@@ -1,0 +1,8 @@
+# Dataset guide
+Use reports/dataset_discovery_report.md and dataset_comparison.csv for every assessed candidate, source URL, license declaration and rejection reason. Actual schemas, hashes, row counts and missing values are in data/metadata/file_profiles.json; immutable raw archives are retained locally.
+
+Yash Dharme's 2023 raw source provides seven cities, three sufficiently represented cabin classes and a booking date, but all queries belong to one collection day. PromptCloud provides broader geography across three collection days, without cabin and standardized price definitions. These are separate research cohorts, never a pooled INR target.
+
+The 2022 EaseMyTrip file is a reference. The Goibibo candidate has matching ordered flight IDs, dates shifted 500 days and altered prices, so it is not independent validation. The broad 2019–2025 candidate lacks authentic collection evidence and has questionable route/time fields. Its authenticity is unverified, rather than asserted to be proven synthetic. MakeMyTrip's 404 rows explicitly exclude taxes and lack key quote settings, so they cannot validate a total-price model.
+
+Airport masters and schedules do not contain ticket prices; traffic files do not become fare observations; aggregate fare indexes are not individual quotes. ATL international returns do not establish domestic return support. The HF schedule original has unknown rights, and a mirror's MIT tag does not cure that. Publisher licenses and upstream-rights caveats appear in dataset_licensing_and_provenance.md. No paid API, credentials or unauthorized scraping is required.

@@ -1,0 +1,4 @@
+cohort,publisher,price_field,record_currency_field,original_documented_default,mixed_currency_test,decision,card
+cabin_2023,Yash Dharme,Price,absent,not found,not possible from records,Case C: unknown; no INR normalization,https://www.kaggle.com/datasets/yashdharme36/airfare-ml-predicting-flight-fares
+network_2020,PromptCloud,Fare,absent,not found,not possible from records,Case C: unknown; no INR normalization,https://www.kaggle.com/datasets/promptcloud/easemytrip-flight-fare-details-2020
+network_external_2020,PromptCloud,Fare,absent,not found,not possible from records,Case C: unknown; no INR normalization,https://www.kaggle.com/datasets/promptcloud/easemytrip-flight-fare-travel-listings

@@ -1,0 +1,93 @@
+source_city,iata_code,name,municipality,type,decision
+Delhi,DEL,Indira Gandhi International Airport,New Delhi,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+New Delhi,DEL,Indira Gandhi International Airport,New Delhi,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Mumbai,BOM,Chhatrapati Shivaji Maharaj International Airport,Mumbai,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Bangalore,BLR,Kempegowda International Airport Bengaluru,Bengaluru,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Bengaluru,BLR,Kempegowda International Airport Bengaluru,Bengaluru,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Hyderabad,HYD,Rajiv Gandhi International Airport,Hyderabad,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Kolkata,CCU,Netaji Subhash Chandra Bose International Airport,Kolkata,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Chennai,MAA,Chennai International Airport,Chennai,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Ahmedabad,AMD,Sardar Vallabh Patel International Airport,Ahmedabad,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Bhubaneswar,BBI,Biju Patnaik International Airport,Bhubaneswar,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Kochi,COK,Cochin International Airport,Kochi,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Cochin,COK,Cochin International Airport,Kochi,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Goa,GOI,Goa Dabolim International Airport,Vasco da Gama,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Guwahati,GAU,Lokpriya Gopinath Bordoloi International Airport,Guwahati,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Amritsar,ATQ,Sri Guru Ram Das Ji International Airport,Amritsar,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Coimbatore,CJB,Coimbatore International Airport,Coimbatore,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Bhopal,BHO,Raja Bhoj International Airport,Bhopal,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Indore,IDR,Devi Ahilya Bai Holkar International Airport,Indore,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Dehra Dun,DED,Dehradun Jolly Grant Airport,Dehradun (Jauligrant),medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Jaipur,JAI,Jaipur International Airport,Jaipur,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Vadodara,BDQ,Vadodara International Airport,Vadodara,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Lucknow,LKO,Chaudhary Charan Singh International Airport,Lucknow,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Chandigarh,IXC,Shaheed Bhagat Singh International Airport,Chandigarh,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Kozhikode,CCJ,Calicut International Airport,Calicut,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Patna,PAT,Jay Prakash Narayan Airport,Patna,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Mangalore,IXE,Mangaluru International Airport,Mangaluru,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Jammu,IXJ,Jammu Airport,Jammu,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Pune,PNQ,Pune International Airport,Pune,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Port Blair,IXZ,Veer Savarkar International Airport / INS Utkrosh,Port Blair,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Agartala,IXA,Agartala - Maharaja Bir Bikram Airport,Agartala,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Bagdogra,IXB,Bagdogra Airport,Siliguri,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Ranchi,IXR,Birsa Munda Airport,Ranchi,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Aizawl,AJL,Lengpui Airport,Aizawl (Lengpui),medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Madurai,IXM,Madurai Airport,Madurai,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Hubli,HBX,Hubballi Airport,Hubballi,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Imphal,IMF,Bir Tikendrajit International Airport,Imphal,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Raipur,RPR,Swami Vivekananda Airport,Raipur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Jodhpur,JDH,Jodhpur Airport,Jodhpur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Nagpur,NAG,Dr. Babasaheb Ambedkar International Airport,Nagpur,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Trivandrum,TRV,Thiruvananthapuram International Airport,Thiruvananthapuram,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Tirupati,TIR,Tirupati International Airport,Tirupati,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Udaipur,UDR,Maharana Pratap Airport,Udaipur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Kannur,CNN,Kannur International Airport,Kannur,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Surat,STV,Surat International Airport,Surat,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Gorakhpur,GOP,Gorakhpur Airport,Gorakhpur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Vijayawada,VGA,Vijayawada International Airport,Vijayawada,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Allahabad,IXD,Prayagraj Airport,Allahabad,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Srinagar,SXR,Srinagar International Airport,Srinagar,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Dibrugarh,DIB,Dibrugarh Airport,Dibrugarh,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Rajkot,RAJ,Rajkot Airport,Rajkot,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Aurangabad,IXU,Aurangabad Airport,Aurangabad,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Belgaum,IXG,Belagavi Airport,Belgaum,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Gaya,GAY,Gaya Airport,Gaya,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Silchar,IXS,Silchar Airport,Silchar,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Bhuj,BHJ,Bhuj Airport,Bhuj,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Dharamsala,DHM,Kangra Airport,Kangra,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Agatti Island,AGX,Agatti Airport,Agatti,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Rajahmundry,RJA,Rajahmundry Airport,Madhurapudi,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Leh,IXL,Leh Kushok Bakula Rimpochee Airport,Leh,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Dimapur,DMU,Dimapur Airport,Dimapur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Jorhat,JRH,Jorhat Airport,Jorhat,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Kadapa,CDP,Kadapa Airport,Kadapa,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Jaisalmer,JSA,Jaisalmer Airport,,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Pondicherry,PNY,Pondicherry Airport,Puducherry (Pondicherry),medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Puducherry,PNY,Pondicherry Airport,Puducherry (Pondicherry),medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Agra,AGR,Agra Airport / Agra Air Force Station,Agra,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Lilabari,IXI,Lilabari North Lakhimpur Airport,Lilabari,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Varanasi,VNS,Lal Bahadur Shastri International Airport,Varanasi,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Visakhapatnam,VTZ,Alluri Sitarama Raju International Airport (Vizag),Visakhapatnam,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Tiruchirapally,TRZ,Tiruchirappalli International Airport,Tiruchirappalli,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Jabalpur,JLR,Jabalpur Airport,Jabalpur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Shirdi,SAG,Shirdi International Airport,Kakadi,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Durgapur,RDP,Kazi Nazrul Islam Airport,Durgapur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Nanded,NDC,Nanded Airport,Nanded,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Kanpur,KNU,Kanpur Airport,Kanpur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Jharsuguda,JRG,Jharsuguda Airport,,small_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Gwalior,GWL,Gwalior Airport,Gwalior,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Mysore,MYQ,Mysore Airport,Mysore,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Kullu,KUU,Kullu Manali Airport,Bhuntar,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Jamnagar,JGA,Jamnagar Airport,Jamnagar,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Bhavnagar,BHU,Bhavnagar Airport,Bhavnagar,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Khajuraho,HJR,Khajuraho Airport,Khajuraho,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Diu,DIU,Diu Airport,Diu,small_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Kolhapur,KLH,Kolhapur Airport,Kolhapur,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Tuticorin,TCR,Tuticorin Airport,Vagaikulam,small_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Tezpur,TEZ,Tezpur Airport,,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Pantnagar,PGH,Pantnagar Airport,Pantnagar,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Ajmer,KQH,Kishangarh Airport Ajmer,Ajmer (Kishangarh),medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Porbandar,PBD,Porbandar Airport,Porbandar,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Simla,SLV,Shimla Airport,Jubbarhatti,small_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Nasik,ISK,Nashik International Airport,Nashik,large_airport,Explicit historical city mapping; see airport_coverage_analysis.md
+Pathankot,IXP,Pathankot Airport,Pathankot,medium_airport,Explicit historical city mapping; see airport_coverage_analysis.md
