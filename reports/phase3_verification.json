@@ -1,0 +1,80 @@
+{
+  "recorded_at_utc": "2026-11-15T07:58:11.174766+00:00",
+  "validated_implementation_commit": "30e1a2efca23770221f5550607c678663618cc3f",
+  "baseline_test_counts": {
+    "tests": 48,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "current_test_counts": {
+    "tests": 102,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "portable_checks_in_clean_private_remote_clone": {
+    "tests_passed": 54,
+    "raw_datasets_present": false,
+    "native_models_present": false,
+    "model_data_dependencies_installed": false,
+    "compile_check": "passed",
+    "frontend_clean_install_and_build": "passed",
+    "npm_known_vulnerabilities": 0,
+    "documentation_links_missing": 0,
+    "git_ancestry_guard": "passed"
+  },
+  "unchanged_data_and_model_files": 56,
+  "models": [
+    {
+      "id": "cabin_2023",
+      "sha256": "feaeadb9f82931f8aa048bf686ac0db7c9b178d3aa46fd219237a4e4df6b737f"
+    },
+    {
+      "id": "network_2020",
+      "sha256": "9c98ad32b7f445cf5900cd9362554d2a2422de44893568537e27aa320480a8ff"
+    }
+  ],
+  "launch_workflow": "existing run.ps1; owned server stopped after verification",
+  "http": {
+    "predictions": 1776,
+    "explanations": 592,
+    "expected_invalid_cases": 15,
+    "unexpected_failures": 0,
+    "additional_original_smoke_profiles": 592
+  },
+  "frontend": {
+    "vite": "6.4.6",
+    "build": "passed",
+    "known_audit_vulnerabilities": 0,
+    "all_four_compiled_files_identical_to_pre_patch_build": true,
+    "compiled_sha256": {
+      "favicon.svg": "164b73df21568fe84f8c81fdd5f208655e650eb2f82383ca6c61219bc2177de4",
+      "index.html": "25fb72104e5231e9fa9aafcdcaed4ef8b7b337e0cd614dd3402b53d8a51a9a39",
+      "assets/index-C4V2YZ8G.css": "fed2bf380342c330b887a089bf4573ea1a840b4de972dd0e7326f43008558dd7",
+      "assets/index-Vz5NmkVG.js": "851e7f5fc55570978839f39d0285f6a4b1c87ae7186025c702f97a942574afd3"
+    }
+  },
+  "new_genuine_quote_observations": 0,
+  "new_verified_airports": 0,
+  "retraining": false,
+  "intervals": "withheld_unvalidated_serving_domain",
+  "browser": {
+    "status": "blocked",
+    "origin": "http://127.0.0.1:8000",
+    "reason": "saved user permission denies origin approval; no workaround attempted"
+  },
+  "hosted_ci": {
+    "status": "skipped",
+    "zero_spend_gate": "unset",
+    "owner_decision": "Not confirmed\u2014keep hosted CI gated",
+    "inspected_run_url": "https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence/actions/runs/43691732763",
+    "passed_claimed": false
+  },
+  "repository": {
+    "url": "https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence",
+    "owner": "SachitBabbar07",
+    "visibility": "PRIVATE",
+    "default_branch": "main"
+  }
+}

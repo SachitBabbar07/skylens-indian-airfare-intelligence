@@ -14,6 +14,8 @@ Indian domestic airfare intelligence: historical estimation, airport coverage an
 
 ## Checks without datasets
 
+Current local verification: **102 tests passed**, including the original 48; clean remote clone: **54 portable tests passed** plus production build. Hosted CI remains deliberately skipped under the user's zero-spend decision. Browser QA still needs the saved localhost permission to be allowed. Detailed evidence is in the [delivery report](reports/github_delivery_report.md).
+
 Install `requirements-ci.txt` in Python 3.12, then run `python -m pytest tests/test_quotes.py tests/test_portable_contract.py -q`. Run `npm --prefix frontend ci` and `npm --prefix frontend run build` for the production UI. The [GitHub workflow](.github/workflows/ci.yml) uses synthetic software fixtures in temporary directories, never synthetic training data; it downloads no fare datasets. An actual remote CI result is reported only after a successful run, in the delivery report.
 
 Raw/processed data, native models, private quote evidence and audit backups stay local. A clone is a reproducible **source** checkout; restoring exact artifacts or explicitly fitting a new research reconstruction is a separate step. No dependency automatically collects live fares, retrains at startup, or pays a service.

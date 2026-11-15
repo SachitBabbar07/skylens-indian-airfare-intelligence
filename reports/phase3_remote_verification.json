@@ -1,0 +1,25 @@
+{
+  "repository": "SachitBabbar07/skylens-indian-airfare-intelligence",
+  "url": "https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence",
+  "owner": "SachitBabbar07",
+  "visibility": "PRIVATE",
+  "default_branch": "main",
+  "verified_commit": "30e1a2efca23770221f5550607c678663618cc3f",
+  "remote_matches_local_head": true,
+  "uploaded_blobs": 159,
+  "largest_blob": {
+    "path": "reports/airport_fare_coverage.csv",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "f8ec78630372790de64ddc0d3f90d0215dff1a4f",
+    "size": 255191,
+    "url": "https://api.github.com/repos/SachitBabbar07/skylens-indian-airfare-intelligence/git/blobs/f8ec78630372790de64ddc0d3f90d0215dff1a4f"
+  },
+  "required_source_docs_present": true,
+  "readme_html_rendered": true,
+  "source_docs_blob_hashes_match": true,
+  "excluded_payloads_absent": true,
+  "remote_branches": [
+    "30e1a2efca23770221f5550607c678663618cc3f\trefs/heads/main"
+  ]
+}

@@ -27,11 +27,19 @@ The legitimate-access investigation did not establish an available INR-0 source 
 
 ## Executed verification
 
-The untouched baseline passed 48 tests. The expanded local suite passed 100 tests at the first complete run, including native model loading/prediction/SHAP, data leakage and preservation regressions. Final verification counts are recorded in `phase3_verification.json` after the final run. Frontend TypeScript/Vite production build passed. The unchanged `run.ps1` launched both actual native models with health 200.
+The untouched baseline passed 48 tests. The final local suite passed **102 tests**: all original 48 plus 54 portable software checks, with zero failures/errors/skips and one upstream deprecation warning. Tests cover native model loading/prediction/SHAP, data leakage/preservation and the new intake. The actual private remote was cloned into a clean source-only checkout: all 54 portable tests, compilation and documentation-link checks passed without model/data dependencies. Detailed outcomes are in [verification](phase3_verification.json).
+
+TypeScript/Vite production builds passed in the original workspace and clean clone. Clean installation exposed an existing Vite development-tool vulnerability; Vite was pinned from 6.3.5 to patched 6.4.6 within the same major version. The reviewed lockfile changes only Vite, npm audit now reports zero known vulnerabilities, and all four compiled application files were byte-identical after the patch. No application-source, model or data change was involved. See [dependency audit](frontend_dependency_audit.json) and the [maintainer advisory](https://github.com/vitejs/vite/security/advisories/GHSA-p9ff-h696-f583). The unchanged `run.ps1` launched both actual native models with health 200; the owned server was stopped after testing.
 
 The HTTP matrix passed **1,776 predictions + 592 additive explanations + 15 expected invalid-input cases**, with zero unexpected failures, across all 592 exposed profiles; metadata, directory and built assets passed. The original 592-profile HTTP smoke also passed separately. These are real local native-model requests, not mock results, and are distinct from the synthetic portable contract tests.
 
 Original raw/processed/interim data and all model files were compared with the Phase 3 checkpoint: **56 unchanged files**. Model hashes and original metrics are in the validation report. Registry publication removes individual source examples while retaining source schemas/hashes/licenses; the original local baseline/checkpoints preserve those examples and are never pushed.
+
+## GitHub backup
+
+[SachitBabbar07/skylens-indian-airfare-intelligence](https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence) is **PRIVATE**, with `main` as default branch. Milestone pushes, matching remote commit, uploaded source/docs and GitHub-rendered README were verified. The [delivery report](github_delivery_report.md) contains identity/authentication, branches, commits, exclusions, reconstruction and clone/pull/contribution instructions. No secret, raw dataset, quote evidence, model binary, backup or local audit branch was uploaded.
+
+Hosted Actions jobs are **skipped by the zero-spend gate**, as explicitly requested by the user after billing availability could not be confirmed. Two actual runs were inspected; no CI pass is claimed. No completion tag was created while browser QA and source acquisition dependencies remain open.
 
 ## Browser limitation and required action
 
