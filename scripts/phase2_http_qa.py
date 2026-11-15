@@ -41,7 +41,7 @@ def main():
             ]
             for index, hour in enumerate(variants):
                 body["departure_hour"] = hour
-                response = client.post("/predict", json=body)
+                response = client.post("/research/predict", json=body)
                 prediction_checks += 1
                 if response.status_code != 200:
                     failures.append({"profile": body, "variant": index, "status": response.status_code})
@@ -51,7 +51,7 @@ def main():
                 assert result["interval"] is None
                 assert result["interval_status"] == "withheld_unvalidated_serving_domain"
                 if index == 0:
-                    explanation = client.post("/explain", json=body)
+                    explanation = client.post("/research/explain", json=body)
                     explanation_checks += 1
                     if explanation.status_code != 200:
                         failures.append({"explain": body, "status": explanation.status_code})
@@ -75,7 +75,7 @@ def main():
             {"stops": 7}, {"research_acknowledged": False}, {"model_id": "network_2020"},
         ]
         for changed in invalid:
-            response = client.post("/predict", json={**valid, **changed})
+            response = client.post("/research/predict", json={**valid, **changed})
             expected_errors.append({"changed_fields": changed, "status": response.status_code})
             if response.status_code != 422:
                 failures.append(expected_errors[-1])
@@ -94,7 +94,7 @@ def main():
         "compiled_assets_checked": assets, "health": health.json(),
         "unexpected_failures": failures,
         "browser_qa": "not performed: saved permission setting denies localhost browser access",
-        "currency_display_source_check": "Frontend result labels source fare units; API currency null.",
+        "currency_display_source_check": "Explicit research diagnostics label unverified model-output units; API currency null. Customer fare prediction is disabled.",
         "browser_console_and_mobile_layout": "unverified",
     }
     args.output.write_text(

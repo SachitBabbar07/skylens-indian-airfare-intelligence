@@ -1,0 +1,62 @@
+{
+  "checked_at_utc": "2026-11-15T14:14:43.340Z",
+  "origins": [
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:5173"
+  ],
+  "viewport_checks": [
+    {
+      "width": 1440,
+      "height": 900,
+      "client_width": 1425,
+      "scroll_width": 1425
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "client_width": 375,
+      "scroll_width": 375
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "client_width": 345,
+      "scroll_width": 345
+    }
+  ],
+  "default_raw_amount_visible": false,
+  "customer_button_enabled": false,
+  "customer_http_status": 503,
+  "research_output_display": "54,757.14",
+  "research_output_unit": "unverified model-output units",
+  "shap_contribution_rows": 13,
+  "checks": [
+    "required acknowledgement",
+    "same native research output on both origins",
+    "empty numeric input remains required",
+    "out-of-range numeric input blocked",
+    "PNQ excluded from eligible research options",
+    "network model no-profile warning and no form",
+    "PNQ coverage search",
+    "methodology native offline metrics",
+    "expanded SHAP table has no page overflow"
+  ],
+  "console": {
+    "desktop": [],
+    "mobile": [],
+    "documentation": [
+      {
+        "level": "error",
+        "message": "Deprecated: escaping deep link whitespace with `_` is unsupported and will be removed in a future 5.x release. Use `%20` instead.",
+        "timestamp": "2026-11-15T14:14:23.853Z",
+        "url": "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"
+      }
+    ]
+  },
+  "network_evidence": "Swagger actual customer response and correlated server logs; full HAR unavailable",
+  "screenshots": [
+    "docs/screenshots/research-overview-desktop.jpg",
+    "docs/screenshots/research-overview-mobile.jpg",
+    "docs/screenshots/research-tools-desktop.jpg"
+  ]
+}

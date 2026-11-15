@@ -34,7 +34,7 @@ def test_every_advertised_profile_accepts_clock_minute_conversion(client):
     profiles = client.get("/supported-options").json()["combinations"]
     assert len(profiles) == 592
     for profile in profiles:
-        response = client.post("/predict", json=scenario(profile))
+        response = client.post("/research/predict", json=scenario(profile))
         assert response.status_code == 200, (profile, response.text)
 
 
@@ -42,19 +42,19 @@ def test_actual_clock_precision_regressions(client):
     evidence = json.loads((ROOT / "data/metadata/phase2/clock_precision_probe.json").read_text())
     assert evidence["failures"] == 7
     for example in evidence["failure_examples"]:
-        assert client.post("/predict", json=example["inputs"]).status_code == 200
+        assert client.post("/research/predict", json=example["inputs"]).status_code == 200
 
 
 def test_clock_tolerance_does_not_accept_a_minute_outside_support(client):
     profile = client.get("/supported-options").json()["combinations"][0]
     body = scenario(profile)
     body["departure_hour"] = profile["hour_min"] - 1 / 60
-    assert client.post("/predict", json=body).status_code == 422
+    assert client.post("/research/predict", json=body).status_code == 422
 
 
 def test_interval_withheld_when_offline_holdout_misses_serving_domain(client):
     profile = client.get("/supported-options").json()["combinations"][0]
-    result = client.post("/predict", json=scenario(profile)).json()
+    result = client.post("/research/predict", json=scenario(profile)).json()
     assert result["interval"] is None
     assert result["interval_status"] == "withheld_unvalidated_serving_domain"
     assert result["currency"] is None

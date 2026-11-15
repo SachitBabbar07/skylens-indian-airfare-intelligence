@@ -34,11 +34,11 @@ def test_real_prediction_and_additive_explanation(client,model):
         body=d.iloc[0].to_dict()
         req={k:body[k] for k in ['origin','destination','airline','cabin_class','stops','duration_minutes','days_left','departure_hour']}
         req.update(model_id=model,research_acknowledged=True)
-        assert client.post('/predict',json=req).status_code==422
+        assert client.post('/research/predict',json=req).status_code==422
         return
-    body=payload(client,model);r=client.post('/predict',json=body);assert r.status_code==200,r.text
+    body=payload(client,model);r=client.post('/research/predict',json=body);assert r.status_code==200,r.text
     result=r.json();assert result['estimate']>0 and result['research_only'] and result['currency'] is None
-    e=client.post('/explain',json=body);assert e.status_code==200,e.text
+    e=client.post('/research/explain',json=body);assert e.status_code==200,e.text
     explanation=e.json();assert explanation['estimate']==pytest.approx(result['estimate']);assert explanation['additive_error']<1e-6
     assert explanation['baseline']+sum(v['contribution'] for v in explanation['contributions'])==pytest.approx(result['estimate'])
     assert len(explanation['contributions'])==13
@@ -46,19 +46,19 @@ def test_real_prediction_and_additive_explanation(client,model):
 @pytest.mark.parametrize('field,value',[('origin','ZZZ'),('origin','VABB'),('origin','PNQ'),('airline','Unknown Airline'),('cabin_class','First'),('journey_type','round_trip'),('journey_type','multi_city'),('days_left',-1),('days_left',3.5),('duration_minutes',0),('stops',-1),('stops',8),('departure_hour',24),('research_acknowledged',False),('return_date','2026-12-01'),('passenger_count',2),('travel_date','invalid'),('unknown',True)])
 def test_reject_invalid_or_unsupported(client,field,value):
     body=payload(client);body[field]=value
-    r=client.post('/predict',json=body);assert r.status_code==422,r.text
+    r=client.post('/research/predict',json=body);assert r.status_code==422,r.text
 
 @pytest.mark.parametrize('field',['origin','destination','duration_minutes','research_acknowledged'])
 def test_missing_required(client,field):
-    body=payload(client);del body[field];assert client.post('/predict',json=body).status_code==422
+    body=payload(client);del body[field];assert client.post('/research/predict',json=body).status_code==422
 
 def test_same_airport(client):
-    body=payload(client);body['destination']=body['origin'];assert client.post('/predict',json=body).status_code==422
+    body=payload(client);body['destination']=body['origin'];assert client.post('/research/predict',json=body).status_code==422
 
 def test_out_of_support_bounds(client):
-    body=payload(client);body['duration_minutes']=4000;assert client.post('/predict',json=body).status_code==422
+    body=payload(client);body['duration_minutes']=4000;assert client.post('/research/predict',json=body).status_code==422
 
-def test_malformed_json(client):assert client.post('/predict',content='{bad',headers={'Content-Type':'application/json'}).status_code==422
+def test_malformed_json(client):assert client.post('/research/predict',content='{bad',headers={'Content-Type':'application/json'}).status_code==422
 
 def test_api_metadata_and_search(client):
     assert client.get('/health').status_code==200
@@ -75,7 +75,7 @@ def test_network_unknown_class_stays_unspecified(client):
 
 def test_model_unavailable(client):
     body=payload(client);s=app.state.store;old=s.models;s.models={}
-    try:assert client.get('/health').status_code==503;assert client.post('/predict',json=body).status_code==503
+    try:assert client.get('/health').status_code==503;assert client.post('/research/predict',json=body).status_code==503
     finally:s.models=old
 
 def test_missing_and_corrupted_model(tmp_path):
@@ -87,7 +87,7 @@ def test_internal_error_is_not_exposed(client,monkeypatch):
     body=payload(client)
     def fail(*args):raise RuntimeError('private-test-stack-details')
     monkeypatch.setattr(app.state.store,'predict',fail)
-    r=client.post('/predict',json=body);assert r.status_code==500 and 'private-test-stack-details' not in r.text
+    r=client.post('/research/predict',json=body);assert r.status_code==500 and 'private-test-stack-details' not in r.text
 
 @pytest.mark.parametrize('model',['network_2020','cabin_2023'])
 def test_quote_and_observation_splits_disjoint(model):

@@ -1,5 +1,12 @@
 # Changelog
 
+## Critical product correction — 2026-11-15
+
+- Replaced the prominent fare card with Research Mode, the exact unavailable customer message and explicit missing evidence. Raw output is confined to acknowledged research diagnostics in unverified model-output units; SHAP has no rupee interpretation.
+- Blocked customer and generic legacy paths with 503; moved research inference/explanations to explicit research paths and added strict response/presentation guards. Metadata labels and environment flags cannot enable customer mode.
+- Re-audited original publisher documentation; currency and fare scope remain unverified. Preserved all 56 data/model files, original metrics, support thresholds and withheld intervals. No training or data acquisition.
+- Passed 129 Python tests, 12 interface contract tests, production build and actual desktop/mobile browser QA. Documented one upstream Swagger deep-link deprecation. Repository visibility and hosted-CI gates remain unchanged.
+
 ## Browser QA follow-up — 2026-11-15
 
 - Verified both authorized localhost origins through the in-app browser, including desktop/mobile layouts, native estimates/SHAP, coverage, validation and actual outage/retry recovery.

@@ -7,7 +7,16 @@ verification receipts below remain valid for their recorded timestamps. Raw
 datasets, model binaries, quote evidence, credentials and the local archival
 branch remain excluded. Hosted CI stays gated under the owner's prior decision.
 
-**Browser QA follow-up, 15 November 2026:** permissions now allow both localhost
+**Critical product correction, 15 November 2026:** customer fare prediction is
+disabled; the default interface is Research Mode with no model amount. Explicit
+research endpoints retain native outputs/SHAP in unverified model-output units.
+All 56 frozen files remain unchanged. Local validation: 129 Python tests,
+77 portable tests in the minimal environment, 12 interface tests and production
+build passed. See the [current correction and screenshots](product_correction_20261115.md).
+Visibility and zero-spend CI gates are unchanged. Earlier browser screenshots
+below are historical mechanics evidence, not approval of the old fare card.
+
+**Earlier browser QA follow-up, 15 November 2026:** permissions now allow both localhost
 origins. Desktop/mobile flows passed after fixing documentation proxying and
 blank-number warnings. Tests remain 102 passing; model/data hashes are unchanged.
 See [browser findings and screenshots](browser_qa_followup_20261115.md). The original

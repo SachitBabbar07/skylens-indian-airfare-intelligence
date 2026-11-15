@@ -15,9 +15,9 @@ with httpx.Client(base_url='http://127.0.0.1:8000',timeout=30) as client:
     for c in opts['combinations']:
         body={k:c[k] for k in ['origin','destination','airline','cabin_class','stops']}
         body.update(model_id='cabin_2023',days_left=int(c['lead_min']),duration_minutes=float(c['duration_min']),departure_hour=float(c['hour_min']),research_acknowledged=True)
-        r=client.post('/predict',json=body)
+        r=client.post('/research/predict',json=body)
         if r.status_code!=200:failures.append({'profile':body,'status':r.status_code,'detail':r.text})
-    result={'health_status':health.status_code,'frontend_status':page.status_code,'compiled_assets_checked':len(assets),'profiles_checked':len(opts['combinations']),'failures':failures,'browser_visual_qa':'Not performed: browser permission declined'}
+    result={'health_status':health.status_code,'frontend_status':page.status_code,'compiled_assets_checked':len(assets),'profiles_checked':len(opts['combinations']),'failures':failures,'browser_visual_qa':'Not performed by this HTTP script; see reports/product_correction_20261115.md for actual browser QA.'}
     output.write_text(json.dumps(result,indent=2),encoding='utf-8')
     print(json.dumps(result))
     assert not failures

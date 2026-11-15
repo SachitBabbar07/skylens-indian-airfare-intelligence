@@ -1,5 +1,7 @@
 # Browser QA follow-up — 15 November 2026
 
+> **Historical mechanics report, superseded for product presentation.** The large price-style card and “Estimated recorded fare” label shown below were misleading despite the disclaimers. These screenshots are preserved as evidence of that defect, not the approved current interface. Customer estimation is now disabled, with raw values confined to explicit research tools. See the [product correction and current screenshots](product_correction_20261115.md). A functioning native model and successful browser interactions did not verify currency or fare semantics.
+
 **Passed for the exercised desktop and mobile viewport flows on both authorized origins.** The saved localhost permission block is resolved. The backend was launched using the unchanged `D:\SkyLens\run.ps1`; the existing frontend used `npm --prefix frontend run dev -- --port 5173 --strictPort`. Both remain running at [backend/application](http://127.0.0.1:8000) and [frontend](http://127.0.0.1:5173).
 
 The authorized ChatGPT in-app browser was used throughout. No alternate browser, raw CDP, external browser automation, security change or permission bypass was used. Temporary viewport overrides were reset, QA-only tabs closed, and one normal application tab per origin retained.

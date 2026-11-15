@@ -1,0 +1,38 @@
+[
+  {
+    "source": "yashdharme36/airfare-ml-predicting-flight-fares",
+    "source_url": "https://www.kaggle.com/datasets/yashdharme36/airfare-ml-predicting-flight-fares",
+    "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/yashdharme36/airfare-ml-predicting-flight-fares",
+    "checked_at_utc": "2026-11-15T13:59:33.602474+00:00",
+    "http_status": 200,
+    "metadata_sha256": "f39cc298564ee14f94d8cd21b35209221d02c3b16c98cd5508bc154bede408e3",
+    "published_version": 1,
+    "description_characters": 3059,
+    "target_semantics_dictionary_identified_in_review": false,
+    "review_finding": "Publisher description lists fields but does not define currency, tax/fee inclusion, total/base fare, passenger basis or genuine booking type. No target-semantics dictionary identified in the reviewed materials."
+  },
+  {
+    "source": "promptcloud/easemytrip-flight-fare-details-2020",
+    "source_url": "https://www.kaggle.com/datasets/promptcloud/easemytrip-flight-fare-details-2020",
+    "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/promptcloud/easemytrip-flight-fare-details-2020",
+    "checked_at_utc": "2026-11-15T13:59:34.216237+00:00",
+    "http_status": 200,
+    "metadata_sha256": "279d91b41659178a82bfc689decd1c307a7a0319cf62ace12e20484ed5ab59a4",
+    "published_version": 1,
+    "description_characters": 1017,
+    "target_semantics_dictionary_identified_in_review": false,
+    "review_finding": "Publisher description lists fields but does not define currency, tax/fee inclusion, total/base fare, passenger basis or genuine booking type. No target-semantics dictionary identified in the reviewed materials."
+  },
+  {
+    "source": "promptcloud/easemytrip-flight-fare-travel-listings",
+    "source_url": "https://www.kaggle.com/datasets/promptcloud/easemytrip-flight-fare-travel-listings",
+    "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/promptcloud/easemytrip-flight-fare-travel-listings",
+    "checked_at_utc": "2026-11-15T13:59:34.711173+00:00",
+    "http_status": 200,
+    "metadata_sha256": "9788631f5ebdc436fe166f2e5a599288dfec4b6627dd3ca28d8f1e7820d42946",
+    "published_version": 1,
+    "description_characters": 997,
+    "target_semantics_dictionary_identified_in_review": false,
+    "review_finding": "Publisher description lists fields but does not define currency, tax/fee inclusion, total/base fare, passenger basis or genuine booking type. No target-semantics dictionary identified in the reviewed materials."
+  }
+]

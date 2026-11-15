@@ -19,7 +19,7 @@ class PredictionRequest(BaseModel):
     @model_validator(mode='after')
     def check_context(self):
         if self.origin==self.destination:raise ValueError('Choose different origin and destination airports.')
-        if not self.research_acknowledged:raise ValueError('Acknowledge the research limitations before requesting an estimate.')
+        if not self.research_acknowledged:raise ValueError('Acknowledge the research limitations before requesting raw research output.')
         return self
 
 class FareInterval(BaseModel):
@@ -30,18 +30,21 @@ class FareInterval(BaseModel):
     label:str
 
 class PredictionResponse(BaseModel):
+    model_config=ConfigDict(allow_inf_nan=False)
     model_id:str
     model_version:str
     estimate:float
-    unit:str
-    currency:str|None
-    price_scope:str
-    passenger_basis:str
-    research_only:bool
+    unit:Literal['source fare units']
+    currency:Literal[None]
+    price_scope:Literal['unknown']
+    passenger_basis:Literal['unknown']
+    research_only:Literal[True]
+    output_kind:Literal['unverified_research_model_output']='unverified_research_model_output'
+    unit_verification:Literal['unverified']='unverified'
     coverage_status:str
     historical_support:int
-    interval:FareInterval|None
-    interval_status:str
+    interval:Literal[None]
+    interval_status:Literal['withheld_unvalidated_serving_domain']
     warnings:list[str]
     inputs:dict
 
@@ -51,9 +54,13 @@ class Contribution(BaseModel):
     contribution:float
 
 class ExplanationResponse(BaseModel):
+    model_config=ConfigDict(allow_inf_nan=False)
     estimate:float
     baseline:float
     contributions:list[Contribution]
     additive_error:float
-    unit:str
+    unit:Literal['source fare units']
+    currency:Literal[None]=None
+    research_only:Literal[True]=True
+    unit_verification:Literal['unverified']='unverified'
     interpretation:str

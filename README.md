@@ -1,6 +1,8 @@
 # SkyLens
 
-Indian domestic airfare intelligence: historical estimation, airport coverage and native model explanations. FastAPI + React/TypeScript + CatBoost, with source-specific research cohorts and explicit limits.
+Historical Indian aviation research: dataset coverage, frozen model evaluation and native explanations. FastAPI + React/TypeScript + CatBoost, with source-specific research cohorts and explicit limits.
+
+> **Current product status — Research Mode:** Customer fare prediction is disabled. The overview displays no model amount. Acknowledged research tools show raw values only in **unverified model-output units**, never as actual fares, ticket prices, booking quotes or verified INR amounts. Original source documentation still does not establish currency, taxes/fees, total/base fare, passenger basis or genuine journey type. Customer use requires those definitions and independent validation for its intended scope. See the [product correction and current screenshots](reports/product_correction_20261115.md), [source re-audit](reports/price_target_reaudit_20261115.md) and [API migration](docs/API_GUIDE.md).
 
 > **Phase 3:** offline quote intake, evidence/permission gates and repeated-day sampling are implemented. Genuine new verified quotes: **0**. No retraining or airport expansion; seven research-eligible airports, 592 exact profiles, currency unknown for the historical models, intervals withheld. This is not a current INR fare or booking service. See [current findings](reports/phase3_final_findings.md).
 
@@ -14,9 +16,9 @@ Indian domestic airfare intelligence: historical estimation, airport coverage an
 
 ## Checks without datasets
 
-Current local verification: **102 tests passed**, including the original 48; clean remote clone: **54 portable tests passed** plus production build. Authorized desktop/mobile browser QA now passes on ports 8000 and 5173, including native predictions and outage recovery. See [browser findings and genuine screenshots](reports/browser_qa_followup_20261115.md). Hosted CI stays skipped under the user's zero-spend decision. Repository details are in the [delivery report](reports/github_delivery_report.md).
+Current local verification: **129 Python tests and 12 rendered-interface tests passed**, plus the production build. All 56 frozen data/model files retain their hashes. Authorized desktop/mobile QA on ports 8000 and 5173 verifies the corrected unavailable customer state and explicit research flows. See [current findings and screenshots](reports/product_correction_20261115.md). Earlier browser QA verified mechanics but did not justify the old fare-card presentation. Hosted CI stays gated under the user's zero-spend decision. Repository details are in the [delivery report](reports/github_delivery_report.md).
 
-Install `requirements-ci.txt` in Python 3.12, then run `python -m pytest tests/test_quotes.py tests/test_portable_contract.py -q`. Run `npm --prefix frontend ci` and `npm --prefix frontend run build` for the production UI. The [GitHub workflow](.github/workflows/ci.yml) uses synthetic software fixtures in temporary directories, never synthetic training data; it downloads no fare datasets. An actual remote CI result is reported only after a successful run, in the delivery report.
+Install `requirements-ci.txt` in Python 3.12, then run `python -m pytest tests/test_quotes.py tests/test_portable_contract.py tests/test_product_contract.py -q`. Run `npm --prefix frontend ci`, `npm --prefix frontend test` and `npm --prefix frontend run build`. The [GitHub workflow](.github/workflows/ci.yml) uses synthetic software fixtures only, never synthetic training data, and downloads no fare datasets. A skipped hosted job is not claimed as passing remote execution.
 
 Raw/processed data, native models, private quote evidence and audit backups stay local. A clone is a reproducible **source** checkout; restoring exact artifacts or explicitly fitting a new research reconstruction is a separate step. No dependency automatically collects live fares, retrains at startup, or pays a service.
 
@@ -35,7 +37,7 @@ Original code/documentation use the [MIT license](LICENSE). Third-party data, ai
 
 Indian domestic historical airfare research, coverage and model explanations. A college ML project with traceable files, measured validation and a local application.
 
-> Research edition: no verified current INR total-fare model qualified from the audited data. Currency, taxes, passenger basis and booking type remain undocumented. Outputs stay in source fare units. Confirmed one-way booking fares, round-trip/multi-city and live quotes are unsupported.
+> Research edition: no verified current INR total-fare model qualified from the audited data. Currency, taxes, passenger basis and booking type remain undocumented. Raw research outputs stay in unverified model-output units. Confirmed one-way booking fares, round-trip/multi-city and live quotes are unsupported.
 
 ## Run locally (Windows PowerShell)
 From this repository root, with free Python 3.12, Node 22+ and uv:
@@ -84,9 +86,9 @@ Mean, median, Ridge, a decision tree and three CatBoost settings share identical
 | network_2020 | 5445 | 2764.6631 | 4664.6755 | 0.4266 | 1583.1307 | 23.0764 | 6464.8287 | 0.8516 |
 | cabin_2023 | 88773 | 2339.7568 | 4376.3518 | 0.947 | 998.1895 | 13.7101 | 6142.7176 | 0.8924 |
 
-Absolute errors use source fare units, not verified INR. R² is explained variance under the specified protocol, not accuracy. Cabin chronology tests later departures from one snapshot; network chronology tests the latest collection day. Random-group, route and unseen-airport stress fits use development data and cap tree count at 250, unlike final fits. [Evaluation](reports/model_evaluation_report.md), [errors](reports/error_analysis_report.md) and [external challenge](reports/external_validation_report.md) expose limits rather than relying only on R².
+Absolute errors use unverified model-output units, not verified INR. R² is explained variance under the specified protocol, not accuracy. Cabin chronology tests later departures from one snapshot; network chronology tests the latest collection day. Random-group, route and unseen-airport stress fits use development data and cap tree count at 250, unlike final fits. [Evaluation](reports/model_evaluation_report.md), [errors](reports/error_analysis_report.md) and [external challenge](reports/external_validation_report.md) expose limits rather than relying only on R².
 
-Native SHAP assigns actual fitted contributions: baseline + all contributions reproduces the output. Global mean absolute SHAP and validation permutation importance are saved. Contributions describe associations, not causes. [Explainability report](reports/explainability_report.md) includes an actual example. Residual intervals use separate calibration observations, with measured final-test coverage. Temporal shift prevents a distribution-free/future-price guarantee; optional ranges are labeled historical empirical intervals, not confidence intervals.
+Native SHAP assigns actual fitted contributions: baseline + all contributions reproduces the output. Global mean absolute SHAP and validation permutation importance are saved. Contributions describe associations, not causes. [Explainability report](reports/explainability_report.md) includes an actual example. Residual intervals use separate calibration observations, with measured final-test coverage. Temporal shift prevents a distribution-free/future-price guarantee; these ranges remain offline diagnostics and are withheld from served research outputs.
 
 ## API and interface
 FastAPI validates schema, categories, joint support and numeric bounds. It hashes native model files at startup; requests never retrain. Errors return meaningful 422/503 or safe 500 responses without internal stacks. Explicit CORS is configurable. See [API guide](docs/API_GUIDE.md).

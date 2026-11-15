@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from backend.app.schemas import PredictionRequest,PredictionResponse,ExplanationResponse
 from backend.app.services import ModelStore
+from backend.app.capabilities import router as capability_router
 from skylens.prepare import ROOT
 LOG=logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ async def lifespan(app):
 
 app=FastAPI(title='SkyLens · Historical Fare Research',version='0.1.0',lifespan=lifespan,description='Research only. No verified current INR total-fare or round-trip predictor qualified from the audited data.')
 app.add_middleware(CORSMiddleware,allow_origins=os.getenv('SKYLENS_CORS_ORIGINS','http://127.0.0.1:5173,http://localhost:5173').split(','),allow_credentials=False,allow_methods=['GET','POST'],allow_headers=['Content-Type'])
+app.include_router(capability_router)
 
 def store(request):return request.app.state.store
 
@@ -82,15 +84,15 @@ def route_coverage(request:Request,model_id:str='cabin_2023',origin:str|None=Non
     if destination:s=s[s.destination.eq(destination)]
     return {'combinations':s.to_dict('records'),'minimum_training_observations':50,'coverage_status':'research_only'}
 
-@app.post('/predict',response_model=PredictionResponse)
+@app.post('/research/predict',response_model=PredictionResponse,tags=['Unverified research outputs'],description='Raw model output in unverified source units. Not an airfare estimate, INR amount or booking quote.')
 def predict(payload:PredictionRequest,request:Request):return store(request).predict(payload)
 
-@app.post('/explain',response_model=ExplanationResponse)
+@app.post('/research/explain',response_model=ExplanationResponse,tags=['Unverified research outputs'],description='SHAP research contributions in unverified model-output units, not rupee impacts.')
 def explain(payload:PredictionRequest,request:Request):return store(request).explain(payload)
 
 @app.get('/feature-importance')
 def importance(request:Request,model_id:str='cabin_2023'):
-    return {'method':'Mean absolute SHAP over a fixed sample of final-test observations','unit':'source fare units','features':store(request).get(model_id)['importance']}
+    return {'method':'Mean absolute SHAP over a fixed sample of final-test observations','unit':'source fare units','unit_verification':'unverified','currency':None,'interpretation':'Research contributions in unverified model-output units, not rupee impacts.','features':store(request).get(model_id)['importance']}
 
 web=ROOT/'frontend/dist'
 if web.is_dir():app.mount('/',StaticFiles(directory=web,html=True),name='frontend')
