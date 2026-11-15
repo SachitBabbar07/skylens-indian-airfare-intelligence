@@ -2,6 +2,8 @@
 
 ## Phase 3 — 2026-11-15
 
+- Updated Vite 6.3.5 to the patched 6.4.6 within the existing major version after a clean-install audit found a vulnerable development-tool package. Regenerated lockfile, passed build and repeated npm audit: zero reported vulnerabilities. Compiled application assets are byte-identical; model/data/application source are unchanged by this patch.
+
 - Added current source access/rights audit and a route-based repeated-day collection design with explicit statistical precision planning.
 - Added offline, permission-gated CSV intake, raw/evidence hashes, research/quarantine statuses, conflict-aware summaries and shared-segment temporal split manifests.
 - Added empty quote template/schema and beginner-oriented evidence/review instructions.

@@ -1,0 +1,36 @@
+{
+  "before": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 1,
+    "critical": 0,
+    "total": 1
+  },
+  "after": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "vite_before": "6.3.5",
+  "vite_after": "6.4.6",
+  "affected_direct_package": "vite",
+  "advisory_urls": [
+    "https://github.com/advisories/GHSA-g4jq-h2w9-997c",
+    "https://github.com/advisories/GHSA-jqfw-vq24-v9c3",
+    "https://github.com/advisories/GHSA-93m4-6634-74q7",
+    "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
+    "https://github.com/advisories/GHSA-p9ff-h696-f583",
+    "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+    "https://github.com/advisories/GHSA-698v-4r3x-3vcv",
+    "https://github.com/advisories/GHSA-r825-w8mm-5pxw",
+    "https://github.com/advisories/GHSA-587h-7wmj-h5pm",
+    "https://github.com/advisories/GHSA-9jrq-w75r-8gcw",
+    "https://github.com/advisories/GHSA-rq7h-c2jc-7f22",
+    "https://github.com/advisories/GHSA-fx2h-pf6j-xcff"
+  ],
+  "scope": "Build/development tooling; no frontend source, backend model or dataset changes"
+}
