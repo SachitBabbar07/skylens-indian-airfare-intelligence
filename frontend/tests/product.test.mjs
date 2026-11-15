@@ -10,6 +10,7 @@ const server = await createServer({root: fileURLToPath(new URL('..', import.meta
   optimizeDeps: {noDiscovery: true, include: []}, esbuild: {jsx: 'automatic'}});
 after(() => server.close());
 const views = await server.ssrLoadModule('/src/ResearchViews.tsx');
+const acquisition = await server.ssrLoadModule('/src/AcquisitionStatus.tsx');
 const render = (component, props) => renderToStaticMarkup(React.createElement(component, props));
 // Explicit software fixtures, never training data or displayed sample fares.
 const result = {estimate: 12345.6789, currency: null, unit: 'source fare units', research_only: true,
@@ -64,5 +65,29 @@ test('empty and loading states do not invent an amount', () => {
   for (const busy of [true, false]) {
     const html = render(views.ResearchOutput, {result: null, explanation: null, busy});
     assert.doesNotMatch(html, /12,345|54,757|₹|class="fare"/);
+  }
+});
+
+test('acquisition review exposes empty templates without enabling customer predictions', () => {
+  const review = {reviewed_at_utc: '2026-11-15T00:00:00Z', verified_one_way_observations: 0,
+    verified_round_trip_observations: 0, approved_sources: 0, customer_fare_prediction_available: false,
+    training_automatically_enabled: false};
+  const html = render(acquisition.AcquisitionReview, {review});
+  assert.match(html, /Download empty quote CSV/);
+  assert.match(html, /Verified one-way observations/);
+  assert.match(html, /Importing records does not enable customer predictions/);
+  assert.doesNotMatch(html, /₹|54,757|customer-ready/);
+  const unsafe = render(acquisition.AcquisitionReview, {review: {...review, customer_fare_prediction_available: true}});
+  assert.match(unsafe, /Acquisition review withheld/);
+  assert.doesNotMatch(unsafe, /Download empty quote CSV/);
+});
+
+test('acquisition review rejects missing, negative and fabricated count flags', () => {
+  const base = {reviewed_at_utc: '2026-11-15T00:00:00Z', verified_one_way_observations: 0,
+    verified_round_trip_observations: 0, approved_sources: 0, customer_fare_prediction_available: false,
+    training_automatically_enabled: false};
+  for (const changes of [{approved_sources: -1}, {verified_one_way_observations: '10'},
+    {training_automatically_enabled: true}, {reviewed_at_utc: 'unverified'}]) {
+    assert.equal(acquisition.validReview({...base, ...changes}), false);
   }
 });

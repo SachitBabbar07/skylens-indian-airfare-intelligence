@@ -75,6 +75,26 @@ def test_header_only_template_has_zero_observations(fixture):
     assert result["rows"] == summary(fixture[4])["verified_targets"] == 0
 
 
+def test_phase5_license_label_does_not_override_missing_ml_permission(fixture):
+    q, grant, permissions, _, _, _ = fixture
+    q.update(license_name='CC0', license_url='https://creativecommons.org/publicdomain/zero/1.0/',
+             reuse_status='open_license')
+    grant['ml_use_allowed'] = False
+    permissions.write_text(json.dumps({'sources': [grant]}))
+    assert run(fixture, [q])['research_only'] == 1
+    assert summary(fixture[4])['verified_targets'] == 0
+
+
+def test_phase5_optional_lead_time_stays_unknown_or_matches_actual_dates(fixture):
+    from skylens.quotes import Quote, IST
+    q = fixture[0]
+    parsed = Quote.model_validate(q)
+    assert parsed.booking_lead_days is None and parsed.license_name is None
+    lead = (parsed.departure_date-parsed.collected_at_utc.astimezone(IST).date()).days
+    q['booking_lead_days'] = lead+1
+    assert run(fixture, [q])['quarantined'] == 1
+
+
 def test_authenticity_is_human_review_and_intake_never_trains(fixture):
     q = fixture[0]
     assert run(fixture, [q])["verified_targets"] == 1

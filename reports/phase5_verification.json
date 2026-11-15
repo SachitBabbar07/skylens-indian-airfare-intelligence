@@ -1,0 +1,23 @@
+{
+  "checked_at_utc": "2026-11-15T17:03:50.747875+00:00",
+  "python": {
+    "tests": 155,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "portable_tests": 101,
+  "frontend_tests": 14,
+  "production_build": "passed",
+  "native_api_verification": "reports/phase5_http_verification.json",
+  "browser_qa": "reports/phase5_browser_qa.json",
+  "frozen_data_model_files_unchanged": 56,
+  "protected_training_launch_files_unchanged": 5,
+  "new_verified_targets": 0,
+  "new_model_fits": 0,
+  "new_paid_services": 0,
+  "npm_audit_vulnerabilities": 0,
+  "fresh_pinned_archive_download_replay": "passed: youssefkhaled117/flight-price-cleaned",
+  "hosted_CI": "gated; no remote execution pass claimed",
+  "repository_visibility": "public; unchanged"
+}

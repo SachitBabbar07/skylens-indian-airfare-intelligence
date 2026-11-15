@@ -22,6 +22,8 @@ Extra fields, incorrect types, invalid ranges and unsupported profiles produce 4
 
 ## Metadata and diagnostics
 
+`GET /acquisition/status` returns the dated Phase 5 acquisition review, separate verified one-way/return counts and unchanged customer/training-disabled flags. Missing/unsafe review metadata returns 503. `/acquisition/template.csv` downloads a header-only manual-intake CSV; `/acquisition/schema` exposes quote/source-grant schemas. These are read-only endpoints, with no upload, automatic ingestion or training. Optional license/reuse labels do not grant rights; a supplied booking lead must match the actual observation and travel dates. See the [acquisition decision](../reports/phase5_acquisition_decision.md).
+
 `GET /health` reports artifact readiness (503 if incomplete), separately from production-predictor unavailability. `/model-info` exposes frozen research metadata. `/supported-options?model_id=cabin_2023` exposes profiles and bounds. `/airports` accepts `query`, `model_id` and `supported_only`; false exposes the full directory. `/airlines` exposes historical labels. `/coverage` distinguishes master, observed and eligible research evidence. `/route-coverage` filters profiles. `/fare-semantics` exposes the original audit. `/feature-importance` exposes actual mean absolute SHAP in unverified units.
 
 CORS uses configured local origins in `SKYLENS_CORS_ORIGINS`. Vite proxies these endpoints, `/research`, `/capabilities`, `/fare-estimate`, `/docs` and `/openapi.json`. See the [source re-audit](../reports/price_target_reaudit_20261115.md) and [product correction](../reports/product_correction_20261115.md).

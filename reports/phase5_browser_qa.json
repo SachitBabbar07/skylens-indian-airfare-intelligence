@@ -1,0 +1,45 @@
+{
+  "checked_at_utc": "2026-11-15T16:58:02.350Z",
+  "origins": [
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:5173"
+  ],
+  "viewport_checks": [
+    {
+      "viewport": "1440x900",
+      "client_width": 1425,
+      "scroll_width": 1425
+    },
+    {
+      "viewport": "390x844",
+      "client_width": 375,
+      "scroll_width": 375
+    },
+    {
+      "viewport": "360x800",
+      "client_width": 345,
+      "scroll_width": 345
+    }
+  ],
+  "customer_prediction_enabled": false,
+  "default_currency_symbol_present": false,
+  "default_raw_output_present": false,
+  "downloaded_csv_lines": 1,
+  "downloaded_csv_has_reuse_and_known_lead_fields": true,
+  "schema_link_opened": true,
+  "native_research_analyses": 3,
+  "shap_rows": 13,
+  "unsupported_PNQ_research_option": false,
+  "network_cohort_submit_buttons": 0,
+  "console": {
+    "desktop": [],
+    "mobile": [],
+    "narrow": [],
+    "schema": []
+  },
+  "network_evidence": "Actual CSV download, visible JSON schema, native research flow and correlated local server logs; full HAR export unavailable",
+  "screenshots": [
+    "docs/screenshots/phase5-acquisition-desktop.jpg",
+    "docs/screenshots/phase5-acquisition-mobile.jpg"
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "recorded_at_utc": "2026-11-15T16:25:23.621876+00:00",
+  "source_commit": "4784faf3e187a3c6fdc00fe78150c6755afac74d",
+  "frozen_files": {
+    "data/interim/cabin_2023_exclusions.csv": {
+      "sha256": "e0bcc301d42122df4b9eb535afe2993c475663fa968aa7bad1196c12ec0b0857",
+      "bytes": 227896
+    },
+    "data/interim/network_2020_exclusions.csv": {
+      "sha256": "99ad3f9eaeac6841d62695a35e0cff8d8b7308a2fde1de164aea6fe0e0fc5bf7",
+      "bytes": 1033708
+    },
+    "data/interim/network_external_2020_exclusions.csv": {
+      "sha256": "f74074aa8c3744cabae33e97f804b416f621851916966d219012ce0ce9c1ed84",
+      "bytes": 495730
+    },
+    "data/processed/cabin_2023.parquet": {
+      "sha256": "41cc1a09623c44ff9f48cd1221d6813d03a1504a41d222091c6c76aa7daf0ee2",
+      "bytes": 20478369
+    },
+    "data/processed/cabin_2023_splits.parquet": {
+      "sha256": "4e73f6a09089df7350e25f6428a1ca5f3cea87f742708b7d976e5cd5a697a96a",
+      "bytes": 18172168
+    },
+    "data/processed/network_2020.parquet": {
+      "sha256": "60640a56fdeb026e46fd71dd28773a511834b439a8375cd3271984055716c944",
+      "bytes": 1537067
+    },
+    "data/processed/network_2020_splits.parquet": {
+      "sha256": "986f27b65c092c1a2279e2dc1c0b54efb886f1b39c51f26d5cfd676843499c30",
+      "bytes": 1116411
+    },
+    "data/processed/network_external_2020.parquet": {
+      "sha256": "84b17b66747da422cd33d33904565eda81ad9076051a3bacbf999069b97f0cfb",
+      "bytes": 2271424
+    },
+    "data/raw/andrewgeorgeissac/flight_data_BOM_BLR.csv": {
+      "sha256": "6ab5cdaba2117254d8472d7212208755b0541e416618f5de6f4ab0fda4393709",
+      "bytes": 5881
+    },
+    "data/raw/andrewgeorgeissac/flight_data_DEL_BLR.csv": {
+      "sha256": "59ed72e614431a3c01eb140ff539b0ec4414ae8e51115964dc8aadadda0e110b",
+      "bytes": 6507
+    },
+    "data/raw/andrewgeorgeissac/flight_data_DEL_BOM.csv": {
+      "sha256": "af4193af3c053b4d1f424b5d54f1ca4dc3d8955f4ffe3d19bd626df7908c7772",
+      "bytes": 6544
+    },
+    "data/raw/andrewgeorgeissac/flight_data_DEL_CCU.csv": {
+      "sha256": "85ae3ee9fbe249a31b98a27287da25c6bd0e9e1ac503db2476be9383330a0bc5",
+      "bytes": 4009
+    },
+    "data/raw/andrewgeorgeissac/flight_data_DEL_HYD.csv": {
+      "sha256": "761a069b69c3e656bdabb1b4de6ec7ac99585874fcee14da8b376b5966f9c5f4",
+      "bytes": 4039
+    },
+    "data/raw/andrewgeorgeissac/original.zip": {
+      "sha256": "8be70b4788a704529d4ee61d074af571b7727526e0f8a296043159741a99613b",
+      "bytes": 5983
+    },
+    "data/raw/iamavyukt/goibibo_flights_data.csv": {
+      "sha256": "7a2a6c75e6d615cae6322fb4a2cf837959ed9e2c25cff88f63836e3ff185cde6",
+      "bytes": 27204589
+    },
+    "data/raw/iamavyukt/original.zip": {
+      "sha256": "64f260287625e08b550d586c03d81e023cdf7502798a7a40e6e26ce3c33e4edf",
+      "bytes": 1947044
+    },
+    "data/raw/ourairports/airports.csv": {
+      "sha256": "5b3b48a429c8513853ff13a51a03282d1ef159ddf347f40203ff66b583574e8b",
+      "bytes": 12760412
+    },
+    "data/raw/ourairports/LICENSE": {
+      "sha256": "6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e",
+      "bytes": 1211
+    },
+    "data/raw/ourairports/regions.csv": {
+      "sha256": "9220d6582b804cfdec8432e5bb21456699c9df8969bf5d8886beb62ff0b1318b",
+      "bytes": 485265
+    },
+    "data/raw/phase2/ankushsonar__flight-price-dataset-india-2019/Flight_data.csv": {
+      "sha256": "1115bde9a56a076c724b22f00ea1097c3bf68b16662cb56922f661319bda1ab2",
+      "bytes": 1089696
+    },
+    "data/raw/phase2/ankushsonar__flight-price-dataset-india-2019/original.zip": {
+      "sha256": "e93a7eaa5262b4b4d7ca2cfc2c64b78a2acb880c7c18857bad68e43372817f3a",
+      "bytes": 152762
+    },
+    "data/raw/phase2/prithvirajshukla__flight-fare-prediction/Flight_Fare.xlsx": {
+      "sha256": "22ffc5c95f49e16e847d793058966011ef164d845a10e7a44825611b61aa285d",
+      "bytes": 530389
+    },
+    "data/raw/phase2/prithvirajshukla__flight-fare-prediction/original.zip": {
+      "sha256": "3f9ae0481e4a2ba1d86f4d9e70c444e4d657fa565be8281444af03d9f62675d5",
+      "bytes": 502944
+    },
+    "data/raw/phase2/sshriya08__flight-price-prediction-dataset/airports.csv": {
+      "sha256": "74abe8ba10eb5af226809488a1563045500bbc874833007acdf1cc7d57c97ff0",
+      "bytes": 8751682
+    },
+    "data/raw/phase2/sshriya08__flight-price-prediction-dataset/flight_cleaned.csv": {
+      "sha256": "e23f20c5c2b859c5b27f9cd385efaadf7efcc732baad10aaec99741835b49e5f",
+      "bytes": 755914
+    },
+    "data/raw/phase2/sshriya08__flight-price-prediction-dataset/original.zip": {
+      "sha256": "ef799e67becf39d8d22d558b22b8961a7f6d3abec3f8694c9ea79aadb034702a",
+      "bytes": 3135841
+    },
+    "data/raw/phase2/viveksharmar__flight-price-data/flight_dataset.csv": {
+      "sha256": "03c3fe4d3c4b027f960b34ccc3db6920787ef3581002f2d82bd2dad5cfb81ca1",
+      "bytes": 642278
+    },
+    "data/raw/phase2/viveksharmar__flight-price-data/original.zip": {
+      "sha256": "09488b18b75d6930a3038b981006ed3d7fe767784240afd95f1748083605e31b",
+      "bytes": 117911
+    },
+    "data/raw/promptcloud/marketing_sample_for_easemytrip_in-easemytrip_flight_fares_data__20200101_20200229__30k_data.csv": {
+      "sha256": "26bd9612e043cdd13b21d3dcdefb921f9f2a31bcbea73a8b95c4cdb42bfbe4cf",
+      "bytes": 5488079
+    },
+    "data/raw/promptcloud/marketing_sample_for_easemytrip_in-easemytrip_flights_fares__20200401_20200630__30k_data.csv": {
+      "sha256": "9cea675fe7cf75c9a44f3b1ea53bad94992130152d101b537458aeafc629f182",
+      "bytes": 5386483
+    },
+    "data/raw/promptcloud/original.zip": {
+      "sha256": "95c0eccbb8135c38f3f3ed75e3da671d96fb6197a6955536f93c84e6fcb076a3",
+      "bytes": 1765258
+    },
+    "data/raw/promptcloud__easemytrip-flight-fare-details-2020/marketing_sample_for_easemytrip_in-easemytrip_flight_fares_data__20200101_20200229__30k_data.csv": {
+      "sha256": "26bd9612e043cdd13b21d3dcdefb921f9f2a31bcbea73a8b95c4cdb42bfbe4cf",
+      "bytes": 5488079
+    },
+    "data/raw/promptcloud__easemytrip-flight-fare-details-2020/original.zip": {
+      "sha256": "95c0eccbb8135c38f3f3ed75e3da671d96fb6197a6955536f93c84e6fcb076a3",
+      "bytes": 1765258
+    },
+    "data/raw/promptcloud__easemytrip-flight-fare-travel-listings/marketing_sample_for_easemytrip_in-easemytrip_flights_fares__20200401_20200630__30k_data.csv": {
+      "sha256": "9cea675fe7cf75c9a44f3b1ea53bad94992130152d101b537458aeafc629f182",
+      "bytes": 5386483
+    },
+    "data/raw/promptcloud__easemytrip-flight-fare-travel-listings/original.zip": {
+      "sha256": "92e7e54e505ef6d96976af0cf1c568baf9488d9f81d651a856ba46877fd877f7",
+      "bytes": 1667001
+    },
+    "data/raw/shraddha4ever20/flights.csv": {
+      "sha256": "9031af427f4f60d8ff1102284931c24b5abaa241e95672fcf0598a1b22d10e0a",
+      "bytes": 1615863
+    },
+    "data/raw/shraddha4ever20/original.zip": {
+      "sha256": "50a17b4c3e943d3cf7c762fc0478fab33ea9ad346db90d745723e09f600b2598",
+      "bytes": 406427
+    },
+    "data/raw/shubhambathwal/business.csv": {
+      "sha256": "171e9cb53b1432198b8124800276037de29905cf3d7601a49f3e035d7e447617",
+      "bytes": 9868748
+    },
+    "data/raw/shubhambathwal/Clean_Dataset.csv": {
+      "sha256": "c27377aa4451d4427794523f3292dd2c2dc312f29c6d880aef4df1dcf1aaf7a3",
+      "bytes": 24683279
+    },
+    "data/raw/shubhambathwal/economy.csv": {
+      "sha256": "f785d63ab5ff6f428c55b683847bef3d7d8e29ccb41ff444fe73c2c5c4b2508c",
+      "bytes": 21096149
+    },
+    "data/raw/shubhambathwal/original.zip": {
+      "sha256": "295e67ef7c8049301969862ef264d44d40811fc8ebb5b6783c90c87484dea146",
+      "bytes": 4360218
+    },
+    "data/raw/sumitjaiswar/india flights.csv": {
+      "sha256": "fe52ead5b9dd3523964328d3c78feeb814040e248d3107b0704b4c5c7eb52e6e",
+      "bytes": 30573
+    },
+    "data/raw/sumitjaiswar/original.zip": {
+      "sha256": "9ab2356a8a8fd1f6759c8177570b246499309922348052b661084365231a4ce2",
+      "bytes": 7932
+    },
+    "data/raw/yashdharme36/Cleaned_dataset.csv": {
+      "sha256": "7a614a733563e2aae7cbedf4d6383b5384f4901b16f741d1cd0172d057324e92",
+      "bytes": 49152100
+    },
+    "data/raw/yashdharme36/original.zip": {
+      "sha256": "f33010cc2f08f016bcf7cc5c52cd060397e6d37761810415e8b2154ebfa32ef0",
+      "bytes": 6979576
+    },
+    "data/raw/yashdharme36/Scraped_dataset.csv": {
+      "sha256": "09a51c999ef26a132f38879224bc97f710fe926d86874b43f43e00291a917d36",
+      "bytes": 48670199
+    },
+    "models/cabin_2023/explanation_example.json": {
+      "sha256": "75e93fcb39ded355129e129a5becb692494ea4ca4dabbe8c98324094191c2a33",
+      "bytes": 1011
+    },
+    "models/cabin_2023/feature_importance.csv": {
+      "sha256": "646841227a55b20b9246476d2ee456d1005d6aceaeecd2eeff0540e3b32b2753",
+      "bytes": 437
+    },
+    "models/cabin_2023/metadata.json": {
+      "sha256": "5903f35b69cc6ade56a1eafdcb50f58a3525c28c298abc1196dd45aab777fe85",
+      "bytes": 9075
+    },
+    "models/cabin_2023/model.cbm": {
+      "sha256": "feaeadb9f82931f8aa048bf686ac0db7c9b178d3aa46fd219237a4e4df6b737f",
+      "bytes": 1194056
+    },
+    "models/cabin_2023/support.csv": {
+      "sha256": "f9fe4938843a79d1f71e6534551f0b5043fbb37e6e9534fe520b3b32ae835460",
+      "bytes": 58511
+    },
+    "models/network_2020/explanation_example.json": {
+      "sha256": "08996015ace8f0bbbff38f2b58245d19aa7936f17557b7b88470cf22aa444ab7",
+      "bytes": 1004
+    },
+    "models/network_2020/feature_importance.csv": {
+      "sha256": "eb32bd76c1e7dd204082aaaf60d2954f2dbcb1a128b18d877ce98ef85c877e2b",
+      "bytes": 418
+    },
+    "models/network_2020/metadata.json": {
+      "sha256": "a3969534e2924dc3bc8008e4b5359fe5bd9eb0b3b25d9b44aa01d85715bddca1",
+      "bytes": 19753
+    },
+    "models/network_2020/model.cbm": {
+      "sha256": "9c98ad32b7f445cf5900cd9362554d2a2422de44893568537e27aa320480a8ff",
+      "bytes": 2003032
+    },
+    "models/network_2020/support.csv": {
+      "sha256": "317e866c91755bfbbf6d9bd163b04645a6227175bf62f077890d969f1dd49ae5",
+      "bytes": 219660
+    }
+  },
+  "model_metrics": {
+    "cabin_2023": {
+      "n": 88773,
+      "mae": 2339.7568244890613,
+      "rmse": 4376.351778545567,
+      "r2": 0.9470333889343409,
+      "median_absolute_error": 998.1894818040819,
+      "mape_percent": 13.7101340167778,
+      "p90_absolute_error": 6142.717596390066,
+      "inference_ms_per_row": 0.0013238529733125015
+    },
+    "network_2020": {
+      "n": 5445,
+      "mae": 2764.6631279673315,
+      "rmse": 4664.675451433455,
+      "r2": 0.4266470115210942,
+      "median_absolute_error": 1583.1306671615594,
+      "mape_percent": 23.07643595693641,
+      "p90_absolute_error": 6464.828674996453,
+      "inference_ms_per_row": 0.002241248852370544
+    }
+  },
+  "protected_pipeline_files": {
+    "config/sources.json": "4a777b8c8f8ecfd39264509bdf890aa6ed72e1644914ab813dde91f71481cb9d",
+    "src/skylens/prepare.py": "0cac97463ee96891d00c1194a823c967592de38c9752463c1c8ad1c007ad2235",
+    "src/skylens/train.py": "d3b7ecfc22fe119ed5b966609062d2a0e786901b53e1f11a02112f5b13fe3bd7",
+    "src/skylens/features.py": "4e77cc0ed9efd5ff2257352b702f457f98e3cfa79ef31db41b856e0c6a676427",
+    "run.ps1": "e86e0364ddc96b5850f70076e798393d349f2f035400525aabae2000b23651da"
+  }
+}

@@ -7,6 +7,14 @@ verification receipts below remain valid for their recorded timestamps. Raw
 datasets, model binaries, quote evidence, credentials and the local archival
 branch remain excluded. Hosted CI stays gated under the owner's prior decision.
 
+**Phase 5, 15 November 2026:** six additional file distributions were audited;
+none qualified for the documented customer target. Pinned audit acquisition,
+quality/lineage checks and empty manual-intake CSV/schema downloads are implemented.
+Local checks passed: 155 Python tests, 101 portable tests, 14 frontend tests,
+production build and authorized desktop/mobile QA. Original data/models and
+customer-disabled behavior remain intact. See [Phase 5 findings](phase5_final_findings.md).
+Visibility and hosted-CI gates are unchanged; raw candidates remain excluded.
+
 **Critical product correction, 15 November 2026:** customer fare prediction is
 disabled; the default interface is Research Mode with no model amount. Explicit
 research endpoints retain native outputs/SHAP in unverified model-output units.

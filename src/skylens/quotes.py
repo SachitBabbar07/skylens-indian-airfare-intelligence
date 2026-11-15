@@ -124,6 +124,12 @@ class Quote(StrictModel):
     # Field -> location in the bound evidence. Do not put inferred assertions here.
     semantic_evidence: dict[str, str] = Field(default_factory=dict)
     original_values: dict[str, str] = Field(default_factory=dict)
+    # Optional source assertions, not grants. SourceGrant/evidence gates still
+    # determine reuse; neither a license label nor a known lead enables training.
+    license_name: str | None = None
+    license_url: str | None = None
+    reuse_status: Literal['unknown', 'source_permission', 'open_license'] = 'unknown'
+    booking_lead_days: int | None = Field(default=None, strict=True, ge=0)
 
     @model_validator(mode="after")
     def coherent(self):
@@ -142,6 +148,11 @@ class Quote(StrictModel):
             raise ValueError("origin and destination must differ")
         if self.departure_date < collected.astimezone(IST).date():
             raise ValueError("departure precedes collection date")
+        if self.license_url is not None:
+            web_url(self.license_url)
+        if (self.booking_lead_days is not None
+                and self.booking_lead_days != (self.departure_date-collected.astimezone(IST).date()).days):
+            raise ValueError('booking lead days disagrees with the actual observation and departure dates')
         if self.journey_type == "one_way" and self.return_date is not None:
             raise ValueError("one-way quote cannot have a return date")
         if self.journey_type == "round_trip" and self.return_date is None:
@@ -321,7 +332,7 @@ def target_issues(quote: Quote, grant: SourceGrant, evidence_root: Path, airport
 
 
 JSON_FIELDS = {"passenger_composition", "itinerary_segments", "semantic_evidence", "original_values"}
-INT_FIELDS = {"number_of_passengers", "stops", "duration_minutes"}
+INT_FIELDS = {"number_of_passengers", "stops", "duration_minutes", "booking_lead_days"}
 
 
 def parse_row(row: dict) -> Quote:

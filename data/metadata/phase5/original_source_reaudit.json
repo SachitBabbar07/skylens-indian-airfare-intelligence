@@ -1,0 +1,56 @@
+[
+  {
+    "source": "yashdharme36/airfare-ml-predicting-flight-fares",
+    "source_url": "https://www.kaggle.com/datasets/yashdharme36/airfare-ml-predicting-flight-fares",
+    "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/yashdharme36/airfare-ml-predicting-flight-fares",
+    "http_status": 200,
+    "checked_at_utc": "2026-11-15T16:44:14.282126+00:00",
+    "metadata_sha256": "43bbc8bc71e62c530f02d2dd500da3c3ccf77cd9b0563e9fcdeaaa8b0b67b1a6",
+    "version": 1,
+    "declared_license": "CC0: Public Domain",
+    "missing_definitions": [
+      "currency",
+      "tax_and_fee_inclusion",
+      "total_or_base",
+      "passenger_basis",
+      "genuine_booking_type"
+    ],
+    "documentation_finding": "No additional target definitions found in the original publisher description; raw fields and preparation code remain as previously audited."
+  },
+  {
+    "source": "promptcloud/easemytrip-flight-fare-details-2020",
+    "source_url": "https://www.kaggle.com/datasets/promptcloud/easemytrip-flight-fare-details-2020",
+    "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/promptcloud/easemytrip-flight-fare-details-2020",
+    "http_status": 200,
+    "checked_at_utc": "2026-11-15T16:44:14.735712+00:00",
+    "metadata_sha256": "279d91b41659178a82bfc689decd1c307a7a0319cf62ace12e20484ed5ab59a4",
+    "version": 1,
+    "declared_license": "CC0: Public Domain",
+    "missing_definitions": [
+      "currency",
+      "tax_and_fee_inclusion",
+      "total_or_base",
+      "passenger_basis",
+      "genuine_booking_type"
+    ],
+    "documentation_finding": "No additional target definitions found in the original publisher description; raw fields and preparation code remain as previously audited."
+  },
+  {
+    "source": "promptcloud/easemytrip-flight-fare-travel-listings",
+    "source_url": "https://www.kaggle.com/datasets/promptcloud/easemytrip-flight-fare-travel-listings",
+    "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/promptcloud/easemytrip-flight-fare-travel-listings",
+    "http_status": 200,
+    "checked_at_utc": "2026-11-15T16:44:15.246034+00:00",
+    "metadata_sha256": "ddb58f10931825c20b876021ab46fa3f92b8e46b6169b672b05404bab97c27a3",
+    "version": 1,
+    "declared_license": "CC0: Public Domain",
+    "missing_definitions": [
+      "currency",
+      "tax_and_fee_inclusion",
+      "total_or_base",
+      "passenger_basis",
+      "genuine_booking_type"
+    ],
+    "documentation_finding": "No additional target definitions found in the original publisher description; raw fields and preparation code remain as previously audited."
+  }
+]

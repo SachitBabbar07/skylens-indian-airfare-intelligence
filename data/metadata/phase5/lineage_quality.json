@@ -1,0 +1,121 @@
+{
+  "baseline": "data\\raw\\shubhambathwal\\Clean_Dataset.csv",
+  "baseline_rows": 300153,
+  "comparisons": [
+    {
+      "candidate": "data\\raw\\phase5\\rohitgrewal__airlines-flights-data\\airlines_flights_data.csv",
+      "rows": 300153,
+      "compared_keys": [
+        "airline",
+        "flight",
+        "source_city",
+        "departure_time",
+        "stops",
+        "arrival_time",
+        "destination_city",
+        "class",
+        "duration",
+        "days_left",
+        "price"
+      ],
+      "rows_with_matching_baseline_key": 295397,
+      "multiset_overlap_rows": 295397,
+      "ordered_keys_identical": false,
+      "ordered_non_flight_fields_identical": true,
+      "flight_label_differences": 4756
+    },
+    {
+      "candidate": "data\\raw\\phase5\\youssefkhaled117__flight-price-cleaned\\flight_data_cleaned.csv",
+      "rows": 300153,
+      "compared_keys": [
+        "airline",
+        "source_city",
+        "departure_time",
+        "stops",
+        "arrival_time",
+        "destination_city",
+        "class",
+        "duration",
+        "days_left",
+        "price"
+      ],
+      "rows_with_matching_baseline_key": 300153,
+      "multiset_overlap_rows": 300153,
+      "ordered_keys_identical": true
+    },
+    {
+      "candidate": "data\\raw\\phase5\\usmankhankk__india-domestic-flight-prices\\flight_data_cleaned.csv",
+      "rows": 297936,
+      "compared_keys": [
+        "airline",
+        "source_city",
+        "departure_time",
+        "stops",
+        "arrival_time",
+        "destination_city",
+        "class",
+        "days_left",
+        "price"
+      ],
+      "rows_with_matching_baseline_key": 297809,
+      "multiset_overlap_rows": 297809,
+      "ordered_keys_identical": false,
+      "price_capped_rows": 123,
+      "price_column_equals_capped_target": true
+    },
+    {
+      "source": "HybridAni/AirFare-EDA",
+      "input_rows": 2010,
+      "history_rows": 1872,
+      "input_exact_duplicate_rows": 138,
+      "history_rows_found_in_input": 1872,
+      "fare_math_mismatches": 0,
+      "collection_date_labels": [
+        "2026-09-03",
+        "2026-09-04",
+        "2026-09-05"
+      ],
+      "travel_date_range": [
+        "2026-09-10",
+        "2026-10-20"
+      ]
+    },
+    {
+      "source": "AyushyaRanjan/APIx",
+      "file": "real_raw_quotes.csv",
+      "rows": 26018,
+      "full_breakdown_true": 0,
+      "component_missing": {
+        "base_fare": 26018,
+        "taxes_statutory": 26018,
+        "udf_airport_fees": 26018,
+        "convenience_fee": 26018
+      },
+      "collection_days": [
+        "2026-09-13",
+        "2026-09-14",
+        "2026-09-15"
+      ],
+      "imputed_rows": null
+    },
+    {
+      "source": "AyushyaRanjan/APIx",
+      "file": "real_cleaned_fares.csv",
+      "rows": 142,
+      "full_breakdown_true": 0,
+      "component_missing": {
+        "base_fare_inr": 142,
+        "taxes_statutory_inr": 142,
+        "udf_airport_fees_inr": 142,
+        "convenience_fee_inr": 142
+      },
+      "collection_days": [
+        "2026-09-13",
+        "2026-09-14",
+        "2026-09-15"
+      ],
+      "imputed_rows": 0
+    }
+  ],
+  "key_normalization": "Categorical case/separators; numeric fields formatted to eight decimal places. No price scaling or date inference."
+}

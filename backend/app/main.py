@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from backend.app.schemas import PredictionRequest,PredictionResponse,ExplanationResponse
 from backend.app.services import ModelStore
 from backend.app.capabilities import router as capability_router
+from backend.app.acquisition import router as acquisition_router
 from skylens.prepare import ROOT
 LOG=logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ async def lifespan(app):
 app=FastAPI(title='SkyLens · Historical Fare Research',version='0.1.0',lifespan=lifespan,description='Research only. No verified current INR total-fare or round-trip predictor qualified from the audited data.')
 app.add_middleware(CORSMiddleware,allow_origins=os.getenv('SKYLENS_CORS_ORIGINS','http://127.0.0.1:5173,http://localhost:5173').split(','),allow_credentials=False,allow_methods=['GET','POST'],allow_headers=['Content-Type'])
 app.include_router(capability_router)
+app.include_router(acquisition_router)
 
 def store(request):return request.app.state.store
 

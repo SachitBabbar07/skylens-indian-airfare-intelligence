@@ -1,0 +1,88 @@
+{
+  "purpose": "Pinned audit-only public archives; not approved training inputs",
+  "sources": [
+    {
+      "source": "usmankhankk/india-domestic-flight-prices",
+      "source_url": "https://www.kaggle.com/datasets/usmankhankk/india-domestic-flight-prices",
+      "download_url": "https://www.kaggle.com/api/v1/datasets/download/usmankhankk/india-domestic-flight-prices?datasetVersionNumber=1",
+      "version": 1,
+      "declared_license": "CC0: Public Domain",
+      "source_updated": "2026-05-06T20:24:23.073Z",
+      "metadata_sha256": "2c18c2887772e1f3e905b49e338e652799597f8d17ba5f2eb6116253799bee62",
+      "archive_sha256": "f85ed734ab1a0204e0194f3721ca582a1b529d594a20e8333c11a1ff24ec8af3",
+      "archive_bytes": 19845063,
+      "files": [
+        {
+          "path": "01_data_preprocessing.ipynb",
+          "bytes": 48080,
+          "sha256": "01c8439f63ea08311e4ef48f0e8849e2d474ee6f47e889ababc7f8803a850acb"
+        },
+        {
+          "path": "02_eda_and_statistics.ipynb",
+          "bytes": 901155,
+          "sha256": "e305c93878af6cbfaa0ca9c8c47c40fbe1917549b97e79c9156e4a8f778fbcc5"
+        },
+        {
+          "path": "03_modeling_and_evaluation.ipynb",
+          "bytes": 420392,
+          "sha256": "072c58bcdea5b0f8fc1812e2af2d2f8542a3732602d56b938e7dc5b4dd8cecac"
+        },
+        {
+          "path": "Flight_dataset.xlsx",
+          "bytes": 16975554,
+          "sha256": "85a4e403e97a117917a23f48382e5e4ca7c81402c57180632a37824f930ed823"
+        },
+        {
+          "path": "flight_data_cleaned.csv",
+          "bytes": 41419704,
+          "sha256": "f928d83c1b8e6c556db76e8288f5c46ccb94bdf74d7123e222dd9dded24ccb89"
+        }
+      ],
+      "training_eligible": false,
+      "role": "audit_only_not_training",
+      "checked_at_utc": "2026-11-15T16:27:54.939920+00:00"
+    },
+    {
+      "source": "youssefkhaled117/flight-price-cleaned",
+      "source_url": "https://www.kaggle.com/datasets/youssefkhaled117/flight-price-cleaned",
+      "download_url": "https://www.kaggle.com/api/v1/datasets/download/youssefkhaled117/flight-price-cleaned?datasetVersionNumber=1",
+      "version": 1,
+      "declared_license": "CC0: Public Domain",
+      "source_updated": "2026-03-17T19:32:18.537Z",
+      "metadata_sha256": "17a5bc6aa14210d551562f2472c91fcc78dabfbb678391a030f417a603a0d7e2",
+      "archive_sha256": "d8db45c3d6f2c81d16162aa07bb53232ed406aa4d2d65c12a94518375dbc9ad6",
+      "archive_bytes": 1759828,
+      "files": [
+        {
+          "path": "flight_data_cleaned.csv",
+          "bytes": 23742760,
+          "sha256": "328f8c04c163bddd4a8428ea7c63caa5f141327a344d52280ab43cb5638ed663"
+        }
+      ],
+      "training_eligible": false,
+      "role": "audit_only_not_training",
+      "checked_at_utc": "2026-11-15T16:27:58.121597+00:00"
+    },
+    {
+      "source": "rohitgrewal/airlines-flights-data",
+      "source_url": "https://www.kaggle.com/datasets/rohitgrewal/airlines-flights-data",
+      "download_url": "https://www.kaggle.com/api/v1/datasets/download/rohitgrewal/airlines-flights-data?datasetVersionNumber=1",
+      "version": 1,
+      "declared_license": "Database: Open Database, Contents: Database Contents",
+      "source_updated": "2025-07-29T09:16:00.463Z",
+      "metadata_sha256": "23abab4356be7813da509451a362992b74f4a5513b76de861e6dc93a4201d63d",
+      "archive_sha256": "75f905e0231ca5e25444d2b07b802aa04a4ea538406f83dab42caa18769b5da0",
+      "archive_bytes": 2440299,
+      "files": [
+        {
+          "path": "airlines_flights_data.csv",
+          "bytes": 24946485,
+          "sha256": "bed7525ebf278c6c5ff903a7bc58e212d1816fb96a50b7859b5c44886db9627f"
+        }
+      ],
+      "training_eligible": false,
+      "role": "audit_only_not_training",
+      "checked_at_utc": "2026-11-15T16:28:01.634645+00:00"
+    }
+  ]
+}

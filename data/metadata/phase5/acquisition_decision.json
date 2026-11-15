@@ -1,0 +1,33 @@
+{
+  "reviewed_at_utc": "2026-11-15T16:45:51.891945+00:00",
+  "status": "blocked_no_qualified_target",
+  "verified_one_way_observations": 0,
+  "verified_round_trip_observations": 0,
+  "approved_sources": 0,
+  "customer_fare_prediction_available": false,
+  "training_automatically_enabled": false,
+  "retraining_performed": false,
+  "new_verified_airports": 0,
+  "new_verified_routes": 0,
+  "reason": "No inspected source establishes the full all-in INR single-adult booking target with suitable provenance and reuse rights. No compatible new target has qualified.",
+  "current_research_airports": [
+    "AMD",
+    "BLR",
+    "BOM",
+    "CCU",
+    "DEL",
+    "HYD",
+    "MAA"
+  ],
+  "historical_observed_airports": 88,
+  "historical_directional_routes": 720,
+  "research_directional_routes": 42,
+  "eligible_research_profiles": 592,
+  "production_eligible_airports": 0,
+  "manual_intake": {
+    "template": "/acquisition/template.csv",
+    "schema": "/acquisition/schema",
+    "sample_observations": 0,
+    "permission_and_evidence_review_required": true
+  }
+}

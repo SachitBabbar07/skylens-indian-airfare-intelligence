@@ -1,3 +1,5 @@
+import {AcquisitionStatus} from './AcquisitionStatus';
+
 export const FARE_UNAVAILABLE_MESSAGE = "Fare prediction is temporarily unavailable because the training data's price definition has not yet been verified.";
 export const UNIT_LABEL = 'unverified model-output units';
 export const MISSING_EVIDENCE = [
@@ -66,6 +68,7 @@ export function ResearchOverview({counts, eligibleAirports, eligibleProfiles, on
         ].map(([label, value]) => <div key={String(label)}><strong>{typeof value === 'number' ? value.toLocaleString('en-IN') : '—'}</strong><span>{label}</span></div>)}
       </div>
     </section>
+    <AcquisitionStatus/>
   </>;
 }
 

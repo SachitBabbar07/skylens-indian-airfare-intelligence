@@ -1,0 +1,135 @@
+{
+  "baseline_rows": 300153,
+  "normalization": "case/separators and eight-decimal numeric key formatting only; no price conversion",
+  "training_automatically_enabled": false,
+  "candidates": [
+    {
+      "file": "data/raw/phase5/rohitgrewal__airlines-flights-data/airlines_flights_data.csv",
+      "sha256": "bed7525ebf278c6c5ff903a7bc58e212d1816fb96a50b7859b5c44886db9627f",
+      "rows": 300153,
+      "compared_fields": [
+        "airline",
+        "flight",
+        "source_city",
+        "departure_time",
+        "stops",
+        "arrival_time",
+        "destination_city",
+        "class",
+        "duration",
+        "days_left",
+        "price"
+      ],
+      "matching_baseline_keys": 295397,
+      "multiset_overlap_rows": 295397,
+      "ordered_keys_identical": false,
+      "missing": {
+        "index": 0,
+        "airline": 0,
+        "flight": 0,
+        "source_city": 0,
+        "departure_time": 0,
+        "stops": 0,
+        "arrival_time": 0,
+        "destination_city": 0,
+        "class": 0,
+        "duration": 0,
+        "days_left": 0,
+        "price": 0
+      },
+      "currency_field_present": false,
+      "observation_timestamp_field_present": false,
+      "ordered_other_ten_fields_identical": true,
+      "flight_label_differences": 4756
+    },
+    {
+      "file": "data/raw/phase5/youssefkhaled117__flight-price-cleaned/flight_data_cleaned.csv",
+      "sha256": "328f8c04c163bddd4a8428ea7c63caa5f141327a344d52280ab43cb5638ed663",
+      "rows": 300153,
+      "compared_fields": [
+        "airline",
+        "source_city",
+        "departure_time",
+        "stops",
+        "arrival_time",
+        "destination_city",
+        "class",
+        "duration",
+        "days_left",
+        "price"
+      ],
+      "matching_baseline_keys": 300153,
+      "multiset_overlap_rows": 300153,
+      "ordered_keys_identical": true,
+      "missing": {
+        "airline": 0,
+        "flight": 0,
+        "source_city": 0,
+        "departure_time": 0,
+        "stops": 0,
+        "arrival_time": 0,
+        "destination_city": 0,
+        "class": 0,
+        "duration": 0,
+        "days_left": 0,
+        "price": 0,
+        "duration_category": 0
+      },
+      "currency_field_present": false,
+      "observation_timestamp_field_present": false
+    },
+    {
+      "file": "data/raw/phase5/usmankhankk__india-domestic-flight-prices/flight_data_cleaned.csv",
+      "sha256": "f928d83c1b8e6c556db76e8288f5c46ccb94bdf74d7123e222dd9dded24ccb89",
+      "rows": 297936,
+      "compared_fields": [
+        "airline",
+        "source_city",
+        "departure_time",
+        "stops",
+        "arrival_time",
+        "destination_city",
+        "class",
+        "days_left",
+        "price"
+      ],
+      "matching_baseline_keys": 297809,
+      "multiset_overlap_rows": 297809,
+      "ordered_keys_identical": false,
+      "missing": {
+        "airline": 0,
+        "source_city": 0,
+        "departure_time": 0,
+        "stops": 0,
+        "arrival_time": 0,
+        "destination_city": 0,
+        "class": 0,
+        "days_left": 0,
+        "price": 0,
+        "duration_minutes": 0,
+        "duration_hours": 12,
+        "price_outlier_iqr": 0,
+        "price_capped": 0,
+        "duration_minutes_outlier_iqr": 0,
+        "duration_minutes_capped": 0,
+        "route": 0,
+        "duration_bucket": 0
+      },
+      "currency_field_present": false,
+      "observation_timestamp_field_present": false,
+      "capped_price_rows": 123,
+      "target_equals_capped_price": true
+    }
+  ],
+  "ixigo_export_audit": {
+    "sha256": "04c7234c0dc2ee75d52db44af1f6e71e51109faa6e2cf2ce2dcb83b4f6df924a",
+    "rows": 26018,
+    "full_breakdown_rows": 0,
+    "missing_components": {
+      "base_fare": 26018,
+      "taxes_statutory": 26018,
+      "udf_airport_fees": 26018,
+      "convenience_fee": 26018
+    }
+  }
+}

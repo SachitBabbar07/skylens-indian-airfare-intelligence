@@ -1,5 +1,12 @@
 # Changelog
 
+## Phase 5 — 2026-11-15
+
+- Inspected six additional file distributions and original source/terms documentation. Recorded actual schemas, hashes, duplicate lineage, transformed targets, missing definitions and licensing blockers; no new target qualified.
+- Added pinned audit-only archive acquisition with checksum/path/expansion checks and reproducible quality comparison. Canonical data, trained models, fitting thresholds and withheld intervals remain unchanged.
+- Exposed read-only acquisition status and empty manual CSV/schema downloads. Added optional license/reuse assertions and validated known booking lead without relaxing evidence/permission gates. Customer fare prediction remains disabled.
+- Verification and delivery results are recorded in the Phase 5 final findings after execution; hosted CI remains gated.
+
 ## Critical product correction — 2026-11-15
 
 - Replaced the prominent fare card with Research Mode, the exact unavailable customer message and explicit missing evidence. Raw output is confined to acknowledged research diagnostics in unverified model-output units; SHAP has no rupee interpretation.

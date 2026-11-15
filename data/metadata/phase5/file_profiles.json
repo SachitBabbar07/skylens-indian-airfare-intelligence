@@ -1,0 +1,693 @@
+[
+  {
+    "path": "data/raw/phase5/rohitgrewal__airlines-flights-data/airlines_flights_data.csv",
+    "sha256": "bed7525ebf278c6c5ff903a7bc58e212d1816fb96a50b7859b5c44886db9627f",
+    "rows": 300153,
+    "columns": [
+      "index",
+      "airline",
+      "flight",
+      "source_city",
+      "departure_time",
+      "stops",
+      "arrival_time",
+      "destination_city",
+      "class",
+      "duration",
+      "days_left",
+      "price"
+    ],
+    "missing": {
+      "index": 0,
+      "airline": 0,
+      "flight": 0,
+      "source_city": 0,
+      "departure_time": 0,
+      "stops": 0,
+      "arrival_time": 0,
+      "destination_city": 0,
+      "class": 0,
+      "duration": 0,
+      "days_left": 0,
+      "price": 0
+    },
+    "exact_duplicate_rows": 0,
+    "endpoint_labels": [
+      "Bangalore",
+      "Chennai",
+      "Delhi",
+      "Hyderabad",
+      "Kolkata",
+      "Mumbai"
+    ],
+    "directional_routes": 30,
+    "airline": {
+      "unique": 6,
+      "min": "AirAsia",
+      "max": "Vistara",
+      "values": [
+        "AirAsia",
+        "Air_India",
+        "GO_FIRST",
+        "Indigo",
+        "SpiceJet",
+        "Vistara"
+      ]
+    },
+    "class": {
+      "unique": 2,
+      "min": "Business",
+      "max": "Economy",
+      "values": [
+        "Business",
+        "Economy"
+      ]
+    }
+  },
+  {
+    "path": "data/raw/phase5/usmankhankk__india-domestic-flight-prices/flight_data_cleaned.csv",
+    "sha256": "f928d83c1b8e6c556db76e8288f5c46ccb94bdf74d7123e222dd9dded24ccb89",
+    "rows": 297936,
+    "columns": [
+      "airline",
+      "source_city",
+      "departure_time",
+      "stops",
+      "arrival_time",
+      "destination_city",
+      "class",
+      "days_left",
+      "price",
+      "duration_minutes",
+      "duration_hours",
+      "price_outlier_iqr",
+      "price_capped",
+      "duration_minutes_outlier_iqr",
+      "duration_minutes_capped",
+      "route",
+      "duration_bucket"
+    ],
+    "missing": {
+      "airline": 0,
+      "source_city": 0,
+      "departure_time": 0,
+      "stops": 0,
+      "arrival_time": 0,
+      "destination_city": 0,
+      "class": 0,
+      "days_left": 0,
+      "price": 0,
+      "duration_minutes": 0,
+      "duration_hours": 12,
+      "price_outlier_iqr": 0,
+      "price_capped": 0,
+      "duration_minutes_outlier_iqr": 0,
+      "duration_minutes_capped": 0,
+      "route": 0,
+      "duration_bucket": 0
+    },
+    "exact_duplicate_rows": 4,
+    "endpoint_labels": [
+      "bangalore",
+      "chennai",
+      "delhi",
+      "hyderabad",
+      "kolkata",
+      "mumbai"
+    ],
+    "directional_routes": 30,
+    "airline": {
+      "unique": 6,
+      "min": "air_india",
+      "max": "vistara",
+      "values": [
+        "air_india",
+        "airasia",
+        "go_first",
+        "indigo",
+        "spicejet",
+        "vistara"
+      ]
+    },
+    "class": {
+      "unique": 2,
+      "min": "business",
+      "max": "economy",
+      "values": [
+        "business",
+        "economy"
+      ]
+    }
+  },
+  {
+    "path": "data/raw/phase5/youssefkhaled117__flight-price-cleaned/flight_data_cleaned.csv",
+    "sha256": "328f8c04c163bddd4a8428ea7c63caa5f141327a344d52280ab43cb5638ed663",
+    "rows": 300153,
+    "columns": [
+      "airline",
+      "flight",
+      "source_city",
+      "departure_time",
+      "stops",
+      "arrival_time",
+      "destination_city",
+      "class",
+      "duration",
+      "days_left",
+      "price",
+      "duration_category"
+    ],
+    "missing": {
+      "airline": 0,
+      "flight": 0,
+      "source_city": 0,
+      "departure_time": 0,
+      "stops": 0,
+      "arrival_time": 0,
+      "destination_city": 0,
+      "class": 0,
+      "duration": 0,
+      "days_left": 0,
+      "price": 0,
+      "duration_category": 0
+    },
+    "exact_duplicate_rows": 0,
+    "endpoint_labels": [
+      "Bangalore",
+      "Chennai",
+      "Delhi",
+      "Hyderabad",
+      "Kolkata",
+      "Mumbai"
+    ],
+    "directional_routes": 30,
+    "airline": {
+      "unique": 6,
+      "min": "AirAsia",
+      "max": "Vistara",
+      "values": [
+        "AirAsia",
+        "Air_India",
+        "GO_FIRST",
+        "Indigo",
+        "SpiceJet",
+        "Vistara"
+      ]
+    },
+    "class": {
+      "unique": 2,
+      "min": "Business",
+      "max": "Economy",
+      "values": [
+        "Business",
+        "Economy"
+      ]
+    }
+  },
+  {
+    "path": "data/raw/phase5/HybridAni__AirFare-EDA/historical/historical_cleaned.csv",
+    "sha256": "3f7a57c112f7bd20115219f891c50890676530716196f35683dbaa4ec2a0679d",
+    "rows": 1872,
+    "columns": [
+      "origin",
+      "destination",
+      "airline",
+      "flight_number",
+      "travel_date",
+      "departure_time",
+      "fare_class",
+      "total_fare",
+      "base_fare",
+      "taxes",
+      "convenience_fee",
+      "booking_window",
+      "scrape_timestamp"
+    ],
+    "missing": {
+      "origin": 0,
+      "destination": 0,
+      "airline": 0,
+      "flight_number": 0,
+      "travel_date": 0,
+      "departure_time": 0,
+      "fare_class": 0,
+      "total_fare": 0,
+      "base_fare": 0,
+      "taxes": 0,
+      "convenience_fee": 0,
+      "booking_window": 0,
+      "scrape_timestamp": 0
+    },
+    "exact_duplicate_rows": 0,
+    "endpoint_labels": [
+      "BLR",
+      "BOM",
+      "DEL",
+      "HYD"
+    ],
+    "directional_routes": 4,
+    "airline": {
+      "unique": 1,
+      "min": "Air India",
+      "max": "Air India",
+      "values": [
+        "Air India"
+      ]
+    },
+    "fare_class": {
+      "unique": 1,
+      "min": "Economy",
+      "max": "Economy",
+      "values": [
+        "Economy"
+      ]
+    },
+    "scrape_timestamp": {
+      "unique": 49,
+      "min": "2026-09-03T22:22:00",
+      "max": "2026-09-05T23:21:00",
+      "timezone": "undocumented; no UTC conversion inferred"
+    },
+    "travel_date": {
+      "unique": 13,
+      "min": "2026-09-10T00:00:00",
+      "max": "2026-10-20T00:00:00",
+      "values": [
+        "10/18/2026",
+        "10/19/2026",
+        "10/20/2026",
+        "10/3/2026",
+        "10/4/2026",
+        "10/5/2026",
+        "10/6/2026",
+        "9/10/2026",
+        "9/11/2026",
+        "9/12/2026",
+        "9/13/2026",
+        "9/19/2026",
+        "9/20/2026"
+      ]
+    },
+    "booking_window": {
+      "unique": 4,
+      "min": "15",
+      "max": "7",
+      "values": [
+        "15",
+        "30",
+        "45",
+        "7"
+      ]
+    }
+  },
+  {
+    "path": "data/raw/phase5/HybridAni__AirFare-EDA/input/AirIndia_2011flights_cleaned.csv",
+    "sha256": "a4cb5fc02c1934372e4f78275bbc54cd123bd09e1b4cdd13a579e7875568cee4",
+    "rows": 2010,
+    "columns": [
+      "origin",
+      "destination",
+      "airline",
+      "flight_number",
+      "travel_date",
+      "departure_time",
+      "fare_class",
+      "total_fare",
+      "base_fare",
+      "taxes",
+      "convenience_fee",
+      "booking_window",
+      "scrape_timestamp"
+    ],
+    "missing": {
+      "origin": 0,
+      "destination": 0,
+      "airline": 0,
+      "flight_number": 0,
+      "travel_date": 0,
+      "departure_time": 0,
+      "fare_class": 0,
+      "total_fare": 0,
+      "base_fare": 0,
+      "taxes": 0,
+      "convenience_fee": 0,
+      "booking_window": 0,
+      "scrape_timestamp": 0
+    },
+    "exact_duplicate_rows": 138,
+    "endpoint_labels": [
+      "BLR",
+      "BOM",
+      "DEL",
+      "HYD"
+    ],
+    "directional_routes": 4,
+    "airline": {
+      "unique": 1,
+      "min": "Air India",
+      "max": "Air India",
+      "values": [
+        "Air India"
+      ]
+    },
+    "fare_class": {
+      "unique": 1,
+      "min": "Economy",
+      "max": "Economy",
+      "values": [
+        "Economy"
+      ]
+    },
+    "scrape_timestamp": {
+      "unique": 49,
+      "min": "2026-09-03T22:22:00",
+      "max": "2026-09-05T23:21:00",
+      "timezone": "undocumented; no UTC conversion inferred"
+    },
+    "travel_date": {
+      "unique": 13,
+      "min": "2026-09-10T00:00:00",
+      "max": "2026-10-20T00:00:00",
+      "values": [
+        "10/18/2026",
+        "10/19/2026",
+        "10/20/2026",
+        "10/3/2026",
+        "10/4/2026",
+        "10/5/2026",
+        "10/6/2026",
+        "9/10/2026",
+        "9/11/2026",
+        "9/12/2026",
+        "9/13/2026",
+        "9/19/2026",
+        "9/20/2026"
+      ]
+    },
+    "booking_window": {
+      "unique": 4,
+      "min": "15",
+      "max": "7",
+      "values": [
+        "15",
+        "30",
+        "45",
+        "7"
+      ]
+    }
+  },
+  {
+    "path": "data/raw/phase5/AyushyaRanjan__APIx/exports/real_cleaned_fares.csv",
+    "sha256": "520d842f67b38349c039668c0b8f1ef8a70f1cc06bf797d7a7f66a2c4b522ffc",
+    "rows": 142,
+    "columns": [
+      "id",
+      "raw_quote_id",
+      "observation_date",
+      "origin_iata",
+      "destination_iata",
+      "carrier_iata",
+      "flight_number",
+      "departure_datetime",
+      "arrival_datetime",
+      "fare_class",
+      "cabin_class",
+      "total_fare_inr",
+      "base_fare_inr",
+      "taxes_statutory_inr",
+      "udf_airport_fees_inr",
+      "convenience_fee_inr",
+      "has_full_breakdown",
+      "advance_purchase_days",
+      "is_nonstop",
+      "cleaning_rules_applied",
+      "cleaned_at",
+      "travel_date",
+      "source",
+      "is_outlier",
+      "is_imputed",
+      "cleaning_note"
+    ],
+    "missing": {
+      "id": 0,
+      "raw_quote_id": 0,
+      "observation_date": 0,
+      "origin_iata": 0,
+      "destination_iata": 0,
+      "carrier_iata": 0,
+      "flight_number": 0,
+      "departure_datetime": 0,
+      "arrival_datetime": 0,
+      "fare_class": 0,
+      "cabin_class": 0,
+      "total_fare_inr": 0,
+      "base_fare_inr": 142,
+      "taxes_statutory_inr": 142,
+      "udf_airport_fees_inr": 142,
+      "convenience_fee_inr": 142,
+      "has_full_breakdown": 0,
+      "advance_purchase_days": 0,
+      "is_nonstop": 0,
+      "cleaning_rules_applied": 0,
+      "cleaned_at": 0,
+      "travel_date": 0,
+      "source": 0,
+      "is_outlier": 0,
+      "is_imputed": 0,
+      "cleaning_note": 142
+    },
+    "exact_duplicate_rows": 0,
+    "endpoint_labels": [
+      "BLR",
+      "BOM",
+      "CCU",
+      "DEL",
+      "HYD",
+      "MAA"
+    ],
+    "directional_routes": 10,
+    "carrier_iata": {
+      "unique": 5,
+      "min": "6E",
+      "max": "SG",
+      "values": [
+        "6E",
+        "AI",
+        "IX",
+        "QP",
+        "SG"
+      ]
+    },
+    "cabin_class": {
+      "unique": 1,
+      "min": "Y",
+      "max": "Y",
+      "values": [
+        "Y"
+      ]
+    },
+    "fare_class": {
+      "unique": 1,
+      "min": "Y",
+      "max": "Y",
+      "values": [
+        "Y"
+      ]
+    },
+    "observation_date": {
+      "unique": 3,
+      "min": "2026-09-13",
+      "max": "2026-09-15",
+      "values": [
+        "2026-09-13",
+        "2026-09-14",
+        "2026-09-15"
+      ]
+    },
+    "travel_date": {
+      "unique": 20,
+      "min": "2026-09-13",
+      "max": "2026-10-30"
+    }
+  },
+  {
+    "path": "data/raw/phase5/AyushyaRanjan__APIx/exports/real_raw_quotes.csv",
+    "sha256": "04c7234c0dc2ee75d52db44af1f6e71e51109faa6e2cf2ce2dcb83b4f6df924a",
+    "rows": 26018,
+    "columns": [
+      "id",
+      "source",
+      "fetched_at",
+      "observation_date",
+      "origin_iata",
+      "destination_iata",
+      "carrier_iata",
+      "flight_number",
+      "departure_datetime",
+      "arrival_datetime",
+      "fare_class",
+      "cabin_class",
+      "total_fare",
+      "currency",
+      "base_fare",
+      "taxes_statutory",
+      "udf_airport_fees",
+      "convenience_fee",
+      "has_full_breakdown",
+      "advance_purchase_days",
+      "is_nonstop",
+      "raw_payload"
+    ],
+    "missing": {
+      "id": 0,
+      "source": 0,
+      "fetched_at": 0,
+      "observation_date": 0,
+      "origin_iata": 0,
+      "destination_iata": 0,
+      "carrier_iata": 0,
+      "flight_number": 0,
+      "departure_datetime": 0,
+      "arrival_datetime": 0,
+      "fare_class": 0,
+      "cabin_class": 0,
+      "total_fare": 0,
+      "currency": 0,
+      "base_fare": 26018,
+      "taxes_statutory": 26018,
+      "udf_airport_fees": 26018,
+      "convenience_fee": 26018,
+      "has_full_breakdown": 0,
+      "advance_purchase_days": 0,
+      "is_nonstop": 0,
+      "raw_payload": 0
+    },
+    "exact_duplicate_rows": 0,
+    "endpoint_labels": [
+      "BLR",
+      "BOM",
+      "CCU",
+      "DEL",
+      "HYD",
+      "MAA"
+    ],
+    "directional_routes": 10,
+    "carrier_iata": {
+      "unique": 5,
+      "min": "6E",
+      "max": "SG",
+      "values": [
+        "6E",
+        "AI",
+        "IX",
+        "QP",
+        "SG"
+      ]
+    },
+    "currency": {
+      "unique": 1,
+      "min": "INR",
+      "max": "INR",
+      "values": [
+        "INR"
+      ]
+    },
+    "cabin_class": {
+      "unique": 1,
+      "min": "Y",
+      "max": "Y",
+      "values": [
+        "Y"
+      ]
+    },
+    "fare_class": {
+      "unique": 1,
+      "min": "Y",
+      "max": "Y",
+      "values": [
+        "Y"
+      ]
+    },
+    "observation_date": {
+      "unique": 3,
+      "min": "2026-09-13",
+      "max": "2026-09-15",
+      "values": [
+        "2026-09-13",
+        "2026-09-14",
+        "2026-09-15"
+      ]
+    }
+  },
+  {
+    "path": "data/raw/phase5/AyushyaRanjan__APIx/exports/sources.csv",
+    "sha256": "77d76ab4ad0fccb4d8d42794092dcf4e6499a5deb1429545f25ecf7c71b30bc0",
+    "rows": 11,
+    "columns": [
+      "name",
+      "description",
+      "is_active",
+      "created_at"
+    ],
+    "missing": {
+      "name": 0,
+      "description": 0,
+      "is_active": 0,
+      "created_at": 0
+    },
+    "exact_duplicate_rows": 0
+  },
+  {
+    "path": "data/raw/phase5/Ayesh17__Flight_Price/combined_data/combined_flight_data.csv",
+    "sha256": "9139a652f012ae21185042bcaf1fbfc3d73f5a5acb15ff8b64e83a90cd300675",
+    "rows": 97916,
+    "columns": [
+      "Origin",
+      "Destination",
+      "Airline(s)",
+      "Price ($)",
+      "Num Stops",
+      "Time to Travel",
+      "Access-Departure Days",
+      "Travel Month",
+      "Travel Day of Year",
+      "Travel Hour"
+    ],
+    "directional_routes": 30,
+    "currency_label": "Price ($); exact denomination not established by this file alone",
+    "training_eligible": false,
+    "encoded_endpoints": [
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0
+    ],
+    "geography": "Combined endpoints are encoded; no country mapping inferred. Inspected raw file is ATL-DEN, US."
+  },
+  {
+    "path": "data/raw/phase5/Ayesh17__Flight_Price/extracted_data/flight_data_range_ATL_to_DEN.csv",
+    "source_url": "https://github.com/Ayesh17/Flight_Price",
+    "download_url": "https://raw.githubusercontent.com/Ayesh17/Flight_Price/2c41ec08ca67f6e7dea5f2c698367beb7847bca2/extracted_data/flight_data_range_ATL_to_DEN.csv",
+    "commit": "2c41ec08ca67f6e7dea5f2c698367beb7847bca2",
+    "sha256": "0af1c28b7b0c8a58b01390e266b001085849b6ffd0c6feaf1fe5922304465967",
+    "rows": 3919,
+    "columns": [
+      "Departure datetime",
+      "Arrival datetime",
+      "Origin",
+      "Destination",
+      "Airline(s)",
+      "Travel Time",
+      "Price ($)",
+      "Num Stops",
+      "Layover",
+      "Access Date",
+      "CO2 Emission (kg)",
+      "Emission Diff (%)"
+    ],
+    "geography": "Inspected source file is ATL to DEN (US); not Indian domestic",
+    "training_eligible": false
+  }
+]
