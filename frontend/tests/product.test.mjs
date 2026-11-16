@@ -12,6 +12,8 @@ after(() => server.close());
 const views = await server.ssrLoadModule('/src/ResearchViews.tsx');
 const acquisition = await server.ssrLoadModule('/src/AcquisitionStatus.tsx');
 const directory = await server.ssrLoadModule('/src/EvidenceDirectory.tsx');
+const {findAirports} = await server.ssrLoadModule('/src/flights/AirportAutocomplete.tsx');
+const {FlightResults, formatFare, sortResults} = await server.ssrLoadModule('/src/flights/FlightResults.tsx');
 const render = (component, props) => renderToStaticMarkup(React.createElement(component, props));
 // Explicit software fixtures, never training data or displayed sample fares.
 const result = {estimate: 12345.6789, currency: null, unit: 'source fare units', research_only: true,
@@ -20,6 +22,59 @@ const result = {estimate: 12345.6789, currency: null, unit: 'source fare units',
 const explanation = {estimate: 12345.6789, baseline: 12000, currency: null, unit: 'source fare units',
   research_only: true, unit_verification: 'unverified', additive_error: 0,
   contributions: [{feature: 'software_fixture', value: 1, contribution: 345.6789}]};
+
+test('the autocomplete finds directory airports by city, airport name and IATA and excludes the other endpoint', () => {
+  const airports = [
+    {code: 'PNQ', city: 'Pune', name: 'Pune International Airport', has_historical_evidence: true},
+    {code: 'AYJ', city: 'Faizabad', name: 'Maharshi Valmiki International Airport', has_historical_evidence: false},
+  ];
+  for (const query of [' ayj ', 'faizabad', 'Valmiki']) assert.equal(findAirports(airports, query)[0].code, 'AYJ');
+  assert.deepEqual(findAirports(airports, 'pune', 'PNQ'), []);
+  assert.deepEqual(findAirports(airports, 'absent'), []);
+});
+
+const fixtureFare = {amount: '1234.5', currency: 'INR', basis: 'party_total', taxes: 'included', fees: 'unknown'};
+const fixtureLeg = {origin: 'PNQ', destination: 'DEL', departure: '2027-04-05T08:00:00+05:30',
+  arrival: '2027-04-05T10:00:00+05:30', airlines: ['Software fixture'], duration_minutes: 120, stops: 0};
+const fixtureResult = {id: 'quote', source: 'live_quote', availability: 'available', source_name: 'Software fixture',
+  retrieved_at: '2027-04-01T12:00:00Z', journey: 'one_way', cabin: 'economy', travellers: {adults: 2, children: 0, infants: 0},
+  legs: [fixtureLeg], fare: fixtureFare};
+
+test('fare formatting retains original currencies and requires exact traveller total basis', () => {
+  assert.match(formatFare(fixtureFare), /\u20b91,234\.50/);
+  assert.match(formatFare({...fixtureFare, currency: 'USD'}), /^USD\s1,234\.50$/);
+  for (const change of [{currency: ''}, {currency: 'XXX'}, {amount: 'NaN'}, {basis: undefined}]) {
+    assert.equal(formatFare({...fixtureFare, ...change}), null);
+  }
+});
+
+test('live quotes keep provenance, each itinerary and fare, and sort only comparable prices', () => {
+  const lower = {...fixtureResult, id: 'lower', fare: {...fixtureFare, amount: '998'},
+    legs: [{...fixtureLeg, departure: '2027-04-05T07:00:00+05:30', duration_minutes: 100}]};
+  for (const criterion of ['price', 'duration', 'departure']) {
+    assert.equal(sortResults([fixtureResult, lower], criterion)[0].id, 'lower');
+  }
+  const usd = {...lower, fare: {...lower.fare, currency: 'USD'}};
+  assert.equal(sortResults([fixtureResult, usd], 'price')[0].id, 'quote');
+  const html = render(FlightResults, {state: {status: 'success', results: [fixtureResult, usd], query: fixtureLeg}, retry() {}});
+  assert.match(html, /2 results/);
+  assert.match(html, /Live Fare Quote/);
+  assert.match(html, /Total for 2 travellers/);
+  assert.match(html, /original currencies/);
+  assert.doesNotMatch(html, /Lowest fare/);
+});
+
+test('research metadata stays outside fares and unavailable states have no price', () => {
+  const estimate = {...fixtureResult, source: 'ml_estimate'};
+  const html = render(FlightResults, {state: {status: 'success', results: [estimate], query: fixtureLeg}, retry() {}});
+  assert.match(html, /ML Estimated Fare/);
+  assert.doesNotMatch(html, /Live Fare Quote|Non-stop/);
+  for (const state of [{status: 'idle'}, {status: 'loading'}, {status: 'success', results: []},
+    {status: 'error', message: 'Provider timed out', retryable: true}]) {
+    const rendered = render(FlightResults, {state, unavailable: true, retry() {}});
+    assert.doesNotMatch(rendered, /\u20b9|result-price/);
+  }
+});
 
 test('default overview disables customer prediction and has no raw amount or price card', () => {
   const html = render(views.ResearchOverview, {counts: {}, eligibleAirports: 0, eligibleProfiles: 0, onResearch() {}});

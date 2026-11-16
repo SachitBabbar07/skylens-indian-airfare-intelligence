@@ -13,12 +13,20 @@ from backend.app.services import ModelStore
 from backend.app.capabilities import router as capability_router
 from backend.app.acquisition import router as acquisition_router
 from backend.app.evidence import historical_evidence
+from backend.app.fare_service import FareService
+from backend.app.flight_search import load_airports, router as flight_router
 from skylens.prepare import ROOT
 LOG=logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app):
     app.state.store=ModelStore()
+    app.state.fare_service=FareService()
+    try:
+        app.state.flight_airports=load_airports(ROOT)
+    except (OSError, ValueError, KeyError):
+        LOG.warning('Flight airport directory could not be loaded')
+        app.state.flight_airports={}
     try:
         app.state.evidence=historical_evidence(ROOT)
     except HTTPException as exc:
@@ -28,7 +36,7 @@ async def lifespan(app):
              len(app.state.store.models),len(app.state.store.errors))
     yield
 
-app=FastAPI(title='SkyLens · Historical Fare Research',version='0.1.0',lifespan=lifespan,description='Research only. No verified current INR total-fare or round-trip predictor qualified from the audited data.')
+app=FastAPI(title='SkyLens · Indian Flight Search',version='0.1.0',lifespan=lifespan,description='Indian airport and flight search, with separate historical fare research. Customer prices require a verified fare source.')
 origins=[value.strip() for value in os.getenv('SKYLENS_CORS_ORIGINS','http://127.0.0.1:5173,http://localhost:5173').split(',') if value.strip()]
 if '*' in origins:
     raise RuntimeError('SKYLENS_CORS_ORIGINS requires explicit origins; wildcard access is unsupported.')
@@ -36,6 +44,7 @@ app.add_middleware(CORSMiddleware,allow_origins=origins,allow_credentials=False,
 app.add_middleware(GZipMiddleware,minimum_size=1024,compresslevel=4)
 app.include_router(capability_router)
 app.include_router(acquisition_router)
+app.include_router(flight_router)
 
 def store(request):return request.app.state.store
 

@@ -2,7 +2,17 @@
 
 Run `./run.ps1`. The built application is at [port 8000](http://127.0.0.1:8000); generated documentation is at [/docs](http://127.0.0.1:8000/docs).
 
-## Customer capability is unavailable
+## Flight search
+
+- `GET /flights/airports` lists Indian IATA-coded airport records with name, city, state and a historical evidence flag. Directory entries describe known airports. Route support comes from a registered source.
+- `GET /flights/capabilities` reports the travel options for each registered source and today's date in India. Both `live_quotes` and `ml_estimates` are currently null.
+- `POST /flights/search` accepts origin and destination IATA codes, `journey` (`one_way` or `round_trip`), `departure_date`, `return_date` for round trips, `cabin` and `travellers` (`adults`, `children`, `infants`). Dates use `YYYY-MM-DD` and are validated in India Standard Time.
+
+`results` contains `live_quote` or `ml_estimate` records. Each price has a decimal amount, source currency, `party_total` basis, tax and fee status, cabin, exact travellers, source name and retrieval time. Live quotes also require available itineraries with matching airports and dates, named airlines and time-zone-aware times. `results: []` means a supported source completed the search and returned zero results. The API sends `Cache-Control: no-store` with fare responses.
+
+Application errors supply `detail.code` and `detail.message`. Status 422 covers invalid or unsupported input. Status 503 reports missing provider or authentication failure. Status 429 reports quota or rate limits, 504 reports timeouts, and 502 reports provider failures or incomplete responses. Provider authentication occurs on the backend. The published app has neither a live provider adapter nor an approved customer fare model.
+
+## Customer ML capability
 
 `GET /capabilities` reports `fare_estimation.available=false`, null currency, no approved model and the missing evidence. `POST /fare-estimate` returns **503** with:
 
@@ -28,4 +38,4 @@ Extra fields, incorrect types, invalid ranges and unsupported profiles produce 4
 
 `GET /research/evidence` serves the frozen dataset summaries and historical route counts by direction, cohort and cabin. It contains no prices and remains available independently of loaded models. The distinct route count is 720 across all three cohorts; the external challenge was not used in fitting. Directory records with a missing model cannot be marked eligible. Larger responses use gzip when the client accepts it. Validation failures report the field and reason without echoing the request body.
 
-CORS uses configured local origins in `SKYLENS_CORS_ORIGINS`. Vite proxies these endpoints, `/research`, `/capabilities`, `/fare-estimate`, `/docs` and `/openapi.json`. See the [source re-audit](../reports/price_target_reaudit_20261115.md) and [product correction](../reports/product_correction_20261115.md).
+CORS uses configured local origins in `SKYLENS_CORS_ORIGINS`. Vite proxies these endpoints, `/flights`, `/research/`, `/capabilities`, `/fare-estimate`, `/docs` and `/openapi.json`. The Research page is served at `/research.html`. [Source re-audit](../reports/price_target_reaudit_20261115.md) · [Product correction](../reports/product_correction_20261115.md)

@@ -1,8 +1,12 @@
-# SkyLens · Research Edition
+# SkyLens · Indian Flight Search
 
-SkyLens is a local research application for Indian domestic aviation. It connects a FastAPI backend, a React interface and two frozen CatBoost models to searchable airport and route evidence, saved evaluation metrics and native SHAP explanations.
+SkyLens is a React and FastAPI application for Indian domestic flight search. On the Flights page, you can look up 165 Indian IATA-coded airports by city, airport name or code, swap airports and choose one-way or round-trip travel dates, travellers and cabin.
 
-**Customer fare prediction is unavailable.** Source records do not establish currency, mandatory taxes and fees, total versus base fare, passenger basis or genuine booking type. Research outputs use **unverified model-output units**. SkyLens does not format them as INR or show them as quotes.
+**Live fares require an authorized provider.** This branch has no registered provider and returns an explicit unavailable response without a fare. The fare service validates itineraries, currency, traveller totals and provenance before serving a result. It preserves the source currency and shows ₹ only for INR. Provider credentials belong in the backend process environment. [.env.example](.env.example) · [Flight search API](docs/API_GUIDE.md#flight-search)
+
+## Research
+
+The separate Research page keeps both frozen CatBoost models, historical route evidence, saved evaluation metrics, native SHAP explanations and quote intake. The source records lack documented currency, tax and fee inclusion, total versus base fare, passenger basis and booking type. Customer ML estimates remain disabled. Research diagnostics use **unverified model-output units**.
 
 | Evidence | Coverage |
 | --- | ---: |
@@ -23,11 +27,15 @@ Set-Location D:\SkyLens
 .\run.ps1
 ```
 
-Open [SkyLens](http://127.0.0.1:8000) or [API health](http://127.0.0.1:8000/health). A separate development UI is optional: `npm --prefix frontend run dev -- --port 5173 --strictPort`. No account, API key, paid dependency or live fare service is required to launch. The app binds to loopback and loads the models without fitting them.
+The app binds to loopback and loads existing model artifacts at startup. Use `npm --prefix frontend run dev -- --port 5173 --strictPort` for the optional development UI. [Flights](http://127.0.0.1:8000) · [Research](http://127.0.0.1:8000/research.html) · [API health](http://127.0.0.1:8000/health)
 
 A GitHub clone includes source, metadata and reports. Native models, raw/processed datasets, private quote evidence and backups stay outside Git. [Installation and artifact restoration](docs/INSTALLATION.md) distinguishes the submission workspace from a source-only clone.
 
-## Release verification
+## Verification
+
+Run the Python suite with `PYTHONPATH=src`, `npm --prefix frontend test`, and `npm --prefix frontend run build`. Local checks cover the airport directory, one-way and round-trip validation, fare-source routing, malformed responses and price formatting. Fare-source tests use isolated software fixtures. [Flight search verification](reports/flight_search_verification.md)
+
+### v0.1.0 Research Edition
 
 - **160 Python tests**, including artifact integrity and split leakage checks; **101 portable tests** also passed in a separate minimal environment.
 - **15 frontend tests** and the production build passed. The live backend accepted 1,776 prediction checks and 592 SHAP checks across all 592 eligible profiles; 15 unsupported requests were rejected as expected.

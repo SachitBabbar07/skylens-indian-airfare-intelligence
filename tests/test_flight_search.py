@@ -1,0 +1,204 @@
+import asyncio
+from datetime import datetime, time, timedelta, timezone
+from pathlib import Path
+
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from backend.app.fare_service import FareError, FareService
+from backend.app.flight_fares import IST, SearchSupport
+from backend.app.flight_search import load_airports, router
+
+
+@pytest.fixture
+def client():
+    app = FastAPI()
+    app.include_router(router)
+    app.state.flight_airports = load_airports(Path(__file__).resolve().parents[1])
+    app.state.fare_service = FareService()
+    with TestClient(app) as test_client:
+        yield test_client
+
+
+@pytest.fixture
+def query():
+    day = datetime.now(IST).date() + timedelta(days=3)
+    return {'origin': 'PNQ', 'destination': 'DEL', 'journey': 'one_way', 'departure_date': day.isoformat(),
+            'cabin': 'economy', 'travellers': {'adults': 2, 'children': 0, 'infants': 0}}
+
+
+def quote(request):
+    def leg(origin, destination, day):
+        departure = datetime.combine(day, time(10), tzinfo=IST)
+        return {'origin': origin, 'destination': destination, 'departure': departure,
+                'arrival': departure + timedelta(hours=2), 'airlines': ['Contract fixture'],
+                'duration_minutes': 120, 'stops': 0}
+
+    legs = [leg(request.origin, request.destination, request.departure_date)]
+    if request.return_date:
+        legs.append(leg(request.destination, request.origin, request.return_date))
+    return {'id': 'test-only', 'source': 'live_quote', 'source_name': 'Contract fixture', 'availability': 'available',
+            'retrieved_at': datetime.now(timezone.utc), 'journey': request.journey, 'cabin': request.cabin,
+            'travellers': request.travellers, 'legs': legs,
+            'fare': {'amount': '12000.50', 'currency': 'INR', 'basis': 'party_total', 'taxes': 'included', 'fees': 'unknown'}}
+
+
+class Stub:
+    def __init__(self, respond, *, route_supported=True, support=None):
+        self.respond = respond
+        self.requests = []
+        self.route_supported = route_supported
+        self.support = support or SearchSupport(journeys=['one_way', 'round_trip'], cabins=['economy', 'business'])
+
+    def supports_route(self, request):
+        return self.route_supported
+
+    async def search(self, request):
+        self.requests.append(request)
+        return self.respond(request)
+
+
+def test_directory_and_unconfigured_search(client, query):
+    airports = {airport['code']: airport for airport in client.get('/flights/airports').json()['airports']}
+    assert len(airports) == 165
+    assert airports['PNQ']['city'] == 'Pune'
+    assert airports['PNQ']['has_historical_evidence'] is True
+    assert airports['AYJ']['has_historical_evidence'] is False
+    capabilities = client.get('/flights/capabilities').json()
+    assert capabilities['live_quotes'] is capabilities['ml_estimates'] is None
+    response = client.post('/flights/search', json=query)
+    assert response.status_code == 503
+    assert response.json()['detail']['code'] == 'unconfigured'
+    assert response.headers['Cache-Control'] == 'no-store'
+    assert 'results' not in response.json()
+
+
+@pytest.mark.parametrize('edits', [
+    {'origin': 'LHR'}, {'destination': 'PNQ'}, {'destination': 'typo'}, {'departure_date': '2000-01-01'},
+    {'journey': 'round_trip'}, {'journey': 'round_trip', 'return_date': '2000-01-01'},
+    {'return_date': '2099-01-01'}, {'travellers': {'adults': 0}}, {'travellers': {'adults': '2'}},
+    {'travellers': {'adults': 9, 'children': 1}}, {'travellers': {'adults': 1, 'infants': 2}}, {'cabin': 'executive'},
+])
+def test_validation_precedes_source_lookup(client, query, edits):
+    provider = Stub(lambda request: [quote(request)])
+    client.app.state.fare_service = FareService(provider=provider)
+    assert client.post('/flights/search', json=query | edits).status_code == 422
+    assert provider.requests == []
+
+
+@pytest.mark.parametrize('round_trip', [False, True])
+def test_preserves_available_quotes_and_currency(client, query, round_trip):
+    def respond(request):
+        first = quote(request)
+        second = quote(request)
+        second['id'] = 'second'
+        second['fare'].update(currency='USD', amount='154.25')
+        return [first, second]
+
+    provider = Stub(respond)
+    client.app.state.fare_service = FareService(provider=provider)
+    if round_trip:
+        query.update(journey='round_trip', return_date='2099-01-01', cabin='business')
+    response = client.post('/flights/search', json=query)
+    assert response.status_code == 200
+    assert response.headers['Cache-Control'] == 'no-store'
+    first, second = response.json()['results']
+    assert first['source'] == 'live_quote'
+    assert first['fare'] == {'amount': '12000.50', 'currency': 'INR', 'basis': 'party_total',
+                             'taxes': 'included', 'fees': 'unknown'}
+    assert second['fare']['amount'] == '154.25' and second['fare']['currency'] == 'USD'
+    assert first['travellers']['adults'] == 2 and first['cabin'] == query['cabin']
+    assert len(first['legs']) == (2 if round_trip else 1)
+    if round_trip:
+        assert first['legs'][1]['origin'] == query['destination']
+
+
+def test_empty_and_unsupported_are_distinct(client, query):
+    provider = Stub(lambda request: [], support=SearchSupport(journeys=['one_way'], cabins=['economy'], max_travellers=2))
+    client.app.state.fare_service = FareService(provider=provider)
+    assert client.post('/flights/search', json=query).json() == {'results': []}
+    for edits in [{'cabin': 'business'}, {'travellers': {'adults': 3}},
+                  {'travellers': {'adults': 1, 'children': 1}}, {'travellers': {'adults': 1, 'infants': 1}}]:
+        response = client.post('/flights/search', json=query | edits)
+        assert response.status_code == 422
+        assert response.json()['detail']['code'] == 'unsupported'
+    assert len(provider.requests) == 1
+
+
+@pytest.mark.parametrize('defect', ['currency', 'basis', 'amount', 'airport', 'stale', 'missing_leg',
+                                    'duplicate', 'shape', 'unknown_currency', 'wrong_party'])
+def test_bad_response_fails_closed(client, query, defect):
+    def respond(request):
+        value = quote(request)
+        if defect in {'currency', 'basis', 'amount'}:
+            value['fare'].pop(defect)
+        elif defect == 'airport':
+            value['legs'][0]['origin'] = 'BOM'
+        elif defect == 'stale':
+            value['retrieved_at'] -= timedelta(minutes=5)
+        elif defect == 'missing_leg':
+            value['legs'] = []
+        elif defect == 'duplicate':
+            return [value, value]
+        elif defect == 'shape':
+            return {'results': [value]}
+        elif defect == 'unknown_currency':
+            value['fare']['currency'] = 'XXX'
+        elif defect == 'wrong_party':
+            value['travellers'] = {'adults': 1}
+        return [value]
+
+    client.app.state.fare_service = FareService(provider=Stub(respond))
+    response = client.post('/flights/search', json=query)
+    assert response.status_code == 502
+    assert response.json()['detail']['code'] == 'invalid_response'
+    assert 'results' not in response.json()
+
+
+@pytest.mark.parametrize(('code', 'status'), [('authentication', 503), ('quota', 429), ('rate_limit', 429), ('unavailable', 502)])
+def test_provider_errors_have_safe_messages(client, query, code, status):
+    def respond(request):
+        raise FareError(code)
+
+    client.app.state.fare_service = FareService(provider=Stub(respond))
+    response = client.post('/flights/search', json=query)
+    assert response.status_code == status
+    assert response.json()['detail']['code'] == code
+    assert 'results' not in response.json()
+
+
+def test_timeout_and_unexpected_adapter_failure(client, query, caplog):
+    class Delayed(Stub):
+        async def search(self, request):
+            await asyncio.sleep(1)
+
+    class BadRouteLookup(Stub):
+        def supports_route(self, request):
+            raise OSError('private-provider-detail')
+
+    client.app.state.fare_service = FareService(provider=Delayed(None), timeout_seconds=0.01)
+    assert client.post('/flights/search', json=query).json()['detail']['code'] == 'timeout'
+    client.app.state.fare_service = FareService(provider=BadRouteLookup(None))
+    response = client.post('/flights/search', json=query)
+    assert response.status_code == 502
+    assert 'private-provider-detail' not in response.text + caplog.text
+
+
+def test_validated_model_routing_and_provider_fallback(client, query):
+    def estimate(request):
+        value = quote(request)
+        value.pop('legs')
+        value.pop('availability')
+        return [value | {'source': 'ml_estimate'}]
+
+    model = Stub(estimate)
+    provider = Stub(lambda request: [quote(request)])
+    client.app.state.fare_service = FareService(provider=provider, model=model)
+    assert client.post('/flights/search', json=query).json()['results'][0]['source'] == 'ml_estimate'
+    assert provider.requests == []
+    model.route_supported = False
+    assert client.post('/flights/search', json=query).json()['results'][0]['source'] == 'live_quote'
+    model.route_supported = True
+    model.respond = lambda request: []
+    assert client.post('/flights/search', json=query).json()['results'][0]['source'] == 'live_quote'

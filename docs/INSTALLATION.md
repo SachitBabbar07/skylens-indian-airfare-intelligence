@@ -13,7 +13,7 @@ Set-Location D:\SkyLens
 .\run.ps1
 ```
 
-Open [the application](http://127.0.0.1:8000) and [health](http://127.0.0.1:8000/health). Health 200 confirms both model files and the airport directory loaded. A degraded 503 means artifacts are missing or failed validation; the historical evidence directory can still be inspected when its reports are present. Stop with Ctrl+C. If PowerShell policy blocks a script, follow the approved policy for this machine. For the separate dev UI, run `npm --prefix frontend run dev -- --port 5173 --strictPort` alongside the backend. `SKYLENS_CORS_ORIGINS` comes from the process environment; `.env.example` is not loaded automatically. Leave unset for localhost development defaults, set to empty for same-origin operation only, or supply explicit comma-separated origins. Wildcards are rejected.
+The built app opens Flights at `/` and Research at `/research.html`. Health 200 confirms both model files and the airport directory loaded. A degraded 503 means research artifacts are missing or failed validation. Flights uses the checked-in airport directory independently of model loading. Live fares require a verified provider integration. Stop with Ctrl+C. For the separate dev UI, run `npm --prefix frontend run dev -- --port 5173 --strictPort` alongside the backend. `SKYLENS_CORS_ORIGINS` comes from the process environment. Leave it unset for localhost defaults, set it to empty for same-origin operation, or supply explicit comma-separated origins. [Flights](http://127.0.0.1:8000) · [Research](http://127.0.0.1:8000/research.html) · [Health](http://127.0.0.1:8000/health)
 
 ## Portable checks
 
@@ -26,7 +26,7 @@ A source-only clone intentionally contains no raw/processed data, native model b
 ```powershell
 uv venv --python 3.12 .venv
 uv pip install --python .venv/Scripts/python.exe -r requirements-ci.txt
-.\.venv\Scripts\python.exe -m pytest tests/test_quotes.py tests/test_portable_contract.py tests/test_product_contract.py tests/test_phase5_contract.py -q
+.\.venv\Scripts\python.exe -m pytest tests/test_quotes.py tests/test_portable_contract.py tests/test_product_contract.py tests/test_phase5_contract.py tests/test_flight_search.py -q
 .\.venv\Scripts\python.exe -m compileall -q src backend scripts
 npm --prefix frontend ci
 npm --prefix frontend test
