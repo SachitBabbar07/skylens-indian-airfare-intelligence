@@ -4,6 +4,8 @@ SkyLens opens in **Research Mode**. The overview displays the required unavailab
 
 The acquisition panel displays the dated evidence review and links to the empty quote CSV and source-permission schema. It does not present candidate rows as verified data or enable customer prediction. Missing or invalid status stays unavailable; the rest of Research Mode remains usable.
 
+Coverage has separate historical route and eligible profile views. Use IATA, source and cabin filters to inspect observations; eligible profiles add carrier and stops filters and can open the matching research scenario. Dataset details display observed cabin labels and date ranges, including the separate external challenge. Neither a directory record nor a historical observation grants research support. The airport table and route tables have keyboard-focusable scroll regions.
+
 Research tools, Coverage and Methodology remain available. `main.tsx` owns metadata loading, dependent inputs, comboboxes and directory state. `ResearchViews.tsx` owns customer status and research-only output presentation. Ordinary CSS and system fonts retain the existing responsive design.
 
 Every airport, carrier, class and profile choice comes from the API. Endpoint changes choose an eligible route; cabin/carrier/stops depend on joint support. Defaults use observed field minima for a hypothetical historical profile, not an advertised flight or current schedule. At least 50 fitting observations and original numeric bounds remain required. The network cohort retains coverage and measured results without an eligible prediction form.

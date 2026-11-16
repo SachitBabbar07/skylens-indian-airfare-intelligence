@@ -4,6 +4,8 @@ SkyLens is a local Windows-first research application. Use Python 3.12, Node 22 
 
 ## Existing research workspace
 
+Verified on Windows with CPython 3.12.14, Node 24.11.1 and uv 0.12.21. Stop the running backend and Vite dev server before `setup.ps1`; on Windows, the dev server can hold `esbuild.exe` open during `npm ci`. Setup syncs the dedicated `.venv` to the pinned requirements and builds the UI. It does not fetch fares, restore models or train.
+
 ```powershell
 Set-Location D:\SkyLens
 .\setup.ps1
@@ -11,7 +13,7 @@ Set-Location D:\SkyLens
 .\run.ps1
 ```
 
-Open `http://127.0.0.1:8000` and `/docs`. `run.ps1` loads existing native model artifacts; it never retrains. Stop with Ctrl+C. If this machine's PowerShell execution policy blocks a script, follow the organization's approved policy; do not bypass it automatically. Build assets with `npm --prefix frontend ci` then `npm --prefix frontend run build`. The frontend dev server uses `npm --prefix frontend run dev` alongside the API. CORS is documented in `.env.example`; variables come from the process environment, not an automatic dotenv loader.
+Open [the application](http://127.0.0.1:8000) and [health](http://127.0.0.1:8000/health). Health 200 confirms both model files and the airport directory loaded. A degraded 503 means artifacts are missing or failed validation; the historical evidence directory can still be inspected when its reports are present. Stop with Ctrl+C. If PowerShell policy blocks a script, follow the approved policy for this machine. For the separate dev UI, run `npm --prefix frontend run dev -- --port 5173 --strictPort` alongside the backend. `SKYLENS_CORS_ORIGINS` comes from the process environment; `.env.example` is not loaded automatically. Leave unset for localhost development defaults, set to empty for same-origin operation only, or supply explicit comma-separated origins. Wildcards are rejected.
 
 ## Portable checks
 
@@ -24,9 +26,10 @@ A source-only clone intentionally contains no raw/processed data, native model b
 ```powershell
 uv venv --python 3.12 .venv
 uv pip install --python .venv/Scripts/python.exe -r requirements-ci.txt
-.\.venv\Scripts\python.exe -m pytest tests/test_quotes.py tests/test_portable_contract.py -q
+.\.venv\Scripts\python.exe -m pytest tests/test_quotes.py tests/test_portable_contract.py tests/test_product_contract.py tests/test_phase5_contract.py -q
 .\.venv\Scripts\python.exe -m compileall -q src backend scripts
 npm --prefix frontend ci
+npm --prefix frontend test
 npm --prefix frontend run build
 ```
 

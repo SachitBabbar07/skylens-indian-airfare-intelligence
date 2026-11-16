@@ -1,0 +1,115 @@
+{
+  "launch_workflow": "existing run.ps1",
+  "profiles": 592,
+  "prediction_requests": 1776,
+  "explanation_requests": 592,
+  "expected_invalid_requests": [
+    {
+      "changed_fields": {
+        "origin": "ZZZ"
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "origin": "PNQ"
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "destination": "AMD"
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "airline": "unknown"
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "cabin_class": "First"
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "journey_type": "round_trip"
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "journey_type": "multi_city"
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "duration_minutes": 0
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "days_left": -1
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "days_left": 1.5
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "return_date": "2026-01-01"
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "passenger_count": 2
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "stops": 7
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "research_acknowledged": false
+      },
+      "status": 422
+    },
+    {
+      "changed_fields": {
+        "model_id": "network_2020"
+      },
+      "status": 422
+    }
+  ],
+  "compiled_assets_checked": [
+    "/favicon.svg",
+    "/assets/index-BPEgT1GR.js",
+    "/assets/index-DsRxp48W.css"
+  ],
+  "health": {
+    "status": "ok",
+    "models_loaded": [
+      "cabin_2023",
+      "network_2020"
+    ],
+    "research_only": true,
+    "production_predictor_available": false
+  },
+  "unexpected_failures": [],
+  "browser_qa": "Separate executed browser verification: reports/phase6_browser_qa.json",
+  "currency_display_source_check": "Explicit research diagnostics label unverified model-output units; API currency null. Customer fare prediction is disabled."
+}

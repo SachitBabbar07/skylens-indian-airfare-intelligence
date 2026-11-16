@@ -1,5 +1,11 @@
 # Changelog
 
+## Research Edition release — 2026-11-16
+
+- Added a searchable route directory, separate eligible profile filters, dataset details and profile-to-analysis handoff. Preserved the exact customer-unavailable message, product boundary and native results.
+- Kept coverage available independently of model readiness. Improved retry/error states, keyboard navigation, responsive table access and compressed metadata responses.
+- Patched dependency advisories, verified the setup and unchanged launch scripts, and recorded full local acceptance and browser outage recovery. No training or dataset changes.
+
 ## Phase 5 — 2026-11-15
 
 - Inspected six additional file distributions and original source/terms documentation. Recorded actual schemas, hashes, duplicate lineage, transformed targets, missing definitions and licensing blockers; no new target qualified.

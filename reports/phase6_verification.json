@@ -1,0 +1,60 @@
+{
+  "checked_at_utc": "2026-11-16T04:49:37.341736+00:00",
+  "environment": "Windows loopback, one client, warm service; not a load test",
+  "timings": {
+    "/health": {
+      "requests": 20,
+      "median_ms": 1.16,
+      "p95_ms": 1.51,
+      "uncompressed_bytes": 121,
+      "response_body_wire_bytes": 121,
+      "content_encoding": null
+    },
+    "/research/evidence": {
+      "requests": 20,
+      "median_ms": 15.11,
+      "p95_ms": 16.51,
+      "uncompressed_bytes": 171106,
+      "response_body_wire_bytes": 10600,
+      "content_encoding": "gzip"
+    },
+    "/supported-options": {
+      "requests": 20,
+      "median_ms": 17.62,
+      "p95_ms": 19.03,
+      "uncompressed_bytes": 136708,
+      "response_body_wire_bytes": 11915,
+      "content_encoding": "gzip"
+    },
+    "/research/predict": {
+      "requests": 20,
+      "median_ms": 6.94,
+      "p95_ms": 8.27,
+      "uncompressed_bytes": 1183,
+      "response_body_wire_bytes": 646,
+      "content_encoding": "gzip"
+    },
+    "/research/explain": {
+      "requests": 20,
+      "median_ms": 39.83,
+      "p95_ms": 42.18,
+      "uncompressed_bytes": 1495,
+      "response_body_wire_bytes": 709,
+      "content_encoding": "gzip"
+    }
+  },
+  "cors_preflight": "approved local origin allowed; unrelated origin rejected",
+  "frontend_proxy": "health, historical evidence, template and schema 200",
+  "frozen_data_and_model_files": 56,
+  "protected_pipeline_and_launch_files": 5,
+  "bundles": {
+    "index-BPEgT1GR.js": {
+      "bytes": 223799,
+      "gzip_bytes": 69231
+    },
+    "index-DsRxp48W.css": {
+      "bytes": 16327,
+      "gzip_bytes": 4213
+    }
+  }
+}

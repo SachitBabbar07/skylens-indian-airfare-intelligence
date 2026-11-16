@@ -1,0 +1,44 @@
+{
+  "checked_at_utc": "2026-11-16T04:48:38.753Z",
+  "origins": [
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:5173"
+  ],
+  "viewports": [
+    {
+      "requested": "1440x900",
+      "client": 1425,
+      "scroll": 1425
+    },
+    {
+      "requested": "390x844",
+      "client": 375,
+      "scroll": 375
+    },
+    {
+      "requested": "360x800",
+      "client": 345,
+      "scroll": 345
+    }
+  ],
+  "historical_DEL_BOM_economy": 10276,
+  "eligible_DEL_BOM_indigo_economy_nonstop": 576,
+  "profile_opens_form_and_requires_acknowledgement": true,
+  "shap_rows": 13,
+  "narrow_route_table_width": 650,
+  "narrow_route_container_width": 317,
+  "customer_disabled": true,
+  "default_currency_symbol_or_raw_amount": false,
+  "download_header_only": true,
+  "schema_fields_visible": true,
+  "backend_outage_observed": true,
+  "retry_restored_metadata_and_native_analysis": true,
+  "expected_proxy_connection_errors_during_outage": 5,
+  "console": {
+    "production": [],
+    "mobile": [],
+    "narrow": [],
+    "schema": []
+  },
+  "network_scope": "Observed UI responses and correlated backend/Vite logs plus live HTTP tests; full browser HAR unavailable."
+}

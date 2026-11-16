@@ -114,7 +114,7 @@ export function ResearchOutput({result, explanation, busy}: {
           style={{width: `${Math.max(1, Math.abs(v.contribution) / Math.max(1, ...explanation.contributions.map(v => Math.abs(v.contribution))) * 100)}%`}}/></div>
       </div>)}
       <details><summary>All contributions and additive check</summary>
-        <div className="contributions-scroll"><table><caption>SHAP contributions · {UNIT_LABEL}</caption><thead><tr><th>Input</th><th>Contribution</th></tr></thead>
+        <div className="contributions-scroll" tabIndex={0} role="region" aria-label="Scrollable SHAP contributions"><table><caption>SHAP contributions · {UNIT_LABEL}</caption><thead><tr><th scope="col">Input</th><th scope="col">Contribution</th></tr></thead>
           <tbody>{explanation.contributions.map(v => <tr key={v.feature}><td>{label(v.feature)}<small>{typeof v.value === 'number' ? fmt(v.value) : v.value}</small></td><td>{fmt(v.contribution)}</td></tr>)}</tbody></table></div>
         <p className="fine">Baseline + contributions = {fmt(result.estimate)} {UNIT_LABEL}. Additive error: {explanation.additive_error.toExponential(1)}.</p>
       </details>

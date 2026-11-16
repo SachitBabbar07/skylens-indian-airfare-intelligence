@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import {api} from './api';
 
 type Review = {reviewed_at_utc: string; verified_one_way_observations: number;
   verified_round_trip_observations: number; approved_sources: number;
@@ -23,23 +24,24 @@ export function AcquisitionReview({review}: {review: Review}) {
     </dl>
     <p className="muted">Collection needs documented source permission and price evidence. Downloaded templates contain no observations. Importing records does not enable customer predictions.</p>
     <div className="acquisition-links"><a href="/acquisition/template.csv" download>Download empty quote CSV</a>
-      <a href="/acquisition/schema" target="_blank" rel="noreferrer">Quote and source-permission schema ↗</a></div>
+      <a href="/acquisition/schema" target="_blank" rel="noreferrer">Quote and source-permission schema ↗</a>
+      <a href="https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence/blob/main/docs/QUOTE_COLLECTION_GUIDE.md" target="_blank" rel="noreferrer">Offline validation and submission ↗</a></div>
   </section>;
 }
 
 export function AcquisitionStatus() {
   const [review, setReview] = useState<Review | null>(null);
   const [error, setError] = useState(false);
+  const [retry, setRetry] = useState(0);
   useEffect(() => {
-    let live = true;
-    fetch('/acquisition/status').then(async response => {
-      if (!response.ok) throw new Error('Unavailable');
-      const value = await response.json();
+    const request = new AbortController();
+    setError(false);
+    api<Review>('/acquisition/status', undefined, AbortSignal.any([request.signal, AbortSignal.timeout(15_000)])).then(value => {
       if (!validReview(value)) throw new Error('Invalid review');
-      if (live) setReview(value);
-    }).catch(() => {if (live) setError(true);});
-    return () => {live = false;};
-  }, []);
+      if (!request.signal.aborted) setReview(value);
+    }).catch(() => {if (!request.signal.aborted) setError(true);});
+    return () => request.abort();
+  }, [retry]);
   return review ? <AcquisitionReview review={review}/> : <p className="muted" role="status">{
-    error ? 'Acquisition review unavailable. Customer prediction remains disabled.' : 'Loading acquisition review…'}</p>;
+    error ? <>Acquisition review unavailable. Customer prediction remains disabled. <button className="secondary" onClick={() => setRetry(n => n+1)}>Retry acquisition status</button></> : 'Loading acquisition review…'}</p>;
 }

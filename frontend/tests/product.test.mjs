@@ -11,6 +11,7 @@ const server = await createServer({root: fileURLToPath(new URL('..', import.meta
 after(() => server.close());
 const views = await server.ssrLoadModule('/src/ResearchViews.tsx');
 const acquisition = await server.ssrLoadModule('/src/AcquisitionStatus.tsx');
+const directory = await server.ssrLoadModule('/src/EvidenceDirectory.tsx');
 const render = (component, props) => renderToStaticMarkup(React.createElement(component, props));
 // Explicit software fixtures, never training data or displayed sample fares.
 const result = {estimate: 12345.6789, currency: null, unit: 'source fare units', research_only: true,
@@ -90,4 +91,11 @@ test('acquisition review rejects missing, negative and fabricated count flags', 
     {training_automatically_enabled: true}, {reviewed_at_utc: 'unverified'}]) {
     assert.equal(acquisition.validReview({...base, ...changes}), false);
   }
+});
+
+test('route filters are directional and normalize typed IATA codes', () => {
+  const route = {origin: 'DEL', destination: 'BOM'};
+  assert.equal(directory.matchesRoute(route, ' del ', 'bo'), true);
+  assert.equal(directory.matchesRoute(route, 'BOM', 'DEL'), false);
+  assert.equal(directory.matchesRoute(route, '', 'BOM'), true);
 });

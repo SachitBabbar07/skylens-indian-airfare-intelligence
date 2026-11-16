@@ -1,5 +1,14 @@
 # GitHub delivery status
 
+**Final Research Edition — 16 November 2026.** The [GitHub release record](https://github.com/SachitBabbar07/skylens-indian-airfare-intelligence/releases/tag/v0.1.0)
+identifies the tested `main` revision and source archives. The release is the
+local research application, with customer fare prediction disabled.
+[Final acceptance](phase6_test_report.md), [browser QA](phase6_browser_qa.md)
+and [data/model limits](phase6_data_model_limits.md) define its scope. The
+repository stays public and hosted CI remains gated. The repository contains
+source, coverage/evaluation reports and documentation; native artifacts and
+restricted data remain in the local submission workspace.
+
 **Current visibility: PUBLIC, explicitly confirmed by the owner on 15 November
 2026.** The repository was initially created and verified private; the owner
 subsequently made it public intentionally. Keep that setting. Historical private
