@@ -14,6 +14,7 @@ const acquisition = await server.ssrLoadModule('/src/AcquisitionStatus.tsx');
 const directory = await server.ssrLoadModule('/src/EvidenceDirectory.tsx');
 const {findAirports} = await server.ssrLoadModule('/src/flights/AirportAutocomplete.tsx');
 const {FlightResults, formatFare, sortResults} = await server.ssrLoadModule('/src/flights/FlightResults.tsx');
+const {requestFlightSearch} = await server.ssrLoadModule('/src/flights/useFlightSearch.ts');
 const render = (component, props) => renderToStaticMarkup(React.createElement(component, props));
 // Explicit software fixtures, never training data or displayed sample fares.
 const result = {estimate: 12345.6789, currency: null, unit: 'source fare units', research_only: true,
@@ -39,6 +40,64 @@ const fixtureLeg = {origin: 'PNQ', destination: 'DEL', departure: '2027-04-05T08
 const fixtureResult = {id: 'quote', source: 'live_quote', availability: 'available', source_name: 'Software fixture',
   retrieved_at: '2027-04-01T12:00:00Z', journey: 'one_way', cabin: 'economy', travellers: {adults: 2, children: 0, infants: 0},
   legs: [fixtureLeg], fare: fixtureFare};
+
+const indicativeQuery = {origin: 'PNQ', destination: 'DEL', journey: 'round_trip', departure_date: '2027-04-05',
+  return_date: '2027-04-10', cabin: 'economy', travellers: {adults: 1, children: 1, infants: 0}};
+const indicative = {estimated_low: 9000, estimated_high: 16000, currency: 'INR', origin: 'PNQ', destination: 'DEL',
+  journey_type: 'round_trip', departure_date: '2027-04-05', return_date: '2027-04-10',
+  cabin_class: 'economy', passenger_count: 2, estimation_source: 'groq_indicative'};
+
+test('the indicative result renders a rupee range, route, dates, travel party and disclosure', () => {
+  const html = render(FlightResults, {state: {status: 'estimate', estimate: indicative}, indicative: true, retry() {}});
+  assert.match(html, /SkyLens Indicative Fare Estimate/);
+  assert.match(html, /\u20b99,000 – \u20b916,000/);
+  assert.match(html, /PNQ → DEL/);
+  assert.match(html, /Round Trip.*Economy/);
+  assert.match(html, /Departure 5 Apr 2027 · Return 10 Apr 2027/);
+  assert.match(html, /Estimated total for 2 travellers/);
+  assert.match(html, /AI-generated indicative estimate\. Not a live airline quote or guaranteed ticket price\. Actual fares may differ\./);
+  assert.doesNotMatch(html, /Live Fare Quote|ML Estimated Fare|Non-stop|Available seats/);
+});
+
+test('loading and retry affordances never fill the estimate area with invented prices', () => {
+  const renderState = state => render(FlightResults, {state, indicative: true, retry() {}});
+  const loading = renderState({status: 'loading'});
+  assert.match(loading, /role="status".*Generating an indicative fare estimate/);
+  const outage = renderState({status: 'error', message: 'Backend unavailable', retryable: true});
+  assert.match(outage, /role="alert".*Backend unavailable.*Try again/);
+  const auth = renderState({status: 'error', message: 'API key was rejected', retryable: false});
+  assert.doesNotMatch(auth, /Try again/);
+  for (const html of [loading, outage, auth]) assert.doesNotMatch(html, /\u20b9|indicative-price/);
+});
+
+test('a backend outage leaves a manual retry and the next request can recover', async context => {
+  let calls = 0;
+  context.mock.method(globalThis, 'fetch', async (url, options) => {
+    assert.equal(url, '/flights/estimate');
+    assert.deepEqual(JSON.parse(options.body), indicativeQuery);
+    if (++calls === 1) throw new TypeError('Connection refused');
+    return Response.json(indicative);
+  });
+  const error = await requestFlightSearch(indicativeQuery, true);
+  assert.equal(error.status, 'error');
+  assert.equal(error.retryable, true);
+  assert.equal(calls, 1);
+  assert.deepEqual(await requestFlightSearch(indicativeQuery, true), {status: 'estimate', estimate: indicative});
+  assert.equal(calls, 2);
+});
+
+test('wrong currency, source, or journey is withheld and provider retry choices are honored', async context => {
+  for (const change of [{currency: 'USD'}, {estimation_source: 'ml_estimate'}, {estimated_high: null}, {passenger_count: 1}]) {
+    const mock = context.mock.method(globalThis, 'fetch', async () => Response.json({...indicative, ...change}));
+    const error = await requestFlightSearch(indicativeQuery, true);
+    assert.equal(error.status, 'error');
+    mock.mock.restore();
+  }
+  context.mock.method(globalThis, 'fetch', async () => Response.json({detail: {code: 'quota', message: 'Free plan allowance reached',
+    retryable: false}}, {status: 429}));
+  assert.deepEqual(await requestFlightSearch(indicativeQuery, true),
+    {status: 'error', message: 'Free plan allowance reached', retryable: false});
+});
 
 test('fare formatting retains original currencies and requires exact traveller total basis', () => {
   assert.match(formatFare(fixtureFare), /\u20b91,234\.50/);

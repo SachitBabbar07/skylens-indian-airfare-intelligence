@@ -15,6 +15,7 @@ from backend.app.acquisition import router as acquisition_router
 from backend.app.evidence import historical_evidence
 from backend.app.fare_service import FareService
 from backend.app.flight_search import load_airports, router as flight_router
+from backend.app.groq_fare_estimator import GroqFareEstimator, GroqSettings
 from skylens.prepare import ROOT
 LOG=logging.getLogger(__name__)
 
@@ -34,9 +35,13 @@ async def lifespan(app):
         app.state.evidence=None
     logging.getLogger('uvicorn.error').info('Research startup: %d models loaded; %d model artifacts unavailable',
              len(app.state.store.models),len(app.state.store.errors))
-    yield
+    app.state.groq_estimator=GroqFareEstimator(GroqSettings.load(ROOT))
+    try:
+        yield
+    finally:
+        await app.state.groq_estimator.close()
 
-app=FastAPI(title='SkyLens · Indian Flight Search',version='0.1.0',lifespan=lifespan,description='Indian airport and flight search, with separate historical fare research. Customer prices require a verified fare source.')
+app=FastAPI(title='SkyLens · Indian Flight Search',version='0.1.0',lifespan=lifespan,description='Indian airport search, experimental Groq fare estimates and separate historical fare research.')
 origins=[value.strip() for value in os.getenv('SKYLENS_CORS_ORIGINS','http://127.0.0.1:5173,http://localhost:5173').split(',') if value.strip()]
 if '*' in origins:
     raise RuntimeError('SKYLENS_CORS_ORIGINS requires explicit origins; wildcard access is unsupported.')

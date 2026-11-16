@@ -1,5 +1,6 @@
 export class ApiError extends Error {
-  constructor(message: string, public readonly status: number, public readonly code?: string) {
+  constructor(message: string, public readonly status: number, public readonly code?: string,
+    public readonly retryable?: boolean) {
     super(message);
   }
 }
@@ -21,7 +22,8 @@ export async function api<T>(path: string, body?: unknown, signal?: AbortSignal)
       : '';
     const message = typeof detail === 'string' ? detail : typeof detail?.message === 'string' ? detail.message :
       validation || unavailable;
-    throw new ApiError(message, response.status, typeof detail?.code === 'string' ? detail.code : undefined);
+    throw new ApiError(message, response.status, typeof detail?.code === 'string' ? detail.code : undefined,
+      typeof detail?.retryable === 'boolean' ? detail.retryable : undefined);
   }
   return data;
 }

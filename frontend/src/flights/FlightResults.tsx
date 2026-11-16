@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {flightDate, flightTime} from './dates';
-import {cabinNames, passengerCount, type Fare, type FareResult, type FlightLeg, type SearchState} from './types';
+import {cabinNames, passengerCount, type Fare, type FareResult, type FlightLeg, type IndicativeEstimate,
+  type SearchState} from './types';
 
 type Sort = 'provider' | 'price' | 'duration' | 'departure';
 
@@ -60,16 +61,44 @@ function FlightResultCard({result}: {result: FareResult}) {
   </article>;
 }
 
-export function FlightResults({state, unavailable, retry}: {state: SearchState; unavailable: boolean; retry: () => void}) {
+const rupees = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR', maximumFractionDigits: 0});
+const travelDate = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'});
+
+function EstimateCard({estimate}: {estimate: IndicativeEstimate}) {
+  const departure = travelDate.format(new Date(`${estimate.departure_date}T00:00:00Z`));
+  const returnDate = estimate.return_date && travelDate.format(new Date(`${estimate.return_date}T00:00:00Z`));
+  return <section className="flight-status indicative-estimate" aria-labelledby="indicative-title" aria-live="polite">
+    <h2 id="indicative-title">SkyLens Indicative Fare Estimate</h2>
+    <p className="indicative-route"><strong>{estimate.origin} → {estimate.destination}</strong> · {estimate.journey_type === 'round_trip' ? 'Round Trip' : 'One Way'}
+      {' · '}{cabinNames[estimate.cabin_class]}</p>
+    <p>Departure {departure}{returnDate && ` · Return ${returnDate}`}</p>
+    <p className="indicative-price">{rupees.format(estimate.estimated_low)} – {rupees.format(estimate.estimated_high)}</p>
+    <p>Estimated total for {estimate.passenger_count} {estimate.passenger_count === 1 ? 'traveller' : 'travellers'}</p>
+    <p className="indicative-disclosure">AI-generated indicative estimate. Not a live airline quote or guaranteed ticket price. Actual fares may differ.</p>
+  </section>;
+}
+
+export function FlightResults({state, unavailable, indicative = false, retry}: {state: SearchState; unavailable: boolean;
+  indicative?: boolean; retry: () => void}) {
   const [sort, setSort] = useState<Sort>('price');
-  if (state.status === 'idle') return unavailable ? <div className="flight-status" role="status">
-    <strong>Live fares unavailable</strong><p>Flight search needs a connected fare provider.</p>
-  </div> : null;
-  if (state.status === 'loading') return <div className="flight-status" role="status">Searching for available flights…</div>;
+  if (state.status === 'idle') {
+    if (indicative) return <div className="flight-status" role="status">
+      <strong>{unavailable ? 'Indicative estimates unavailable' : 'AI-assisted fare estimates'}</strong>
+      <p>{unavailable ? 'A Groq Free plan key is needed on the SkyLens backend.' :
+        'SkyLens sends your selected trip details to Groq to generate an approximate fare range.'}</p>
+    </div>;
+    return unavailable ? <div className="flight-status" role="status">
+      <strong>Live fares unavailable</strong><p>Flight search needs a connected fare provider.</p>
+    </div> : null;
+  }
+  if (state.status === 'loading') return <div className="flight-status" role="status">
+    {indicative ? 'Generating an indicative fare estimate…' : 'Searching for available flights…'}
+  </div>;
   if (state.status === 'error') return <div className="flight-status" role="alert">
-    <strong>Search unavailable</strong><p>{state.message}</p>
+    <strong>{indicative ? 'Estimate unavailable' : 'Search unavailable'}</strong><p>{state.message}</p>
     {state.retryable && <button type="button" className="small-button" onClick={retry}>Try again</button>}
   </div>;
+  if (state.status === 'estimate') return <EstimateCard estimate={state.estimate}/>;
   if (!state.results.length) return <div className="flight-status" role="status">
     <strong>No flights found</strong><p>Try a different date, airport or cabin.</p>
   </div>;

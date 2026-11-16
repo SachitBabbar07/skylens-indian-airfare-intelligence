@@ -26,7 +26,7 @@ A source-only clone intentionally contains no raw/processed data, native model b
 ```powershell
 uv venv --python 3.12 .venv
 uv pip install --python .venv/Scripts/python.exe -r requirements-ci.txt
-.\.venv\Scripts\python.exe -m pytest tests/test_quotes.py tests/test_portable_contract.py tests/test_product_contract.py tests/test_phase5_contract.py tests/test_flight_search.py -q
+.\.venv\Scripts\python.exe -m pytest tests/test_quotes.py tests/test_portable_contract.py tests/test_product_contract.py tests/test_phase5_contract.py tests/test_flight_search.py tests/test_groq_fares.py -q
 .\.venv\Scripts\python.exe -m compileall -q src backend scripts
 npm --prefix frontend ci
 npm --prefix frontend test

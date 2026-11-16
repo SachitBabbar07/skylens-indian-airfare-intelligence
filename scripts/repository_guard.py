@@ -14,7 +14,7 @@ PATTERNS = {
     "private key": rb"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
     "GitHub token": rb"\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{35,})\b",
     "AWS access key": rb"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b",
-    "provider token": rb"\b(?:sk-[A-Za-z0-9_-]{32,}|AIza[A-Za-z0-9_-]{30,})\b",
+    "provider token": rb"\b(?:gsk_[A-Za-z0-9_-]{32,}|sk-[A-Za-z0-9_-]{32,}|AIza[A-Za-z0-9_-]{30,})\b",
     "URL credentials": rb"https?://[^\s/:]+:[^\s/@]+@",
     "assigned credential": rb'''(?i)(?:api_key|access_token|password|client_secret)\s*[=:]\s*["'][A-Za-z0-9+/=_-]{20,}["']''',
 }

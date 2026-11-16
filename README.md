@@ -2,7 +2,7 @@
 
 SkyLens is a React and FastAPI application for Indian domestic flight search. On the Flights page, you can look up 165 Indian IATA-coded airports by city, airport name or code, swap airports and choose one-way or round-trip travel dates, travellers and cabin.
 
-**Live fares require an authorized provider.** This branch has no registered provider and returns an explicit unavailable response without a fare. The fare service validates itineraries, currency, traveller totals and provenance before serving a result. It preserves the source currency and shows ₹ only for INR. Provider credentials belong in the backend process environment. [.env.example](.env.example) · [Flight search API](docs/API_GUIDE.md#flight-search)
+**Indicative fares use Groq.** With a configured Groq Free plan key, SkyLens generates an experimental INR range for the full travel party. The estimate carries no inventory, guaranteed price or calibrated accuracy. Live quotes remain unavailable. [.env.example](.env.example) · [Flight search API](docs/API_GUIDE.md#flight-search)
 
 ## Research
 
@@ -29,11 +29,13 @@ Set-Location D:\SkyLens
 
 The app binds to loopback and loads existing model artifacts at startup. Use `npm --prefix frontend run dev -- --port 5173 --strictPort` for the optional development UI. [Flights](http://127.0.0.1:8000) · [Research](http://127.0.0.1:8000/research.html) · [API health](http://127.0.0.1:8000/health)
 
+To enable indicative estimates, run `.\scripts\configure_groq.ps1` and enter the Groq Free plan key at the masked prompt. Restart the backend after configuration. The script writes an ignored local `.env` file. The backend also accepts `GROQ_API_KEY` and `GROQ_FREE_PLAN_CONFIRMED=true` together from the process environment. Optional `GROQ_MODEL` defaults to `openai/gpt-oss-20b`. Use a model available on the Free plan that supports strict JSON output. [Groq Free plan limits](https://console.groq.com/docs/rate-limits) · [Strict JSON models](https://console.groq.com/docs/structured-outputs#supported-models)
+
 A GitHub clone includes source, metadata and reports. Native models, raw/processed datasets, private quote evidence and backups stay outside Git. [Installation and artifact restoration](docs/INSTALLATION.md) distinguishes the submission workspace from a source-only clone.
 
 ## Verification
 
-Run the Python suite with `PYTHONPATH=src`, `npm --prefix frontend test`, and `npm --prefix frontend run build`. Local checks cover the airport directory, one-way and round-trip validation, fare-source routing, malformed responses and price formatting. Fare-source tests use isolated software fixtures. [Flight search verification](reports/flight_search_verification.md)
+Run the Python suite with `PYTHONPATH=src`, `npm --prefix frontend test`, and `npm --prefix frontend run build`. Local checks cover the airport directory, journey validation, fare-source routing, malformed responses and price formatting. Groq contract tests use mocked SDK transport. [Initial Flights verification](reports/flight_search_verification.md)
 
 ### v0.1.0 Research Edition
 

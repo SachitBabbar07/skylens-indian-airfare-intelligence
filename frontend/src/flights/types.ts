@@ -12,7 +12,8 @@ export type SearchSupport = {
   journeys: Journey[]; cabins: Cabin[]; children: boolean; infants: boolean;
   max_travellers: number; last_departure_date: string | null;
 };
-export type SearchCapabilities = {live_quotes: SearchSupport | null; ml_estimates: SearchSupport | null; today: string};
+export type SearchCapabilities = {live_quotes: SearchSupport | null; ml_estimates: SearchSupport | null;
+  indicative_estimates: SearchSupport | null; today: string};
 export type FlightQuery = {
   origin: string; destination: string; journey: Journey; departure_date: string;
   return_date?: string; cabin: Cabin; travellers: Travellers;
@@ -26,5 +27,9 @@ type PricedResult = {id: string; source_name: string; retrieved_at: string; jour
 export type FareResult = (PricedResult & {source: 'live_quote'; availability: 'available'; legs: FlightLeg[];
   baggage: string | null; conditions: string | null}) | (PricedResult & {source: 'ml_estimate'});
 
+export type IndicativeEstimate = {estimated_low: number; estimated_high: number; currency: 'INR'; journey_type: Journey;
+  origin: string; destination: string; departure_date: string; return_date: string | null; cabin_class: Cabin;
+  passenger_count: number; estimation_source: 'groq_indicative'; disclaimer: string};
+
 export type SearchState = {status: 'idle'} | {status: 'loading'} | {status: 'error'; message: string; retryable: boolean} |
-  {status: 'success'; results: FareResult[]; query: FlightQuery};
+  {status: 'estimate'; estimate: IndicativeEstimate} | {status: 'success'; results: FareResult[]; query: FlightQuery};

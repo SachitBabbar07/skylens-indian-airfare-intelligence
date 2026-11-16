@@ -4,8 +4,8 @@ import {TravellerSelector} from './TravellerSelector';
 import {indiaToday} from './dates';
 import {passengerCount, type Airport, type Cabin, type FlightQuery, type Journey, type SearchCapabilities, type Travellers} from './types';
 
-export function FlightSearchForm({airports, capabilities, busy, onSearch, onEdit}: {
-  airports: Airport[]; capabilities: SearchCapabilities | null; busy: boolean;
+export function FlightSearchForm({airports, capabilities, indicative, busy, onSearch, onEdit}: {
+  airports: Airport[]; capabilities: SearchCapabilities | null; indicative: boolean; busy: boolean;
   onSearch: (query: FlightQuery) => void; onEdit: () => void;
 }) {
   const [journey, setJourney] = useState<Journey>('one_way');
@@ -19,7 +19,8 @@ export function FlightSearchForm({airports, capabilities, busy, onSearch, onEdit
   const [swapCount, setSwapCount] = useState(0);
   const today = indiaToday();
   const roundTrip = journey === 'round_trip';
-  const sources = [capabilities?.live_quotes, capabilities?.ml_estimates].filter(source => source != null);
+  const sources = (indicative ? [capabilities?.indicative_estimates] :
+    [capabilities?.live_quotes, capabilities?.ml_estimates]).filter(source => source != null);
   const journeySources = sources.filter(source => source.journeys.includes(journey));
   const cabins = [...new Set((journeySources.length ? journeySources : sources).flatMap(source => source.cabins))];
   const options = cabins.length ? cabins : ['economy' as const];
