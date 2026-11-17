@@ -1,8 +1,10 @@
 import asyncio
 import json
+import ssl
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -50,6 +52,34 @@ def test_config_uses_local_env_or_process_without_leaking_key(tmp_path, monkeypa
     monkeypatch.setenv('GROQ_FREE_PLAN_CONFIRMED', 'true')
     assert GroqSettings.load(tmp_path) == GroqSettings(DEFAULT_MODEL, 'environment-key', True)
     assert inspect('example.ts', FIXTURE_KEY.encode()) == ['provider token']
+
+
+@pytest.mark.parametrize('explicit_ca', [False, True])
+def test_windows_groq_transport_uses_system_trust_unless_ca_is_configured(monkeypatch, explicit_ca):
+    from backend.app import groq_fare_estimator as provider
+
+    captured = {}
+    def capture_client(**kwargs):
+        captured.update(kwargs)
+        return httpx.AsyncClient(transport=httpx.MockTransport(lambda _: completion()))
+
+    monkeypatch.setattr(provider, 'sys', SimpleNamespace(platform='win32'), raising=False)
+    monkeypatch.setattr(provider, 'AsyncClient', capture_client)
+    monkeypatch.delenv('SSL_CERT_FILE', raising=False)
+    monkeypatch.delenv('SSL_CERT_DIR', raising=False)
+    if explicit_ca:
+        monkeypatch.setenv('SSL_CERT_FILE', 'explicit-ca.pem')
+    estimator = GroqFareEstimator(GroqSettings(DEFAULT_MODEL, FIXTURE_KEY, True))
+    try:
+        verify = captured.get('verify')
+        if explicit_ca:
+            assert verify is True
+        else:
+            assert isinstance(verify, ssl.SSLContext)
+            assert verify.verify_mode == ssl.CERT_REQUIRED
+            assert verify.check_hostname is True
+    finally:
+        asyncio.run(estimator.close())
 
 
 @pytest.fixture

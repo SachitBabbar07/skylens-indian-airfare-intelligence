@@ -5,6 +5,8 @@ import json
 import logging
 import os
 import sqlite3
+import ssl
+import sys
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from hashlib import sha256
@@ -143,8 +145,13 @@ class GroqFareEstimator:
         else:
             # SDK diagnostics can log request and response internals when GROQ_LOG is enabled.
             logging.getLogger('groq').setLevel(logging.WARNING)
+            if http_client is None:
+                # Honor explicitly configured CA bundles and otherwise use Windows' trusted roots.
+                verify = (ssl.create_default_context() if sys.platform == 'win32'
+                          and not (os.getenv('SSL_CERT_FILE') or os.getenv('SSL_CERT_DIR')) else True)
+                http_client = AsyncClient(verify=verify, follow_redirects=False, timeout=timeout)
             self._client = AsyncGroq(api_key=settings.api_key, base_url=BASE_URL, max_retries=0, timeout=timeout,
-                                     http_client=http_client or AsyncClient(follow_redirects=False, timeout=timeout))
+                                     http_client=http_client)
 
     @property
     def support(self) -> SearchSupport | None:
