@@ -15,6 +15,7 @@ export function FlightSearchForm({airports, capabilities, indicative, busy, onSe
   const [returnDate, setReturn] = useState('');
   const [party, setParty] = useState<Travellers>({adults: 1, children: 0, infants: 0});
   const [selectedCabin, setCabin] = useState<Cabin>('economy');
+  const [preferredAirline, setAirline] = useState('');
   const [error, setError] = useState('');
   const [swapCount, setSwapCount] = useState(0);
   const today = indiaToday();
@@ -26,6 +27,9 @@ export function FlightSearchForm({airports, capabilities, indicative, busy, onSe
   const options = cabins.length ? cabins : ['economy' as const];
   const cabin = options.includes(selectedCabin) ? selectedCabin : options[0];
   const selectedSources = journeySources.filter(source => source.cabins.includes(cabin));
+  const airlines = (capabilities?.airlines ?? []).filter(airline =>
+    selectedSources.some(source => source.airlines?.includes(airline.id)));
+  const airline = airlines.some(airline => airline.id === preferredAirline) ? preferredAirline : '';
   const childrenAllowed = selectedSources.some(source => source.children);
   const infantsAllowed = selectedSources.some(source => source.infants);
   const travellers = {...party, children: childrenAllowed ? party.children : 0, infants: infantsAllowed ? party.infants : 0};
@@ -49,7 +53,7 @@ export function FlightSearchForm({airports, capabilities, indicative, busy, onSe
     if (passengerCount(travellers) > maximum) {setError(`Choose up to ${maximum} travellers.`); return;}
     setError('');
     onSearch({origin: origin.code, destination: destination.code, journey, departure_date: departure,
-      ...(roundTrip ? {return_date: returnDate} : {}), cabin, travellers});
+      ...(roundTrip ? {return_date: returnDate} : {}), ...(airline ? {airline} : {}), cabin, travellers});
   }
 
   return <form className="flight-panel" onSubmit={submit} aria-label="Flight search" aria-busy={busy}>
@@ -88,6 +92,12 @@ export function FlightSearchForm({airports, capabilities, indicative, busy, onSe
     </div>
     {error && <p className="form-error" role="alert">{error}</p>}
     <div className="form-actions">
+      {airlines.length > 0 && <label className="airline-field">Airline preference
+        <select value={airline} disabled={busy} onChange={event => {setAirline(event.target.value);edited();}}>
+          <option value="">Any airline</option>
+          {airlines.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}
+        </select>
+      </label>}
       <button className="search-flights" type="submit" disabled={busy || !airports.length}>
         {busy ? 'Searching flights…' : 'Search Flights'}
       </button>

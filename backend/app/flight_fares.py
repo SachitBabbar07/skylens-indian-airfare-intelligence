@@ -12,6 +12,12 @@ IST = ZoneInfo('Asia/Kolkata')
 IATA = Annotated[str, StringConstraints(pattern=r'^[A-Z]{3}$')]
 Cabin = Literal['economy', 'premium_economy', 'business', 'first']
 Journey = Literal['one_way', 'round_trip']
+# DGCA scheduled domestic passenger traffic, September 2026.
+DOMESTIC_AIRLINES = {
+    'air_india': 'Air India', 'air_india_express': 'Air India Express', 'akasa_air': 'Akasa Air',
+    'alliance_air': 'Alliance Air', 'fly91': 'FLY91', 'indiaone_air': 'IndiaOne Air',
+    'indigo': 'IndiGo', 'spicejet': 'SpiceJet', 'star_air': 'Star Air',
+}
 
 
 class Contract(BaseModel):
@@ -43,7 +49,15 @@ class FlightSearch(Contract):
     departure_date: date
     return_date: date | None = None
     cabin: Cabin = 'economy'
+    airline: str | None = None
     travellers: Travellers = Field(default_factory=Travellers)
+
+    @field_validator('airline')
+    @classmethod
+    def validate_airline(cls, airline: str | None) -> str | None:
+        if airline is not None and airline not in DOMESTIC_AIRLINES:
+            raise ValueError('Select a listed domestic airline or Any airline.')
+        return airline
 
     @model_validator(mode='after')
     def validate_journey(self):
@@ -66,10 +80,12 @@ class SearchSupport(Contract):
     infants: bool = False
     max_travellers: Annotated[int, Field(ge=1, le=9)] = 9
     last_departure_date: date | None = None
+    airlines: list[str] = Field(default_factory=list)
 
     def accepts(self, request: FlightSearch) -> bool:
         return (
             request.journey in self.journeys and request.cabin in self.cabins
+            and (request.airline is None or request.airline in self.airlines)
             and (self.children or request.travellers.children == 0)
             and (self.infants or request.travellers.infants == 0)
             and request.travellers.total <= self.max_travellers

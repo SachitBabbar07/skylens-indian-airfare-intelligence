@@ -1,5 +1,6 @@
 export type Journey = 'one_way' | 'round_trip';
 export const ESTIMATE_UNAVAILABLE = 'Fare estimate temporarily unavailable. Please try again.';
+export type Airline = {id: string; name: string};
 export type Cabin = 'economy' | 'premium_economy' | 'business' | 'first';
 export const cabinNames: Record<Cabin, string> = {
   economy: 'Economy', premium_economy: 'Premium Economy', business: 'Business', first: 'First Class',
@@ -11,13 +12,13 @@ export const passengerCount = (party: Travellers) => party.adults + party.childr
 
 export type SearchSupport = {
   journeys: Journey[]; cabins: Cabin[]; children: boolean; infants: boolean;
-  max_travellers: number; last_departure_date: string | null;
+  max_travellers: number; last_departure_date: string | null; airlines: string[];
 };
 export type SearchCapabilities = {live_quotes: SearchSupport | null; ml_estimates: SearchSupport | null;
-  indicative_estimates: SearchSupport | null; today: string};
+  indicative_estimates: SearchSupport | null; today: string; airlines: Airline[]};
 export type FlightQuery = {
   origin: string; destination: string; journey: Journey; departure_date: string;
-  return_date?: string; cabin: Cabin; travellers: Travellers;
+  return_date?: string; cabin: Cabin; airline?: string; travellers: Travellers;
 };
 export type Fare = {amount: string; currency: string; basis: 'party_total'; taxes: string; fees: string};
 export type FlightLeg = {
@@ -30,6 +31,7 @@ export type FareResult = (PricedResult & {source: 'live_quote'; availability: 'a
 
 export type IndicativeEstimate = {estimated_low: number; estimated_high: number; currency: 'INR'; journey_type: Journey;
   origin: string; destination: string; departure_date: string; return_date: string | null; cabin_class: Cabin;
+  airline: string | null; airline_name: string | null; estimated_at: string;
   passenger_count: number; estimation_source: 'groq_indicative'; disclaimer: string};
 
 export type SearchState = {status: 'idle'} | {status: 'loading'} | {status: 'error'; message: string; retryable: boolean} |

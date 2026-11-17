@@ -15,6 +15,7 @@ const directory = await server.ssrLoadModule('/src/EvidenceDirectory.tsx');
 const {findAirports} = await server.ssrLoadModule('/src/flights/AirportAutocomplete.tsx');
 const {FlightResults, formatFare, sortResults} = await server.ssrLoadModule('/src/flights/FlightResults.tsx');
 const {requestFlightSearch} = await server.ssrLoadModule('/src/flights/useFlightSearch.ts');
+const {FlightSearchForm} = await server.ssrLoadModule('/src/flights/FlightSearchForm.tsx');
 const render = (component, props) => renderToStaticMarkup(React.createElement(component, props));
 // Explicit software fixtures, never training data or displayed sample fares.
 const result = {estimate: 12345.6789, currency: null, unit: 'source fare units', research_only: true,
@@ -45,7 +46,8 @@ const indicativeQuery = {origin: 'PNQ', destination: 'DEL', journey: 'round_trip
   return_date: '2027-04-10', cabin: 'economy', travellers: {adults: 1, children: 1, infants: 0}};
 const indicative = {estimated_low: 12500, estimated_high: 16000, currency: 'INR', origin: 'PNQ', destination: 'DEL',
   journey_type: 'round_trip', departure_date: '2027-04-05', return_date: '2027-04-10',
-  cabin_class: 'economy', passenger_count: 2, estimation_source: 'groq_indicative'};
+  cabin_class: 'economy', passenger_count: 2, estimation_source: 'groq_indicative',
+  airline: null, airline_name: null, estimated_at: '2027-04-01T12:00:00Z'};
 
 test('the indicative result renders a rupee range, route, dates, travel party and disclosure', () => {
   const html = render(FlightResults, {state: {status: 'estimate', estimate: indicative}, indicative: true, retry() {}});
@@ -58,6 +60,18 @@ test('the indicative result renders a rupee range, route, dates, travel party an
   assert.match(html, /AI-assisted estimate · Actual fares may vary\./);
   assert.doesNotMatch(html, /guaranteed ticket price|Groq/);
   assert.doesNotMatch(html, /Live Fare Quote|ML Estimated Fare|Non-stop|Available seats/);
+  assert.match(html, /Estimated 1 Apr.*IST/);
+});
+
+test('airline preferences show only supported carriers and the result labels the preference', () => {
+  const support = {journeys: ['one_way'], cabins: ['economy'], airlines: ['indigo'], max_travellers: 9};
+  const html = render(FlightSearchForm, {airports: [], indicative: true, busy: false,
+    capabilities: {indicative_estimates: support, airlines: [{id: 'indigo', name: 'IndiGo'}, {id: 'star_air', name: 'Star Air'}]}});
+  assert.match(html, /Airline preference.*Any airline.*IndiGo/);
+  assert.doesNotMatch(html, /Star Air/);
+  const result = render(FlightResults, {state: {status: 'estimate', estimate: {...indicative, airline: 'indigo', airline_name: 'IndiGo'}},
+    indicative: true, retry() {}});
+  assert.match(result, /Airline preference IndiGo/);
 });
 
 test('loading and retry affordances never fill the estimate area with invented prices', () => {
@@ -91,7 +105,8 @@ test('a backend outage leaves a manual retry and the next request can recover', 
 });
 
 test('wrong currency, source, or journey is withheld and provider retry choices are honored', async context => {
-  for (const change of [{currency: 'USD'}, {estimation_source: 'ml_estimate'}, {estimated_high: null}, {passenger_count: 1}]) {
+  for (const change of [{currency: 'USD'}, {estimation_source: 'ml_estimate'}, {estimated_high: null}, {passenger_count: 1},
+    {airline: 'indigo', airline_name: 'IndiGo'}]) {
     const mock = context.mock.method(globalThis, 'fetch', async () => Response.json({...indicative, ...change}));
     const error = await requestFlightSearch(indicativeQuery, true);
     assert.equal(error.status, 'error');
@@ -100,7 +115,7 @@ test('wrong currency, source, or journey is withheld and provider retry choices 
   context.mock.method(globalThis, 'fetch', async () => Response.json({detail: {code: 'quota', message: 'Free plan allowance reached',
     retryable: false}}, {status: 429}));
   assert.deepEqual(await requestFlightSearch(indicativeQuery, true),
-    {status: 'error', message: 'Fare estimate temporarily unavailable. Please try again.', retryable: false});
+    {status: 'error', message: 'The estimate service has reached its limit. Try again later.', retryable: false});
 });
 
 test('a covered trained-model result goes through the same estimate request', async context => {

@@ -59,15 +59,16 @@ def app_client():
         yield
         await app.state.groq_estimator.close()
 
-    def make(respond, *, key=FIXTURE_KEY, confirmed=True, timeout=3):
+    def make(respond, *, key=FIXTURE_KEY, confirmed=True, timeout=3, cache_path=None):
         calls = []
 
         async def transport(request):
             calls.append(request)
             return await respond(request) if asyncio.iscoroutinefunction(respond) else respond(request)
 
+        cache = {'cache_path': cache_path} if cache_path is not None else {}
         estimator = GroqFareEstimator(GroqSettings(DEFAULT_MODEL, key, confirmed),
-                                      httpx.AsyncClient(transport=httpx.MockTransport(transport)), timeout=timeout)
+                                      httpx.AsyncClient(transport=httpx.MockTransport(transport)), timeout=timeout, **cache)
         app = FastAPI(lifespan=lifespan)
         app.include_router(router)
         app.state.flight_airports = load_airports(Path(__file__).resolve().parents[1])
@@ -87,10 +88,13 @@ def test_structured_round_trip_and_prompt_scope(app_client, query):
         response = client.post('/flights/estimate', json=query)
         assert response.status_code == 200
         assert response.headers['cache-control'] == 'no-store'
-        assert response.json() == {
+        payload = response.json()
+        assert datetime.fromisoformat(payload.pop('estimated_at')).tzinfo is not None
+        assert payload == {
             'estimated_low': 12500, 'estimated_high': 16000, 'currency': 'INR', 'journey_type': 'round_trip',
             'origin': 'PNQ', 'destination': 'DEL', 'departure_date': query['departure_date'], 'return_date': query['return_date'],
             'cabin_class': 'business', 'passenger_count': 2, 'estimation_source': 'groq_indicative', 'disclaimer': DISCLAIMER,
+            'airline': None, 'airline_name': None,
         }
         assert client.post('/flights/search', json=query).status_code == 503
     request, = calls
@@ -99,6 +103,7 @@ def test_structured_round_trip_and_prompt_scope(app_client, query):
     body = json.loads(request.content)
     assert body['model'] == DEFAULT_MODEL
     assert body['max_completion_tokens'] == 384
+    assert body['temperature'] == 0
     assert body['service_tier'] == 'on_demand' and 'tools' not in body
     assert body['response_format']['json_schema']['strict'] is True
     context = json.loads(body['messages'][-1]['content'])
@@ -168,6 +173,57 @@ def test_broad_fallback_range_is_withheld_instead_of_rescaled(app_client, query)
     assert response.status_code == 422
     assert response.json()['detail']['code'] == 'no_estimate'
     assert 'estimated_low' not in response.json() and len(calls) == 1
+
+
+def test_identical_trip_reuses_saved_range_after_restart(app_client, query, tmp_path):
+    database = tmp_path / 'estimates.sqlite3'
+    first, calls = app_client(lambda _: completion(), cache_path=database)
+    with first:
+        original = first.post('/flights/estimate', json=query)
+        assert original.status_code == 200
+        assert first.post('/flights/estimate', json=query).json() == original.json()
+    assert len(calls) == 1
+
+    next_start, calls = app_client(lambda _: completion('{"estimated_low":3200,"estimated_high":4000,"currency":"INR"}'),
+                                   cache_path=database)
+    with next_start:
+        same = next_start.post('/flights/estimate', json=query | {'airline': None})
+        assert same.json() == original.json()
+        assert calls == []
+        selected = next_start.post('/flights/estimate', json=query | {'airline': 'indigo'})
+        assert selected.status_code == 200
+        assert selected.json()['airline_name'] == 'IndiGo'
+        assert selected.json()['estimated_low'] == 3200
+        assert next_start.post('/flights/estimate', json=query | {'airline': 'indigo'}).json() == selected.json()
+    assert len(calls) == 1
+    context = json.loads(json.loads(calls[0].content)['messages'][-1]['content'])
+    assert context['airline_preference'] == 'IndiGo'
+
+
+def test_airline_catalogue_and_invalid_airline(app_client, query):
+    client, calls = app_client(lambda _: completion())
+    with client:
+        options = client.get('/flights/capabilities').json()
+        assert {item['name'] for item in options['airlines']} == {
+            'Air India', 'Air India Express', 'Akasa Air', 'Alliance Air', 'FLY91', 'IndiaOne Air', 'IndiGo', 'SpiceJet', 'Star Air',
+        }
+        assert 'air_india' in options['indicative_estimates']['airlines']
+        assert client.post('/flights/estimate', json=query | {'airline': 'unknown'}).status_code == 422
+    assert calls == []
+
+
+def test_expired_estimate_gets_a_new_timestamp(app_client, query, tmp_path, monkeypatch):
+    saved_at = int(datetime.now(timezone.utc).timestamp())
+    monkeypatch.setattr('backend.app.groq_fare_estimator.time', lambda: saved_at)
+    client, calls = app_client(lambda _: completion(), cache_path=tmp_path / 'estimates.sqlite3')
+    with client:
+        original = client.post('/flights/estimate', json=query).json()
+        saved_at += 24 * 60 * 60 - 1
+        assert client.post('/flights/estimate', json=query).json() == original
+        saved_at += 1
+        refreshed = client.post('/flights/estimate', json=query).json()
+        assert refreshed['estimated_at'] != original['estimated_at']
+    assert len(calls) == 2
 
 
 def test_customer_estimate_uses_covered_model_before_calling_groq(app_client, query):
@@ -242,8 +298,11 @@ def test_timeout_and_backend_connection_failure(app_client, query):
 def test_an_in_flight_estimate_does_not_resend(query):
     async def scenario():
         start, finish = asyncio.Event(), asyncio.Event()
+        calls = 0
 
         async def respond(request):
+            nonlocal calls
+            calls += 1
             start.set()
             await finish.wait()
             return completion()
@@ -255,11 +314,16 @@ def test_an_in_flight_estimate_does_not_resend(query):
         try:
             await start.wait()
             with pytest.raises(EstimateError) as duplicate:
-                await estimator.estimate(payload, None)
+                await estimator.estimate(FlightSearch.model_validate(query | {'origin': 'BOM'}), None)
             assert duplicate.value.code == 'busy'
+            same = asyncio.create_task(estimator.estimate(payload, None))
+            await asyncio.sleep(0)
         finally:
             finish.set()
-            await first
+        try:
+            assert await first == await same
+            assert calls == 1
+        finally:
             await estimator.close()
 
     asyncio.run(scenario())

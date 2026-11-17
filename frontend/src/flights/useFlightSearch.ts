@@ -18,6 +18,8 @@ export async function requestFlightSearch(query: FlightQuery, indicative: boolea
           estimate.origin !== query.origin || estimate.destination !== query.destination ||
           estimate.journey_type !== query.journey || estimate.cabin_class !== query.cabin ||
           estimate.departure_date !== query.departure_date || estimate.return_date !== (query.return_date ?? null) ||
+          estimate.airline !== (query.airline ?? null) || (query.airline ? !estimate.airline_name : estimate.airline_name !== null) ||
+          !Number.isFinite(Date.parse(estimate.estimated_at)) ||
           estimate.passenger_count !== passengerCount(query.travellers)) {
         throw new Error('The estimate response could not be read. Try again.');
       }
@@ -30,7 +32,12 @@ export async function requestFlightSearch(query: FlightQuery, indicative: boolea
     const retryable = error instanceof ApiError
       ? error.retryable ?? (!['unconfigured', 'quota', 'authentication', 'unsupported'].includes(error.code ?? '') && error.status !== 422)
       : true;
-    const message = indicative ? ESTIMATE_UNAVAILABLE : error instanceof Error ? error.message : 'Flight search failed.';
+    let message = indicative ? ESTIMATE_UNAVAILABLE : error instanceof Error ? error.message : 'Flight search failed.';
+    if (indicative && error instanceof ApiError) {
+      if (error.code === 'no_estimate') message = 'A useful fare range is unavailable for this trip. Try a different date or airline.';
+      if (error.code === 'busy' || error.code === 'rate_limit') message = 'Fare searches are busy. Wait a moment and try again.';
+      if (error.code === 'quota') message = 'The estimate service has reached its limit. Try again later.';
+    }
     return {status: 'error', message, retryable};
   }
 }

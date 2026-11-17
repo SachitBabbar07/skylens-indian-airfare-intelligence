@@ -5,7 +5,7 @@ Run `./run.ps1`. The built application is at [port 8000](http://127.0.0.1:8000);
 ## Flight search
 
 - `GET /flights/airports` lists Indian IATA-coded airport records with name, city, state and a historical evidence flag. Directory entries describe known airports. Route support comes from a registered source.
-- `GET /flights/capabilities` reports the travel options for each configured source and today's date in India. `indicative_estimates` is null when Groq is disabled. `live_quotes` and `ml_estimates` remain null in the current configuration.
+- `GET /flights/capabilities` reports the travel options for each configured source, a domestic airline preference directory, and today's date in India. `indicative_estimates` is null when Groq is disabled. `live_quotes` and `ml_estimates` remain null in the current configuration. The airline list covers carriers in the September 2026 domestic traffic report. Routes and operating dates need separate confirmation. [DGCA domestic traffic report](https://public-prd-dgca.s3.ap-south-1.amazonaws.com/InventoryList/dataReports/aviationDataStatistics/airTransport/domestic/airTraffic/traffic%20Data%20Sep%2026.pdf)
 - `POST /flights/estimate` accepts the same journey details and checks for a validated trained-model result first. A qualified result uses the `results` format below with `source=ml_estimate`. Otherwise the Groq fallback can return `estimated_low` and `estimated_high` in INR for all travellers, with `estimation_source=groq_indicative`. The fallback supports one-way and round-trip journeys for adults and children in Economy, Premium Economy and Business. It withholds a range wider than 25% of the upper bound. Width does not establish statistical coverage or current inventory. SkyLens sends the validated journey and approximate airport distance when available.
 - `POST /flights/search` accepts origin and destination IATA codes, `journey` (`one_way` or `round_trip`), `departure_date`, `return_date` for round trips, `cabin` and `travellers` (`adults`, `children`, `infants`). Dates use `YYYY-MM-DD` and are validated in India Standard Time.
 
@@ -13,7 +13,9 @@ Run `./run.ps1`. The built application is at [port 8000](http://127.0.0.1:8000);
 
 Application errors supply `detail.code` and `detail.message`. Status 422 covers invalid or unsupported input. Status 503 reports missing provider or authentication failure. Status 429 reports quota or rate limits, 504 reports timeouts, and 502 reports provider failures or incomplete responses. Provider authentication occurs on the backend. The published app has neither a live provider adapter nor an approved customer fare model.
 
-For the Groq endpoint, `detail.retryable` indicates whether the UI should offer a manual retry. Rate and quota responses can include `Retry-After`. The server rejects concurrent estimates, honors the provider cooldown and makes at most one Groq call per submission. [Groq rate limits](https://console.groq.com/docs/rate-limits)
+The fallback accepts an optional `airline` identifier and labels it as a preference. Identical searches share an in-progress request or reuse a successful range for up to 24 hours. The response preserves the original `estimated_at` timestamp. The SQLite cache under `data/cache/` is local and ignored by Git. Validation failures and provider errors are excluded from the cache.
+
+For the Groq endpoint, `detail.retryable` indicates whether the UI should offer a manual retry. Rate and quota responses can include `Retry-After`. The server honors the provider cooldown and makes at most one Groq call per submission. [Groq rate limits](https://console.groq.com/docs/rate-limits)
 
 ## Customer ML capability
 

@@ -36,19 +36,31 @@ function FlightApp() {
 
   return <div className="flight-app">
     <a className="flight-skip" href="#flight-main">Skip to flight search</a>
-    <header className="flight-header"><div className="flight-width header-inner">
-      <a className="flight-brand" href="/"><img src="/favicon.svg" alt="" width="34" height="34"/> SkyLens</a>
-      <nav aria-label="Main navigation"><a href="/" aria-current="page">Flights</a><a href="/research.html">Research</a></nav>
-    </div></header>
-    <main className="flight-width flight-main" id="flight-main" tabIndex={-1}>
-      <h1>Find flights in India</h1>
-      <p className="flight-intro">Choose your airports, travel dates and cabin.</p>
-      <FlightSearchForm airports={airports} capabilities={capabilities} indicative={indicative} busy={state.status === 'loading'}
-        onSearch={query => void search(query)} onEdit={clear}/>
-      {loadError && <div className="flight-status" role="status"><p>{loadError}</p>
-        <button className="small-button" type="button" onClick={() => setAttempt(value => value + 1)}>Retry connection</button></div>}
-      {(capabilities || state.status !== 'idle') && <FlightResults state={state} indicative={indicative}
-        unavailable={indicative && !estimateAvailable} retry={retry}/>}
+    <header className="flight-header">
+      <div className="flight-width header-inner">
+        <a className="flight-brand" href="/"><img src="/favicon.svg" alt="" width="36" height="36"/>SkyLens</a>
+        <nav aria-label="Main navigation">
+          <a href="/" aria-current="page">Flights</a>
+          <a href="/research.html">Research</a>
+        </nav>
+      </div>
+    </header>
+    <main className="flight-main">
+      <section className="flight-width flight-hero" aria-labelledby="flight-title">
+        <img className="flight-hero-photo" src="/flights-hero.webp" alt="" fetchPriority="high"/>
+        <div className="flight-hero-content">
+          <h1 id="flight-title">Find flights <span>in India</span></h1>
+          <p className="flight-intro">Choose your route, travel dates and cabin.</p>
+        </div>
+      </section>
+      <div className="flight-search-area" id="flight-main" tabIndex={-1}>
+        <FlightSearchForm airports={airports} capabilities={capabilities} indicative={indicative} busy={state.status === 'loading'}
+          onSearch={query => void search(query)} onEdit={clear}/>
+        {loadError && <div className="flight-status" role="status"><p>{loadError}</p>
+          <button className="small-button" type="button" onClick={() => setAttempt(value => value + 1)}>Retry connection</button></div>}
+        {(capabilities || state.status !== 'idle') && <FlightResults state={state} indicative={indicative}
+          unavailable={indicative && !estimateAvailable} retry={retry}/>}
+      </div>
     </main>
     <footer className="flight-width flight-footer"><span>SkyLens</span><span>Indian domestic flights</span><a href="/research.html">Research</a></footer>
   </div>;

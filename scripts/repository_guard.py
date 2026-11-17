@@ -29,7 +29,7 @@ def inspect(name, content):
     p = Path(name)
     if (p.name.startswith(".env") and p.name != ".env.example") or p.suffix in {".pem", ".key", ".pfx", ".p12", ".cbm", ".parquet", ".zip", ".xlsx"}:
         problems.append("forbidden payload")
-    if name.startswith(("data/raw/", "data/interim/", "data/processed/", "data/quotes/", "backups/", ".tools/")):
+    if name.startswith(("data/raw/", "data/interim/", "data/processed/", "data/quotes/", "data/cache/", "backups/", ".tools/")):
         problems.append("private or regenerable payload")
     if len(content) > LIMIT:
         problems.append("blob exceeds 5 MiB")

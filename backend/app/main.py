@@ -35,7 +35,7 @@ async def lifespan(app):
         app.state.evidence=None
     logging.getLogger('uvicorn.error').info('Research startup: %d models loaded; %d model artifacts unavailable',
              len(app.state.store.models),len(app.state.store.errors))
-    app.state.groq_estimator=GroqFareEstimator(GroqSettings.load(ROOT))
+    app.state.groq_estimator=GroqFareEstimator(GroqSettings.load(ROOT), cache_path=ROOT / 'data/cache/indicative_fares.sqlite3')
     try:
         yield
     finally:

@@ -32,6 +32,7 @@ frontend/dist/
 data/raw/
 data/processed/
 data/interim/
+data/cache/
 models/*/model.cbm
 reports/*predictions.parquet
 *.log

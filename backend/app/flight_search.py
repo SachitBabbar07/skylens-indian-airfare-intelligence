@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 
 from backend.app.fare_service import FareError, FareService
-from backend.app.flight_fares import FlightSearch, SearchResponse
+from backend.app.flight_fares import DOMESTIC_AIRLINES, FlightSearch, SearchResponse
 from backend.app.groq_fare_estimator import EstimateError, GroqFareEstimator, IndicativeEstimate
 
 
@@ -65,7 +65,9 @@ def flight_airports(request: Request):
 def flight_capabilities(request: Request, response: Response):
     response.headers['Cache-Control'] = 'no-store'
     estimator = getattr(request.app.state, 'groq_estimator', None)
-    return {**request.app.state.fare_service.capabilities(), 'indicative_estimates': estimator.support if estimator else None}
+    return {**request.app.state.fare_service.capabilities(),
+            'indicative_estimates': estimator.support if estimator else None,
+            'airlines': [{'id': key, 'name': name} for key, name in DOMESTIC_AIRLINES.items()]}
 
 
 @router.post('/estimate', response_model=IndicativeEstimate | SearchResponse)

@@ -63,6 +63,8 @@ function FlightResultCard({result}: {result: FareResult}) {
 
 const rupees = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR', maximumFractionDigits: 0});
 const travelDate = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'});
+const estimateDate = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit',
+  timeZone: 'Asia/Kolkata'});
 
 function EstimateCard({estimate}: {estimate: IndicativeEstimate}) {
   const departure = travelDate.format(new Date(`${estimate.departure_date}T00:00:00Z`));
@@ -72,9 +74,11 @@ function EstimateCard({estimate}: {estimate: IndicativeEstimate}) {
     <p className="indicative-route"><strong>{estimate.origin} → {estimate.destination}</strong> · {estimate.journey_type === 'round_trip' ? 'Round Trip' : 'One Way'}
       {' · '}{cabinNames[estimate.cabin_class]}</p>
     <p>Departure {departure}{returnDate && ` · Return ${returnDate}`}</p>
+    {estimate.airline_name && <p className="indicative-meta">Airline preference {estimate.airline_name}</p>}
     <p className="indicative-price">{rupees.format(estimate.estimated_low)} – {rupees.format(estimate.estimated_high)}</p>
     <p>Estimated total for {estimate.passenger_count} {estimate.passenger_count === 1 ? 'traveller' : 'travellers'}</p>
     <p className="indicative-disclosure">AI-assisted estimate · Actual fares may vary.</p>
+    <p className="indicative-asof">Estimated {estimateDate.format(new Date(estimate.estimated_at))} IST</p>
   </section>;
 }
 
