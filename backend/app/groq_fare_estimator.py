@@ -166,7 +166,7 @@ class GroqFareEstimator:
                         model=self.model,
                         messages=[{'role': 'system', 'content': SYSTEM_PROMPT},
                                   {'role': 'user', 'content': json.dumps(context)}],
-                        max_completion_tokens=1024,
+                        max_completion_tokens=384,
                         reasoning_effort='low' if self.model in {'openai/gpt-oss-20b', 'openai/gpt-oss-120b'} else None,
                         service_tier='on_demand',
                         response_format=RESPONSE_FORMAT,

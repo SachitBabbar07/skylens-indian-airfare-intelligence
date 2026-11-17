@@ -98,6 +98,7 @@ def test_structured_round_trip_and_prompt_scope(app_client, query):
     assert request.headers.get('authorization') == f'Bearer {FIXTURE_KEY}'
     body = json.loads(request.content)
     assert body['model'] == DEFAULT_MODEL
+    assert body['max_completion_tokens'] == 384
     assert body['service_tier'] == 'on_demand' and 'tools' not in body
     assert body['response_format']['json_schema']['strict'] is True
     context = json.loads(body['messages'][-1]['content'])
