@@ -50,44 +50,53 @@ class FareService:
             'today': datetime.now(IST).date(),
         }
 
+    async def estimate_with_model(self, request: FlightSearch) -> SearchResponse | None:
+        results = await self._search_source(self.model, ModelEstimate, request)
+        return SearchResponse(results=results) if results else None
+
     async def search(self, request: FlightSearch) -> SearchResponse:
         if self.model is None and self.provider is None:
             raise FareError('unconfigured')
         searched = False
         for source, result_type in ((self.model, ModelEstimate), (self.provider, LiveQuote)):
-            if source is None:
-                continue
-            try:
-                if not source.support.accepts(request) or not source.supports_route(request):
-                    continue
-                searched = True
-                started = datetime.now(timezone.utc)
-                async with asyncio.timeout(self.timeout_seconds):
-                    values = await source.search(request)
-                if not isinstance(values, list):
-                    raise FareError('invalid_response')
-                results = [result_type.model_validate(value.model_dump() if isinstance(value, result_type) else value)
-                           for value in values]
-                if len({value.id for value in results}) != len(results):
-                    raise FareError('invalid_response')
-                for value in results:
-                    self._verify_result(value, request, started)
-            except TimeoutError:
-                raise FareError('timeout') from None
-            except ValidationError:
-                raise FareError('invalid_response') from None
-            except FareError:
-                raise
-            except Exception:
-                # An adapter exception can contain a credential-bearing URL or
-                # provider payload. Log a fixed event without exception details.
-                log.warning('Fare source request failed')
-                raise FareError('unavailable') from None
+            results = await self._search_source(source, result_type, request)
+            searched = searched or results is not None
             if results:
                 return SearchResponse(results=results)
         if not searched:
             raise FareError('unsupported')
         return SearchResponse(results=[])
+
+    async def _search_source(self, source: LiveFareProvider | ValidatedFareModel | None,
+                             result_type: type[LiveQuote] | type[ModelEstimate], request: FlightSearch
+                             ) -> list[LiveQuote | ModelEstimate] | None:
+        if source is None:
+            return None
+        try:
+            if not source.support.accepts(request) or not source.supports_route(request):
+                return None
+            started = datetime.now(timezone.utc)
+            async with asyncio.timeout(self.timeout_seconds):
+                values = await source.search(request)
+            if not isinstance(values, list):
+                raise FareError('invalid_response')
+            results = [result_type.model_validate(value.model_dump() if isinstance(value, result_type) else value)
+                       for value in values]
+            if len({value.id for value in results}) != len(results):
+                raise FareError('invalid_response')
+            for value in results:
+                self._verify_result(value, request, started)
+            return results
+        except TimeoutError:
+            raise FareError('timeout') from None
+        except ValidationError:
+            raise FareError('invalid_response') from None
+        except FareError:
+            raise
+        except Exception:
+            # Adapter exceptions can contain a credential-bearing URL or provider payload.
+            log.warning('Fare source request failed')
+            raise FareError('unavailable') from None
 
     @staticmethod
     def _verify_result(value: LiveQuote | ModelEstimate, request: FlightSearch, started: datetime) -> None:

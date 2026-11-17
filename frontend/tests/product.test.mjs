@@ -43,19 +43,20 @@ const fixtureResult = {id: 'quote', source: 'live_quote', availability: 'availab
 
 const indicativeQuery = {origin: 'PNQ', destination: 'DEL', journey: 'round_trip', departure_date: '2027-04-05',
   return_date: '2027-04-10', cabin: 'economy', travellers: {adults: 1, children: 1, infants: 0}};
-const indicative = {estimated_low: 9000, estimated_high: 16000, currency: 'INR', origin: 'PNQ', destination: 'DEL',
+const indicative = {estimated_low: 12500, estimated_high: 16000, currency: 'INR', origin: 'PNQ', destination: 'DEL',
   journey_type: 'round_trip', departure_date: '2027-04-05', return_date: '2027-04-10',
   cabin_class: 'economy', passenger_count: 2, estimation_source: 'groq_indicative'};
 
 test('the indicative result renders a rupee range, route, dates, travel party and disclosure', () => {
   const html = render(FlightResults, {state: {status: 'estimate', estimate: indicative}, indicative: true, retry() {}});
   assert.match(html, /SkyLens Indicative Fare Estimate/);
-  assert.match(html, /\u20b99,000 – \u20b916,000/);
+  assert.match(html, /\u20b912,500 – \u20b916,000/);
   assert.match(html, /PNQ → DEL/);
   assert.match(html, /Round Trip.*Economy/);
   assert.match(html, /Departure 5 Apr 2027 · Return 10 Apr 2027/);
   assert.match(html, /Estimated total for 2 travellers/);
-  assert.match(html, /AI-generated indicative estimate\. Not a live airline quote or guaranteed ticket price\. Actual fares may differ\./);
+  assert.match(html, /AI-assisted estimate · Actual fares may vary\./);
+  assert.doesNotMatch(html, /guaranteed ticket price|Groq/);
   assert.doesNotMatch(html, /Live Fare Quote|ML Estimated Fare|Non-stop|Available seats/);
 });
 
@@ -100,6 +101,19 @@ test('wrong currency, source, or journey is withheld and provider retry choices 
     retryable: false}}, {status: 429}));
   assert.deepEqual(await requestFlightSearch(indicativeQuery, true),
     {status: 'error', message: 'Fare estimate temporarily unavailable. Please try again.', retryable: false});
+});
+
+test('a covered trained-model result goes through the same estimate request', async context => {
+  const model = {id: 'model-fixture', source: 'ml_estimate', source_name: 'Software fixture', fare: fixtureFare,
+    retrieved_at: fixtureResult.retrieved_at, journey: indicativeQuery.journey, cabin: indicativeQuery.cabin,
+    travellers: indicativeQuery.travellers};
+  const mock = context.mock.method(globalThis, 'fetch', async (url) => {
+    assert.equal(url, '/flights/estimate');
+    return Response.json({results: [model]});
+  });
+  assert.deepEqual(await requestFlightSearch(indicativeQuery, true),
+    {status: 'success', results: [model], query: indicativeQuery});
+  assert.equal(mock.mock.callCount(), 1);
 });
 
 test('fare formatting retains original currencies and requires exact traveller total basis', () => {

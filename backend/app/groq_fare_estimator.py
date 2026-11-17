@@ -30,7 +30,9 @@ SYSTEM_PROMPT = (
     'cabin, booking lead time, calendar timing and approximate straight-line distance when supplied. The range '
     'must be the estimated total in INR, including customary mandatory taxes and fees, for all adults and '
     'children across the entire requested journey. Do not assume discounts. Use distinct, coarsely rounded '
-    'whole-rupee bounds. If you lack a reasonable basis for the route, cabin or dates, set both bounds to null. '
+    'whole-rupee bounds. Aim for a useful typical range whose width is at most 25 percent of the upper bound. '
+    'Do not narrow a range artificially. If the available context does not support that range for the route, '
+    'cabin, or dates, set both bounds to null. '
     'Return only the required JSON object. Do not invent schedules, inventory, airlines or confidence figures.'
 )
 
@@ -187,6 +189,8 @@ class GroqFareEstimator:
                 raise EstimateError('unavailable') from None
 
         if bounds.estimated_low is None or bounds.estimated_high is None:
+            raise EstimateError('no_estimate')
+        if 4 * (bounds.estimated_high - bounds.estimated_low) > bounds.estimated_high:
             raise EstimateError('no_estimate')
         return IndicativeEstimate(estimated_low=bounds.estimated_low, estimated_high=bounds.estimated_high,
                                   journey_type=search.journey, origin=search.origin, destination=search.destination,

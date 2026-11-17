@@ -5,7 +5,13 @@ import {ESTIMATE_UNAVAILABLE, passengerCount, type FareResult, type FlightQuery,
 export async function requestFlightSearch(query: FlightQuery, indicative: boolean): Promise<SearchState> {
   try {
     if (indicative) {
-      const estimate = await api<IndicativeEstimate>('/flights/estimate', query);
+      const estimate = await api<IndicativeEstimate | {results: FareResult[]}>('/flights/estimate', query);
+      if ('results' in estimate) {
+        if (!Array.isArray(estimate.results) || !estimate.results.length || estimate.results.some(result => result.source !== 'ml_estimate')) {
+          throw new Error('The model response could not be read. Try again.');
+        }
+        return {status: 'success', results: estimate.results, query};
+      }
       if (estimate.estimation_source !== 'groq_indicative' || estimate.currency !== 'INR' ||
           !Number.isSafeInteger(estimate.estimated_low) || !Number.isSafeInteger(estimate.estimated_high) ||
           estimate.estimated_low <= 0 || estimate.estimated_low >= estimate.estimated_high ||

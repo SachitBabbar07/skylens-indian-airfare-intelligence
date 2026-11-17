@@ -12,7 +12,8 @@ function FlightApp() {
   const [capabilities, setCapabilities] = useState<SearchCapabilities | null>(null);
   const [loadError, setLoadError] = useState('');
   const [attempt, setAttempt] = useState(0);
-  const indicative = Boolean(capabilities?.indicative_estimates) || !capabilities?.live_quotes && !capabilities?.ml_estimates;
+  const estimateAvailable = Boolean(capabilities?.indicative_estimates || capabilities?.ml_estimates);
+  const indicative = Boolean(capabilities?.indicative_estimates) || !capabilities?.live_quotes;
   const {state, search, clear, retry} = useFlightSearch(indicative);
 
   useEffect(() => {
@@ -47,7 +48,7 @@ function FlightApp() {
       {loadError && <div className="flight-status" role="status"><p>{loadError}</p>
         <button className="small-button" type="button" onClick={() => setAttempt(value => value + 1)}>Retry connection</button></div>}
       {(capabilities || state.status !== 'idle') && <FlightResults state={state} indicative={indicative}
-        unavailable={indicative && !capabilities?.indicative_estimates} retry={retry}/>}
+        unavailable={indicative && !estimateAvailable} retry={retry}/>}
     </main>
     <footer className="flight-width flight-footer"><span>SkyLens</span><span>Indian domestic flights</span><a href="/research.html">Research</a></footer>
   </div>;

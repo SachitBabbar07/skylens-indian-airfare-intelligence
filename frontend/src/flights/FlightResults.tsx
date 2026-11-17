@@ -74,7 +74,7 @@ function EstimateCard({estimate}: {estimate: IndicativeEstimate}) {
     <p>Departure {departure}{returnDate && ` · Return ${returnDate}`}</p>
     <p className="indicative-price">{rupees.format(estimate.estimated_low)} – {rupees.format(estimate.estimated_high)}</p>
     <p>Estimated total for {estimate.passenger_count} {estimate.passenger_count === 1 ? 'traveller' : 'travellers'}</p>
-    <p className="indicative-disclosure">AI-generated indicative estimate. Not a live airline quote or guaranteed ticket price. Actual fares may differ.</p>
+    <p className="indicative-disclosure">AI-assisted estimate · Actual fares may vary.</p>
   </section>;
 }
 
@@ -82,12 +82,7 @@ export function FlightResults({state, unavailable, indicative = false, retry}: {
   indicative?: boolean; retry: () => void}) {
   const [sort, setSort] = useState<Sort>('price');
   if (state.status === 'idle') {
-    if (indicative) return <div className="flight-status" role="status">
-      {unavailable ? ESTIMATE_UNAVAILABLE : <>
-        <strong>AI-assisted fare estimates</strong>
-        <p>SkyLens sends your selected trip details to Groq to generate an approximate fare range.</p>
-      </>}
-    </div>;
+    if (indicative) return unavailable ? <div className="flight-status" role="status">{ESTIMATE_UNAVAILABLE}</div> : null;
     return unavailable ? <div className="flight-status" role="status">
       <strong>Live fares unavailable</strong><p>Flight search needs a connected fare provider.</p>
     </div> : null;

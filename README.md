@@ -2,7 +2,7 @@
 
 SkyLens is a React and FastAPI application for Indian domestic flight search. On the Flights page, you can look up 165 Indian IATA-coded airports by city, airport name or code, swap airports and choose one-way or round-trip travel dates, travellers and cabin.
 
-**Indicative fares use Groq.** With a configured Groq Free plan key, SkyLens generates an experimental INR range for the full travel party. The estimate carries no inventory, guaranteed price or calibrated accuracy. Live quotes remain unavailable. [.env.example](.env.example) · [Flight search API](docs/API_GUIDE.md#flight-search)
+**Fare estimates use a validated trained model when it covers the trip.** For trips without a qualified model result, the Groq fallback can generate an indicative INR range for the full party. It withholds ranges wider than 25% of the upper bound. The width requirement is a display rule and carries no calibrated accuracy. Live quotes remain unavailable. [.env.example](.env.example) · [Flight search API](docs/API_GUIDE.md#flight-search)
 
 ## Research
 

@@ -19,7 +19,7 @@ export function FlightSearchForm({airports, capabilities, indicative, busy, onSe
   const [swapCount, setSwapCount] = useState(0);
   const today = indiaToday();
   const roundTrip = journey === 'round_trip';
-  const sources = (indicative ? [capabilities?.indicative_estimates] :
+  const sources = (indicative ? [capabilities?.ml_estimates, capabilities?.indicative_estimates] :
     [capabilities?.live_quotes, capabilities?.ml_estimates]).filter(source => source != null);
   const journeySources = sources.filter(source => source.journeys.includes(journey));
   const cabins = [...new Set((journeySources.length ? journeySources : sources).flatMap(source => source.cabins))];

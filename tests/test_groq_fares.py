@@ -1,7 +1,7 @@
 import asyncio
 import json
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import httpx
@@ -17,7 +17,7 @@ from scripts.repository_guard import inspect
 
 
 FIXTURE_KEY = 'gsk_' + 'x' * 52
-RANGE = json.dumps({'estimated_low': 9000, 'estimated_high': 16000, 'currency': 'INR'})
+RANGE = json.dumps({'estimated_low': 12500, 'estimated_high': 16000, 'currency': 'INR'})
 
 
 @pytest.fixture
@@ -88,7 +88,7 @@ def test_structured_round_trip_and_prompt_scope(app_client, query):
         assert response.status_code == 200
         assert response.headers['cache-control'] == 'no-store'
         assert response.json() == {
-            'estimated_low': 9000, 'estimated_high': 16000, 'currency': 'INR', 'journey_type': 'round_trip',
+            'estimated_low': 12500, 'estimated_high': 16000, 'currency': 'INR', 'journey_type': 'round_trip',
             'origin': 'PNQ', 'destination': 'DEL', 'departure_date': query['departure_date'], 'return_date': query['return_date'],
             'cabin_class': 'business', 'passenger_count': 2, 'estimation_source': 'groq_indicative', 'disclaimer': DISCLAIMER,
         }
@@ -159,6 +159,44 @@ def test_abstention_and_truncation(app_client, query):
     client, _ = app_client(lambda _: completion(finish='length'))
     with client:
         assert client.post('/flights/estimate', json=query).json()['detail']['code'] == 'invalid_response'
+
+
+def test_broad_fallback_range_is_withheld_instead_of_rescaled(app_client, query):
+    client, calls = app_client(lambda _: completion('{"estimated_low":2000,"estimated_high":4000,"currency":"INR"}'))
+    with client:
+        response = client.post('/flights/estimate', json=query)
+    assert response.status_code == 422
+    assert response.json()['detail']['code'] == 'no_estimate'
+    assert 'estimated_low' not in response.json() and len(calls) == 1
+
+
+def test_customer_estimate_uses_covered_model_before_calling_groq(app_client, query):
+    from backend.app.flight_fares import SearchSupport
+
+    class ValidatedModel:
+        support = SearchSupport(journeys=['round_trip'], cabins=['business'], children=True)
+
+        def supports_route(self, search):
+            return (search.origin, search.destination) == ('PNQ', 'DEL')
+
+        async def search(self, search):
+            return [{'source': 'ml_estimate', 'id': 'validated-fixture', 'source_name': 'Contract fixture',
+                     'journey': search.journey, 'cabin': search.cabin, 'travellers': search.travellers,
+                     'retrieved_at': datetime.now(timezone.utc),
+                     'fare': {'amount': '14500', 'currency': 'INR', 'basis': 'party_total',
+                              'taxes': 'included', 'fees': 'included'}}]
+
+    client, calls = app_client(lambda _: completion())
+    client.app.state.fare_service = FareService(model=ValidatedModel())
+    with client:
+        model = client.post('/flights/estimate', json=query)
+        assert model.status_code == 200
+        assert model.json()['results'][0]['source'] == 'ml_estimate'
+        assert calls == []
+        fallback = client.post('/flights/estimate', json=query | {'origin': 'BOM'})
+        assert fallback.status_code == 200
+        assert fallback.json()['estimation_source'] == 'groq_indicative'
+    assert len(calls) == 1
 
 
 @pytest.mark.parametrize(('status', 'headers', 'app_status', 'code'), [
