@@ -40,6 +40,7 @@ def test_config_uses_local_env_or_process_without_leaking_key(tmp_path, monkeypa
     assert GroqSettings.load(tmp_path) == GroqSettings(DEFAULT_MODEL, '', False)
     (tmp_path / '.env').write_text(
         f'GROQ_API_KEY={FIXTURE_KEY}\nGROQ_FREE_PLAN_CONFIRMED=true\nGROQ_MODEL=openai/gpt-oss-120b\n', encoding='utf-8')
+    monkeypatch.chdir(tmp_path.parent)
     local = GroqSettings.load(tmp_path)
     assert local == GroqSettings('openai/gpt-oss-120b', FIXTURE_KEY, True)
     assert FIXTURE_KEY not in repr(local)
@@ -106,13 +107,17 @@ def test_structured_round_trip_and_prompt_scope(app_client, query):
     assert FIXTURE_KEY not in response.text and FIXTURE_KEY.encode() not in request.content
 
 
-def test_unconfigured_and_unsupported_inputs_never_contact_groq(app_client, query):
-    for key, confirmed in [('', True), (FIXTURE_KEY, False)]:
-        client, calls = app_client(lambda _: completion(), key=key, confirmed=confirmed)
+def test_unconfigured_and_unsupported_inputs_never_contact_groq(app_client, query, caplog):
+    for key, confirmed, reason in [('', True, 'missing_key'), (FIXTURE_KEY, False, 'free_plan_unconfirmed')]:
+        with caplog.at_level('INFO'):
+            client, calls = app_client(lambda _: completion(), key=key, confirmed=confirmed)
         with client:
             assert client.get('/flights/capabilities').json()['indicative_estimates'] is None
             error = client.post('/flights/estimate', json=query)
-            assert error.status_code == 503 and error.json()['detail']['code'] == 'unconfigured'
+            assert error.status_code == 503
+            assert error.json()['detail'] == {'code': 'unconfigured', 'retryable': True,
+                'message': 'Fare estimate temporarily unavailable. Please try again.'}
+        assert reason in caplog.text and FIXTURE_KEY not in caplog.text
         assert calls == []
 
     client, calls = app_client(lambda _: completion())
@@ -168,6 +173,8 @@ def test_provider_errors_and_throttling_do_not_reveal_diagnostics(app_client, qu
         response = client.post('/flights/estimate', json=query)
         assert response.status_code == app_status
         assert response.json()['detail']['code'] == code
+        assert response.json()['detail']['message'] == 'Fare estimate temporarily unavailable. Please try again.'
+        assert f'provider_status={status} category={code}' in caplog.text
         assert FIXTURE_KEY not in response.text + caplog.text
         assert 'private provider detail' not in response.text + caplog.text
         if app_status == 429:

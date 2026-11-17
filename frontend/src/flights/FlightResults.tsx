@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {flightDate, flightTime} from './dates';
-import {cabinNames, passengerCount, type Fare, type FareResult, type FlightLeg, type IndicativeEstimate,
+import {ESTIMATE_UNAVAILABLE, cabinNames, passengerCount, type Fare, type FareResult, type FlightLeg, type IndicativeEstimate,
   type SearchState} from './types';
 
 type Sort = 'provider' | 'price' | 'duration' | 'departure';
@@ -83,9 +83,10 @@ export function FlightResults({state, unavailable, indicative = false, retry}: {
   const [sort, setSort] = useState<Sort>('price');
   if (state.status === 'idle') {
     if (indicative) return <div className="flight-status" role="status">
-      <strong>{unavailable ? 'Indicative estimates unavailable' : 'AI-assisted fare estimates'}</strong>
-      <p>{unavailable ? 'A Groq Free plan key is needed on the SkyLens backend.' :
-        'SkyLens sends your selected trip details to Groq to generate an approximate fare range.'}</p>
+      {unavailable ? ESTIMATE_UNAVAILABLE : <>
+        <strong>AI-assisted fare estimates</strong>
+        <p>SkyLens sends your selected trip details to Groq to generate an approximate fare range.</p>
+      </>}
     </div>;
     return unavailable ? <div className="flight-status" role="status">
       <strong>Live fares unavailable</strong><p>Flight search needs a connected fare provider.</p>
@@ -95,7 +96,7 @@ export function FlightResults({state, unavailable, indicative = false, retry}: {
     {indicative ? 'Generating an indicative fare estimate…' : 'Searching for available flights…'}
   </div>;
   if (state.status === 'error') return <div className="flight-status" role="alert">
-    <strong>{indicative ? 'Estimate unavailable' : 'Search unavailable'}</strong><p>{state.message}</p>
+    {!indicative && <strong>Search unavailable</strong>}<p>{state.message}</p>
     {state.retryable && <button type="button" className="small-button" onClick={retry}>Try again</button>}
   </div>;
   if (state.status === 'estimate') return <EstimateCard estimate={state.estimate}/>;

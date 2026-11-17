@@ -1,6 +1,6 @@
 import {useCallback, useRef, useState} from 'react';
 import {api, ApiError} from '../api';
-import {passengerCount, type FareResult, type FlightQuery, type IndicativeEstimate, type SearchState} from './types';
+import {ESTIMATE_UNAVAILABLE, passengerCount, type FareResult, type FlightQuery, type IndicativeEstimate, type SearchState} from './types';
 
 export async function requestFlightSearch(query: FlightQuery, indicative: boolean): Promise<SearchState> {
   try {
@@ -24,7 +24,8 @@ export async function requestFlightSearch(query: FlightQuery, indicative: boolea
     const retryable = error instanceof ApiError
       ? error.retryable ?? (!['unconfigured', 'quota', 'authentication', 'unsupported'].includes(error.code ?? '') && error.status !== 422)
       : true;
-    return {status: 'error', message: error instanceof Error ? error.message : 'Flight search failed.', retryable};
+    const message = indicative ? ESTIMATE_UNAVAILABLE : error instanceof Error ? error.message : 'Flight search failed.';
+    return {status: 'error', message, retryable};
   }
 }
 

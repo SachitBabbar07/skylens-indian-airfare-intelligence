@@ -67,7 +67,9 @@ test('loading and retry affordances never fill the estimate area with invented p
   assert.match(outage, /role="alert".*Backend unavailable.*Try again/);
   const auth = renderState({status: 'error', message: 'API key was rejected', retryable: false});
   assert.doesNotMatch(auth, /Try again/);
-  for (const html of [loading, outage, auth]) assert.doesNotMatch(html, /\u20b9|indicative-price/);
+  const disabled = render(FlightResults, {state: {status: 'idle'}, indicative: true, unavailable: true, retry() {}});
+  assert.match(disabled, /Fare estimate temporarily unavailable\. Please try again\./);
+  for (const html of [loading, outage, auth, disabled]) assert.doesNotMatch(html, /\u20b9|indicative-price|Groq Free plan/);
 });
 
 test('a backend outage leaves a manual retry and the next request can recover', async context => {
@@ -81,6 +83,7 @@ test('a backend outage leaves a manual retry and the next request can recover', 
   const error = await requestFlightSearch(indicativeQuery, true);
   assert.equal(error.status, 'error');
   assert.equal(error.retryable, true);
+  assert.equal(error.message, 'Fare estimate temporarily unavailable. Please try again.');
   assert.equal(calls, 1);
   assert.deepEqual(await requestFlightSearch(indicativeQuery, true), {status: 'estimate', estimate: indicative});
   assert.equal(calls, 2);
@@ -96,7 +99,7 @@ test('wrong currency, source, or journey is withheld and provider retry choices 
   context.mock.method(globalThis, 'fetch', async () => Response.json({detail: {code: 'quota', message: 'Free plan allowance reached',
     retryable: false}}, {status: 429}));
   assert.deepEqual(await requestFlightSearch(indicativeQuery, true),
-    {status: 'error', message: 'Free plan allowance reached', retryable: false});
+    {status: 'error', message: 'Fare estimate temporarily unavailable. Please try again.', retryable: false});
 });
 
 test('fare formatting retains original currencies and requires exact traveller total basis', () => {

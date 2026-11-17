@@ -1,4 +1,5 @@
 export type Journey = 'one_way' | 'round_trip';
+export const ESTIMATE_UNAVAILABLE = 'Fare estimate temporarily unavailable. Please try again.';
 export type Cabin = 'economy' | 'premium_economy' | 'business' | 'first';
 export const cabinNames: Record<Cabin, string> = {
   economy: 'Economy', premium_economy: 'Premium Economy', business: 'Business', first: 'First Class',

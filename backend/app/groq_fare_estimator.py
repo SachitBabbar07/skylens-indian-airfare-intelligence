@@ -18,6 +18,7 @@ from pydantic import Field, ValidationError, model_validator
 from backend.app.flight_fares import Cabin, Contract, FlightSearch, IATA, IST, Journey, SearchSupport
 
 
+LOG = logging.getLogger(__name__)
 DEFAULT_MODEL = 'openai/gpt-oss-20b'
 # The SDK adds /openai/v1 to API routes. Pin the host for credentialed calls.
 BASE_URL = 'https://api.groq.com'
@@ -93,24 +94,26 @@ class IndicativeEstimate(Contract):
 
 
 ERRORS = {
-    'unconfigured': (503, 'Configure a Groq Free plan key on the SkyLens backend to generate an estimate.', False),
-    'authentication': (503, 'Groq rejected the API key (HTTP 401). Check the backend credential.', False),
-    'model_unavailable': (503, 'The configured Groq model is unavailable for this key or request. Check GROQ_MODEL.', False),
-    'unsupported': (422, 'Choose a supported cabin and traveller group for an indicative estimate.', False),
-    'quota': (429, 'The Groq Free plan allowance has been reached. Try again after the quota resets.', False),
-    'rate_limit': (429, 'Groq is limiting requests. Wait before trying again.', True),
-    'busy': (429, 'Another estimate is in progress. Wait a moment and try again.', True),
-    'timeout': (504, 'Groq took too long to respond. Try again.', True),
-    'unavailable': (502, 'Groq is temporarily unavailable. Try again.', True),
-    'invalid_response': (502, 'Groq returned an incomplete or invalid estimate. Try again.', True),
-    'no_estimate': (422, 'An indicative estimate is unavailable for these selections. Try another flight search.', False),
+    'unconfigured': (503, True),
+    'authentication': (503, False),
+    'model_unavailable': (503, False),
+    'unsupported': (422, False),
+    'quota': (429, False),
+    'rate_limit': (429, True),
+    'busy': (429, True),
+    'timeout': (504, True),
+    'unavailable': (502, True),
+    'invalid_response': (502, True),
+    'no_estimate': (422, False),
 }
+UNAVAILABLE_MESSAGE = 'Fare estimate temporarily unavailable. Please try again.'
 
 
 class EstimateError(Exception):
     def __init__(self, code: str, retry_after: int | None = None):
         self.code = code
-        self.status, self.message, self.retryable = ERRORS[code]
+        self.status, self.retryable = ERRORS[code]
+        self.message = UNAVAILABLE_MESSAGE
         self.retry_after = retry_after
         super().__init__(self.message)
 
@@ -123,7 +126,11 @@ class GroqFareEstimator:
         self._cooldown_until = 0.0
         self._cooldown_reason = 'rate_limit'
         self._client = None
-        if settings.api_key and settings.free_plan_confirmed:
+        if not settings.api_key:
+            LOG.warning('Indicative fares disabled category=missing_key')
+        elif not settings.free_plan_confirmed:
+            LOG.warning('Indicative fares disabled category=free_plan_unconfirmed')
+        else:
             # SDK diagnostics can log request and response internals when GROQ_LOG is enabled.
             logging.getLogger('groq').setLevel(logging.WARNING)
             self._client = AsyncGroq(api_key=settings.api_key, base_url=BASE_URL, max_retries=0, timeout=timeout,
@@ -171,7 +178,9 @@ class GroqFareEstimator:
             except (APITimeoutError, TimeoutError):
                 raise EstimateError('timeout') from None
             except APIStatusError as error:
-                raise self._status_error(error) from None
+                failure = self._status_error(error)
+                LOG.warning('Groq estimate request failed provider_status=%d category=%s', error.status_code, failure.code)
+                raise failure from None
             except (APIResponseValidationError, ValidationError, ValueError, AttributeError, TypeError):
                 raise EstimateError('invalid_response') from None
             except APIError:
