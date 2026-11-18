@@ -28,6 +28,6 @@ type PricedResult = {id: string; source_name: string; retrieved_at: string; jour
 export type FareResult = (PricedResult & {source: 'live_quote'; availability: 'available'; legs: FlightLeg[];
   baggage: string | null; conditions: string | null}) | (PricedResult & {source: 'ml_estimate'});
 
-export type SearchState = {status: 'idle'} | {status: 'loading'} | {status: 'comparison'; query: FlightQuery} |
+export type SearchState = {status: 'idle'} | {status: 'loading'} |
   {status: 'error'; message: string; retryable: boolean; query: FlightQuery} |
   {status: 'success'; results: FareResult[]; query: FlightQuery};

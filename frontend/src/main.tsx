@@ -13,7 +13,7 @@ function FlightApp() {
   const [loadError, setLoadError] = useState('');
   const [attempt, setAttempt] = useState(0);
   const airlines = capabilities?.airlines ?? [];
-  const {state, search, clear, retry} = useFlightSearch(capabilities);
+  const {state, search, clear, retry} = useFlightSearch();
 
   useEffect(() => {
     const request = new AbortController();
@@ -48,8 +48,8 @@ function FlightApp() {
       <section className="flight-width flight-hero" aria-labelledby="flight-title">
         <img className="flight-hero-photo" src="/flights-hero.webp" alt="" fetchPriority="high"/>
         <div className="flight-hero-content">
-          <h1 id="flight-title">Find flights <span>in India</span></h1>
-          <p className="flight-intro">Choose your route, travel dates and cabin.</p>
+          <h1 id="flight-title">Predict flight fares <span>in India</span></h1>
+          <p className="flight-intro">Choose an itinerary to check model coverage and predict a fare.</p>
         </div>
       </section>
       <div className="flight-search-area" id="flight-main" tabIndex={-1}>

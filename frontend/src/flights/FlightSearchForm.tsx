@@ -87,7 +87,7 @@ export function FlightSearchForm({airports, airlines, busy, onSearch, onEdit}: {
         </select>
       </label>}
       <button className="search-flights" type="submit" disabled={busy || !airports.length}>
-        {busy ? 'Searching flights…' : 'Search Flights'}
+        {busy ? 'Checking model coverage…' : 'Predict fare'}
       </button>
     </div>
   </form>;

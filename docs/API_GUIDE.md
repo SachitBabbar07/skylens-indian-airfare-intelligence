@@ -6,16 +6,16 @@ Run `./run.ps1`. The built application is at [port 8000](http://127.0.0.1:8000);
 
 - `GET /flights/airports` lists Indian IATA-coded airport records with name, city, state and a historical evidence flag. Directory entries describe known airports. Route support comes from a registered source.
 - `GET /flights/capabilities` reports travel options for configured sources, a domestic airline preference directory, and today's date in India. `live_quotes` and `ml_estimates` are null when no source is registered. `indicative_estimates` is reserved for the optional Groq experiment. The airline directory covers carriers in the September 2026 domestic traffic report. [DGCA domestic traffic report](https://public-prd-dgca.s3.ap-south-1.amazonaws.com/InventoryList/dataReports/aviationDataStatistics/airTransport/domestic/airTraffic/traffic%20Data%20Sep%2026.pdf)
-- `POST /flights/estimate` checks for a validated trained model. If none covers the request, the default response is HTTP 503 with `no_fare_evidence`. This also prevents an old browser tab from retrieving an unsupported cached AI range.
+- `POST /flights/estimate` serves only a validated supervised model result, with `source=ml_estimate`. If no model covers the request, it returns HTTP 503 with `no_fare_evidence` and no price.
 - `POST /flights/search` accepts origin and destination IATA codes, `journey` (`one_way` or `round_trip`), `departure_date`, `return_date` for round trips, `cabin` and `travellers` (`adults`, `children`, `infants`). Dates use `YYYY-MM-DD` and are validated in India Standard Time.
 
 `results` contains `live_quote` or `ml_estimate` records. Each price has a decimal amount, source currency, `party_total` basis, tax and fee status, cabin, exact travellers, source name and retrieval time. Live quotes also require available itineraries with matching airports and dates, named airlines and time-zone-aware times. `results: []` means a supported source completed the search and returned zero results. The API sends `Cache-Control: no-store` with fare responses.
 
 Application errors supply `detail.code` and `detail.message`. Status 422 covers invalid or unsupported input. Status 503 reports missing provider or authentication failure. Status 429 reports quota or rate limits, 504 reports timeouts, and 502 reports provider failures or incomplete responses. Provider authentication occurs on the backend. The published app has neither a live provider adapter nor an approved customer fare model.
 
-The Flights page uses `/flights/search` for in-app prices. When a source is unavailable or cannot cover the request, the page can open a Google Flights search with the itinerary. Google Flights handles listings and any booking steps.
+The Flights page sends prediction requests to `/flights/estimate`. The separately documented `/flights/search` contract supports optional live sources as well.
 
-To opt into the legacy Groq API experiment, set `SKYLENS_EXPERIMENTAL_GROQ=true` in the backend process environment along with the existing Free plan configuration from `scripts/configure_groq.ps1`. The Flights page continues to use the comparison workflow. Experimental responses identify `estimation_source=groq_indicative` and have no measured accuracy against current prices. Identical requests can reuse a successful range for 24 hours, and there are no automatic provider retries. [Groq rate limits](https://console.groq.com/docs/rate-limits)
+The separate `POST /flights/experimental/groq-estimate` endpoint requires an explicit `SKYLENS_EXPERIMENTAL_GROQ=true` process setting and the existing Free plan configuration from `scripts/configure_groq.ps1`. Its outputs are marked `groq_indicative` and remain outside supervised prediction. Identical requests can reuse a range for 24 hours. [Groq rate limits](https://console.groq.com/docs/rate-limits)
 
 ## Customer ML capability
 

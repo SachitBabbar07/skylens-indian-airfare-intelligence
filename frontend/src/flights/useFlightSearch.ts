@@ -1,29 +1,24 @@
 import {useCallback, useRef, useState} from 'react';
 import {api, ApiError} from '../api';
-import {type FareResult, type FlightQuery, type SearchCapabilities, type SearchState} from './types';
+import {type FareResult, type FlightQuery, type SearchState} from './types';
 
-export async function requestFlightSearch(query: FlightQuery, capabilities: SearchCapabilities | null): Promise<SearchState> {
-  if (!capabilities?.live_quotes && !capabilities?.ml_estimates) return {status: 'comparison', query};
+export async function requestFlightSearch(query: FlightQuery): Promise<SearchState> {
   try {
-    const response = await api<{results: FareResult[]}>('/flights/search', query);
-    if (!Array.isArray(response.results) || response.results.some(result =>
-      result?.source !== 'live_quote' && result?.source !== 'ml_estimate')) {
-      throw new Error('The fare response could not be read. Try again.');
+    const response = await api<{results: FareResult[]}>('/flights/estimate', query);
+    if (!Array.isArray(response.results) || response.results.some(result => result?.source !== 'ml_estimate')) {
+      throw new Error('The model response could not be read.');
     }
     return {status: 'success', results: response.results, query};
   } catch (error) {
-    if (error instanceof ApiError && ['unconfigured', 'unsupported'].includes(error.code ?? '')) {
-      return {status: 'comparison', query};
-    }
     const retryable = error instanceof ApiError
-      ? error.retryable ?? (!['quota', 'authentication'].includes(error.code ?? '') && error.status !== 422)
+      ? error.retryable ?? (error.code !== 'no_fare_evidence' && error.status !== 422)
       : true;
-    const message = error instanceof ApiError ? error.message : 'SkyLens could not retrieve fares for this trip.';
+    const message = error instanceof ApiError ? error.message : 'SkyLens could not run the fare model.';
     return {status: 'error', message, retryable, query};
   }
 }
 
-export function useFlightSearch(capabilities: SearchCapabilities | null) {
+export function useFlightSearch() {
   const [state, setState] = useState<SearchState>({status: 'idle'});
   const active = useRef(false);
   const lastQuery = useRef<FlightQuery | null>(null);
@@ -34,11 +29,11 @@ export function useFlightSearch(capabilities: SearchCapabilities | null) {
     lastQuery.current = query;
     setState({status: 'loading'});
     try {
-      setState(await requestFlightSearch(query, capabilities));
+      setState(await requestFlightSearch(query));
     } finally {
       active.current = false;
     }
-  }, [capabilities]);
+  }, []);
 
   return {
     state, search,

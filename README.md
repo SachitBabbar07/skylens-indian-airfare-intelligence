@@ -2,7 +2,7 @@
 
 SkyLens is a React and FastAPI application for Indian domestic flight search. On the Flights page, you can look up 165 Indian IATA-coded airports by city, airport name or code, swap airports and choose one-way or round-trip travel dates, travellers and cabin.
 
-**Flights displays prices only from a connected live fare provider or a validated fare model.** With neither connected, **Check current fares** opens Google Flights in INR with the selected airports, dates, cabin, travellers and airline filter. The comparison link needs no SkyLens API key or subscription. [Flight search API](docs/API_GUIDE.md#flight-search)
+**Predict fare** requests a price only from a supervised model validated for the selected itinerary. With no approved customer model, the page reports missing coverage. The historical models still run in Research. [Prediction API](docs/API_GUIDE.md#flight-search) · [Verified fare model status](reports/supervised_fare_status.md)
 
 ## Research
 
@@ -29,7 +29,7 @@ Set-Location D:\SkyLens
 
 The app binds to loopback and loads existing model artifacts at startup. Use `npm --prefix frontend run dev -- --port 5173 --strictPort` for the optional development UI. [Flights](http://127.0.0.1:8000) · [Research](http://127.0.0.1:8000/research.html) · [API health](http://127.0.0.1:8000/health)
 
-Groq is disabled by default. The legacy endpoint can be enabled separately for local experiments. A narrow generated range cannot establish accuracy without current fare evidence. [Experimental API and configuration](docs/API_GUIDE.md#flight-search)
+The offline CatBoost candidate trainer uses only verified quotes and a frozen chronological split. Its private evaluation compares model error with a route-and-airline median baseline. [Verified quote training](docs/QUOTE_COLLECTION_GUIDE.md)
 
 A GitHub clone includes source, metadata and reports. Native models, raw/processed datasets, private quote evidence and backups stay outside Git. [Installation and artifact restoration](docs/INSTALLATION.md) distinguishes the submission workspace from a source-only clone.
 

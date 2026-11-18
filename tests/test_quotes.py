@@ -75,6 +75,56 @@ def test_header_only_template_has_zero_observations(fixture):
     assert result["rows"] == summary(fixture[4])["verified_targets"] == 0
 
 
+def test_candidate_uses_frozen_holdout_and_never_writes_for_empty_or_changed_data(fixture):
+    pytest.importorskip("catboost")
+    from datetime import timedelta
+    from skylens.train_verified_fare import train_candidate
+
+    store = fixture[4]
+    manifest = store / "split.json"
+    output = store / "experiment"
+    cuts = [datetime(2025, m, 1, tzinfo=UTC) for m in (2, 3, 4)]
+
+    def freeze():
+        rows, _ = resolved_records(store)
+        frozen = temporal_split(rows, cuts)
+        frozen["dataset_sha256"] = digest(encoded(rows))
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_bytes(encoded(frozen))
+
+    freeze()
+    with pytest.raises(ValueError, match="No verified fare observations"):
+        train_candidate(store, manifest, output)
+    assert not output.exists()
+
+    rows = []
+    for month in range(1, 5):
+        collected = datetime(2025, month, 2, tzinfo=UTC)
+        for lead in (5, 10, 15):
+            quote = deepcopy(fixture[0])
+            departure = (collected + timedelta(days=lead)).date()
+            quote.update(quote_id=f"software-test-{month}-{lead}", collected_at_utc=collected.isoformat(),
+                         departure_date=departure.isoformat(), displayed_total=str(100 + lead),
+                         base_fare=str(80 + lead), reviewed_at_utc="2025-05-01T00:00:00Z")
+            quote["itinerary_segments"][0].update(departure=f"{departure}T10:00:00+05:30",
+                                                  arrival=f"{departure}T12:00:00+05:30")
+            rows.append(quote)
+    assert run(fixture, rows)["verified_targets"] == 12
+    with pytest.raises(ValueError, match="Frozen split does not match"):
+        train_candidate(store, manifest, output)
+    assert not output.exists()
+    freeze()
+    result = train_candidate(store, manifest, output)
+    assert result["partitions"]["test"]["observations"] == 3
+    assert result["partitions"]["test"]["baseline_mae_inr"] == pytest.approx(10 / 3)
+    assert result["partitions"]["test"]["mae_inr"] >= 0
+    profile, = result["test_profiles"]
+    assert (profile["origin"], profile["destination"], profile["within_training_support"]) == ("DEL", "BOM", 3)
+    assert result["serving_approved"] is False
+    assert digest((output / "model.cbm").read_bytes()) == result["model_sha256"]
+    assert json.loads((output / "evaluation.json").read_text()) == result
+
+
 def test_phase5_license_label_does_not_override_missing_ml_permission(fixture):
     q, grant, permissions, _, _, _ = fixture
     q.update(license_name='CC0', license_url='https://creativecommons.org/publicdomain/zero/1.0/',

@@ -70,26 +70,34 @@ def flight_capabilities(request: Request, response: Response):
             'airlines': [{'id': key, 'name': name} for key, name in DOMESTIC_AIRLINES.items()]}
 
 
-@router.post('/estimate', response_model=IndicativeEstimate | SearchResponse)
+@router.post('/estimate', response_model=SearchResponse)
 async def flight_estimate(payload: FlightSearch, request: Request, response: Response):
-    origin, destination = itinerary_airports(request, payload)
+    itinerary_airports(request, payload)
     service: FareService = request.app.state.fare_service
-    estimator: GroqFareEstimator | None = getattr(request.app.state, 'groq_estimator', None)
     try:
         model_estimate = await service.estimate_with_model(payload)
-        response.headers['Cache-Control'] = 'no-store'
-        if model_estimate is not None:
-            return model_estimate
-        if estimator is None:
-            return JSONResponse(status_code=503, headers={'Cache-Control': 'no-store'}, content={'detail': {
-                'code': 'no_fare_evidence', 'message': 'No validated fare estimate is available. Check current fares for this trip.',
-                'retryable': False,
-            }})
-        estimate = await estimator.estimate(payload, flight_distance(origin['coordinates'], destination['coordinates']))
     except FareError as error:
         return JSONResponse(status_code=error.status, headers={'Cache-Control': 'no-store'}, content={'detail': {
             'code': error.code, 'message': 'Fare estimate temporarily unavailable. Please try again.',
         }})
+    if model_estimate is None:
+        return JSONResponse(status_code=503, headers={'Cache-Control': 'no-store'}, content={'detail': {
+            'code': 'no_fare_evidence', 'message': 'No validated model covers this itinerary.',
+            'retryable': False,
+        }})
+    response.headers['Cache-Control'] = 'no-store'
+    return model_estimate
+
+
+@router.post('/experimental/groq-estimate', response_model=IndicativeEstimate, tags=['Local experiments'])
+async def experimental_groq_estimate(payload: FlightSearch, request: Request, response: Response):
+    origin, destination = itinerary_airports(request, payload)
+    estimator: GroqFareEstimator | None = getattr(request.app.state, 'groq_estimator', None)
+    try:
+        if estimator is None:
+            raise EstimateError('unconfigured')
+        estimate = await estimator.estimate(payload, flight_distance(origin['coordinates'], destination['coordinates']))
+        response.headers['Cache-Control'] = 'no-store'
     except EstimateError as error:
         headers = {'Cache-Control': 'no-store'}
         if error.retry_after is not None:

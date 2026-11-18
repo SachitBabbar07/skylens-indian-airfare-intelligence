@@ -1,6 +1,5 @@
 import {useState} from 'react';
 import {flightDate, flightTime} from './dates';
-import {fareComparisonUrl} from './fareComparison';
 import {cabinNames, passengerCount, type Airline, type Fare, type FareResult, type FlightLeg, type FlightQuery,
   type SearchState} from './types';
 
@@ -64,24 +63,19 @@ function FlightResultCard({result}: {result: FareResult}) {
 
 const travelDate = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'});
 
-function ComparisonCard({query, airlines, message, retry}: {query: FlightQuery; airlines: Airline[]; message?: string;
+function PredictionStatus({query, airlines, message, retry}: {query: FlightQuery; airlines: Airline[]; message: string;
   retry?: () => void}) {
   const formatDate = (date: string) => travelDate.format(new Date(`${date}T00:00:00Z`));
   const count = passengerCount(query.travellers);
   const airline = airlines.find(entry => entry.id === query.airline);
-  return <section className="flight-status fare-comparison" aria-labelledby="comparison-title" aria-live="polite">
-    <h2 id="comparison-title">{query.origin} → {query.destination}</h2>
+  return <section className="flight-status prediction-status" aria-labelledby="prediction-status-title" role="status">
+    <h2 id="prediction-status-title">{query.origin} → {query.destination}</h2>
     <p>{formatDate(query.departure_date)}{query.return_date && ` – ${formatDate(query.return_date)}`}
       {' · '}{query.journey === 'round_trip' ? 'Round trip' : 'One way'}
       {' · '}{cabinNames[query.cabin]} · {count} {count === 1 ? 'traveller' : 'travellers'}</p>
-    <p>{message ?? 'SkyLens has no sourced fare for this trip. Compare prices on Google Flights.'}</p>
-    {airline && <p>Airline filter {airline.name}</p>}
-    <div className="comparison-actions">
-      <a className="comparison-link" href={fareComparisonUrl(query)} target="_blank" rel="noopener noreferrer">
-        Check current fares <span aria-hidden="true">↗</span>
-      </a>
-      {retry && <button type="button" className="small-button" onClick={retry}>Try again</button>}
-    </div>
+    {airline && <p>Airline {airline.name}</p>}
+    <p>{message}</p>
+    {retry && <button type="button" className="small-button" onClick={retry}>Try again</button>}
   </section>;
 }
 
@@ -89,13 +83,12 @@ export function FlightResults({state, airlines = [], retry}: {state: SearchState
   const [sort, setSort] = useState<Sort>('price');
   if (state.status === 'idle') return null;
   if (state.status === 'loading') return <div className="flight-status" role="status">
-    Searching for available flights…
+    Checking model coverage…
   </div>;
-  if (state.status === 'comparison') return <ComparisonCard query={state.query} airlines={airlines}/>;
-  if (state.status === 'error') return <ComparisonCard query={state.query} airlines={airlines}
+  if (state.status === 'error') return <PredictionStatus query={state.query} airlines={airlines}
     message={state.message} retry={state.retryable ? retry : undefined}/>;
-  if (!state.results.length) return <ComparisonCard query={state.query} airlines={airlines}
-    message="The connected source returned no fares for this trip."/>;
+  if (!state.results.length) return <PredictionStatus query={state.query} airlines={airlines}
+    message="No validated model covers this itinerary."/>;
   const mixed = new Set(state.results.map(result => result.fare.currency)).size > 1;
   const hasDuration = state.results.some(result => result.source === 'live_quote' && result.legs.every(leg => leg.duration_minutes !== null));
   const hasDeparture = state.results.some(result => result.source === 'live_quote');

@@ -42,56 +42,53 @@ const fixtureResult = {id: 'quote', source: 'live_quote', availability: 'availab
   retrieved_at: '2027-04-01T12:00:00Z', journey: 'one_way', cabin: 'economy', travellers: {adults: 2, children: 0, infants: 0},
   legs: [fixtureLeg], fare: fixtureFare};
 
-test('a trip with no fare source offers an exact-date comparison without an invented price', async context => {
+test('an unsupported prediction stays in SkyLens and displays neither a price nor a booking link', async context => {
   const query = {origin: 'DEL', destination: 'IXC', journey: 'one_way', departure_date: '2026-11-25',
     cabin: 'economy', airline: 'indigo', travellers: {adults: 1, children: 0, infants: 0}};
-  const fetch = context.mock.method(globalThis, 'fetch', async () => {throw new Error('No fare source');});
-  const state = await requestFlightSearch(query, {live_quotes: null, ml_estimates: null, indicative_estimates: {}});
-  assert.equal(fetch.mock.callCount(), 0, 'A legacy Groq capability must not trigger a customer estimate');
+  const fetch = context.mock.method(globalThis, 'fetch', async url => {
+    assert.equal(url, '/flights/estimate');
+    return Response.json({detail: {code: 'no_fare_evidence', message: 'No validated model covers this itinerary.'}}, {status: 503});
+  });
+  const state = await requestFlightSearch(query);
+  assert.equal(fetch.mock.callCount(), 1);
   const html = render(FlightResults, {state, airlines: [{id: 'indigo', name: 'IndiGo'}], retry() {}});
   assert.match(html, /DEL → IXC/);
   assert.match(html, /25 Nov 2026/);
   assert.match(html, /IndiGo/);
-  assert.match(html, /Check current fares/);
-  const href = new URL(html.match(/href="([^"]+)"/)[1].replaceAll('&amp;', '&'));
-  assert.equal(href.origin + href.pathname, 'https://www.google.com/travel/flights/search');
-  assert.equal(href.searchParams.get('curr'), 'INR');
-  // The tfs value comes from this exact itinerary with the IndiGo filter set in Google Flights.
-  assert.equal(href.searchParams.get('tfs'), 'CBwQAhoiEgoyMDI2LTExLTI1MgI2RWoHCAESA0RFTHIHCAESA0lYQ0ABSAFwAYIBCwj___________8BmAEC');
-  assert.doesNotMatch(html, /₹|result-price|indicative-price/);
+  assert.match(html, /No validated model covers this itinerary/);
+  assert.doesNotMatch(html, /₹|result-price|href=|Google Flights|Try again/);
 });
 
 const comparisonQuery = {origin: 'PNQ', destination: 'DEL', journey: 'round_trip', departure_date: '2027-04-05',
   return_date: '2027-04-10', cabin: 'economy', travellers: {adults: 1, children: 1, infants: 0}};
 
-test('airline preferences are available for external fare comparison', () => {
+test('airline preferences remain available for predictions', () => {
   const html = render(FlightSearchForm, {airports: [], busy: false,
     airlines: [{id: 'indigo', name: 'IndiGo'}, {id: 'star_air', name: 'Star Air'}]});
   assert.match(html, /Airline preference.*Any airline.*IndiGo.*Star Air/);
 });
 
-test('a fare source outage leaves a comparison link, and a manual retry can recover', async context => {
+test('a model server outage can recover on manual retry', async context => {
   let calls = 0;
-  const quote = {...fixtureResult, travellers: comparisonQuery.travellers, journey: 'round_trip',
-    legs: [fixtureLeg, {...fixtureLeg, origin: 'DEL', destination: 'PNQ', departure: '2027-04-10T08:00:00+05:30',
-      arrival: '2027-04-10T10:00:00+05:30'}]};
+  const model = {id: 'model-fixture', source: 'ml_estimate', source_name: 'Software fixture', fare: fixtureFare,
+    retrieved_at: fixtureResult.retrieved_at, journey: comparisonQuery.journey, cabin: comparisonQuery.cabin,
+    travellers: comparisonQuery.travellers};
   context.mock.method(globalThis, 'fetch', async (url, options) => {
-    assert.equal(url, '/flights/search');
+    assert.equal(url, '/flights/estimate');
     assert.deepEqual(JSON.parse(options.body), comparisonQuery);
     if (++calls === 1) throw new TypeError('Connection refused');
-    return Response.json({results: [quote]});
+    return Response.json({results: [model]});
   });
-  const capabilities = {live_quotes: {}};
-  const error = await requestFlightSearch(comparisonQuery, capabilities);
+  const error = await requestFlightSearch(comparisonQuery);
   assert.equal(error.status, 'error');
   assert.equal(error.retryable, true);
   const html = render(FlightResults, {state: error, retry() {}});
-  assert.match(html, /Check current fares/);
+  assert.doesNotMatch(html, /href=/);
   assert.match(html, /Try again/);
   assert.doesNotMatch(html, /₹|result-price/);
   assert.equal(calls, 1);
-  assert.deepEqual(await requestFlightSearch(comparisonQuery, capabilities),
-    {status: 'success', results: [quote], query: comparisonQuery});
+  assert.deepEqual(await requestFlightSearch(comparisonQuery),
+    {status: 'success', results: [model], query: comparisonQuery});
   assert.equal(calls, 2);
 });
 
@@ -99,7 +96,7 @@ test('unrecognized estimate payloads never reach the price card', async context 
   context.mock.method(globalThis, 'fetch', async () => Response.json({
     estimation_source: 'groq_indicative', estimated_low: 2000, estimated_high: 2500,
   }));
-  assert.equal((await requestFlightSearch(comparisonQuery, {live_quotes: {}})).status, 'error');
+  assert.equal((await requestFlightSearch(comparisonQuery)).status, 'error');
 });
 
 test('a covered trained-model result still reaches the labelled price card', async context => {
@@ -107,10 +104,10 @@ test('a covered trained-model result still reaches the labelled price card', asy
     retrieved_at: fixtureResult.retrieved_at, journey: comparisonQuery.journey, cabin: comparisonQuery.cabin,
     travellers: comparisonQuery.travellers};
   context.mock.method(globalThis, 'fetch', async url => {
-    assert.equal(url, '/flights/search');
+    assert.equal(url, '/flights/estimate');
     return Response.json({results: [model]});
   });
-  assert.deepEqual(await requestFlightSearch(comparisonQuery, {ml_estimates: {}}),
+  assert.deepEqual(await requestFlightSearch(comparisonQuery),
     {status: 'success', results: [model], query: comparisonQuery});
 });
 
