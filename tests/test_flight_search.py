@@ -60,12 +60,16 @@ def test_estimate_uses_kiwi_for_exact_carrier_when_model_has_no_coverage(client,
         asyncio.run(provider.close())
     assert response.status_code == 200
     assert second.json() == response.json()
-    result, = response.json()['results']
-    assert result['source'] == 'live_quote' and result['source_name'] == 'Kiwi.com'
-    assert result['fare'] == {'amount': '13200.0', 'currency': 'INR', 'basis': 'party_total',
-                              'taxes': 'unknown', 'fees': 'unknown'}
-    assert result['legs'][0]['flight_numbers'] == ['6E2147']
-    assert 'booking.example' not in response.text
+    result = response.json()
+    assert result['estimation_method'] == 'market_reference'
+    assert result['price_scope'] == 'party_total' and result['passenger_count'] == 2
+    assert result['taxes'] == result['fees'] == 'unknown'
+    from decimal import Decimal
+    assert Decimal(result['estimated_median']) == Decimal('13200')
+    assert result['estimated_low'] == result['estimated_high']
+    assert result['observation_count'] == 1
+    assert 'booking.example' not in response.text and '6E2147' not in response.text
+    assert 'results' not in result and 'legs' not in result
     assert seen == ['initialize', 'notifications/initialized', 'tools/call']
 
 
@@ -161,26 +165,28 @@ def test_preserves_available_quotes_and_currency(client, query, round_trip):
     response = client.post('/flights/search', json=query)
     assert response.status_code == 200
     assert response.headers['Cache-Control'] == 'no-store'
-    first, second = response.json()['results']
-    assert first['source'] == 'live_quote'
-    assert first['fare'] == {'amount': '12000.50', 'currency': 'INR', 'basis': 'party_total',
-                             'taxes': 'included', 'fees': 'unknown'}
-    assert second['fare']['amount'] == '154.25' and second['fare']['currency'] == 'USD'
-    assert first['travellers']['adults'] == 2 and first['cabin'] == query['cabin']
-    assert len(first['legs']) == (2 if round_trip else 1)
-    if round_trip:
-        assert first['legs'][1]['origin'] == query['destination']
+    estimate = response.json()
+    assert estimate['currency'] == 'INR' and estimate['price_scope'] == 'party_total'
+    assert estimate['estimated_low'] == estimate['estimated_high'] == '12000.50'
+    assert estimate['observation_count'] == 1
+    assert estimate['taxes'] == 'included' and estimate['fees'] == 'unknown'
+    assert estimate['passenger_count'] == 2 and estimate['cabin_class'] == query['cabin']
+    assert estimate['journey_type'] == query['journey'] and estimate['return_date'] == query.get('return_date')
+    assert '154.25' not in response.text
 
 
 def test_empty_and_unsupported_are_distinct(client, query):
     provider = Stub(lambda request: [], support=SearchSupport(journeys=['one_way'], cabins=['economy'], max_travellers=2))
     client.app.state.fare_service = FareService(provider=provider)
-    assert client.post('/flights/search', json=query).json() == {'results': []}
+    empty = client.post('/flights/search', json=query).json()
+    assert empty['estimation_method'] == 'unavailable' and empty['estimated_low'] is None
+    assert empty['source_status']['market'] == 'no_observations'
     for edits in [{'cabin': 'business'}, {'travellers': {'adults': 3}},
                   {'travellers': {'adults': 1, 'children': 1}}, {'travellers': {'adults': 1, 'infants': 1}}]:
         response = client.post('/flights/search', json=query | edits)
-        assert response.status_code == 422
-        assert response.json()['detail']['code'] == 'unsupported'
+        assert response.status_code == 200
+        assert response.json()['estimation_method'] == 'unavailable'
+        assert response.json()['source_status']['market'] == 'unsupported'
     assert len(provider.requests) == 1
 
 
@@ -248,15 +254,48 @@ def test_validated_model_routing_and_provider_fallback(client, query):
         value = quote(request)
         value.pop('legs')
         value.pop('availability')
-        return [value | {'source': 'ml_estimate'}]
+        value['fare']['fees'] = 'included'
+        return [value | {'source': 'ml_estimate', 'origin': request.origin, 'destination': request.destination,
+                         'departure_date': request.departure_date, 'return_date': request.return_date,
+                         'evaluation_reference': 'test-only-reviewed-time-holdout'}]
 
     model = Stub(estimate)
     provider = Stub(lambda request: [quote(request)])
-    client.app.state.fare_service = FareService(provider=provider, model=model)
-    assert client.post('/flights/search', json=query).json()['results'][0]['source'] == 'ml_estimate'
+    client.app.state.fare_service = FareService(provider=provider, model=model, provider_cache_seconds=60)
+    assert client.post('/flights/search', json=query).json()['estimation_method'] == 'historical_ml'
     assert provider.requests == []
     model.route_supported = False
-    assert client.post('/flights/search', json=query).json()['results'][0]['source'] == 'live_quote'
+    assert client.post('/flights/estimate', json=query).json()['estimation_method'] == 'market_reference'
     model.route_supported = True
+    both = client.post('/flights/estimate', json=query).json()
+    assert both['estimation_method'] == 'historical_ml' and both['source_status']['market'] == 'available'
+    assert len(provider.requests) == 1
     model.respond = lambda request: []
-    assert client.post('/flights/search', json=query).json()['results'][0]['source'] == 'live_quote'
+    assert client.post('/flights/search', json=query).json()['estimation_method'] == 'market_reference'
+
+def test_only_eligible_observations_are_cached_and_expire(client, query, monkeypatch):
+    from backend.app import fare_service
+
+    clock = [0.0]
+    monkeypatch.setattr(fare_service, 'monotonic', lambda: clock[0])
+    currency = ['USD']
+
+    def offers(request):
+        value = quote(request)
+        value['fare']['currency'] = currency[0]
+        return [value]
+
+    provider = Stub(offers)
+    client.app.state.fare_service = FareService(provider=provider, provider_cache_seconds=60)
+    assert client.post('/flights/estimate', json=query).json()['estimation_method'] == 'unavailable'
+    currency[0] = 'INR'
+    assert client.post('/flights/estimate', json=query).json()['estimation_method'] == 'market_reference'
+    assert len(provider.requests) == 2
+    clock[0] += 59
+    assert client.post('/flights/estimate', json=query).json()['estimation_method'] == 'market_reference'
+    assert len(provider.requests) == 2
+    clock[0] += 1
+    provider.respond = lambda _: []
+    empty = client.post('/flights/estimate', json=query).json()
+    assert empty['estimation_method'] == 'unavailable' and empty['estimated_low'] is None
+    assert len(provider.requests) == 3

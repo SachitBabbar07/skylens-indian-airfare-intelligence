@@ -132,7 +132,9 @@ class KiwiFareProvider:
             raise FareError('invalid_response')
         if data.get('error'):
             raise FareError('unavailable')
-        if (data.get('currency') != 'INR' or data.get('passengers') != request.travellers.model_dump()
+        party = data.get('passengers')
+        if (data.get('currency') != 'INR' or party != request.travellers.model_dump()
+                or any(type(count) is not int for count in party.values())
                 or not isinstance(data.get('itineraries'), list)):
             raise FareError('invalid_response')
         retrieved = datetime.now(timezone.utc)
@@ -142,7 +144,9 @@ class KiwiFareProvider:
                 quote = _quote(entry, request, retrieved, carrier, cabin_labels)
             except (ValueError, KeyError, TypeError, AttributeError):
                 continue
-            quotes.setdefault(quote.id, quote)
+            if quote.id in quotes and quotes[quote.id] != quote:
+                raise FareError('invalid_response')
+            quotes[quote.id] = quote
         if data['itineraries'] and not quotes:
             raise FareError('invalid_response')
         return list(quotes.values())
@@ -181,7 +185,8 @@ def _quote(entry: dict, request: FlightSearch, retrieved: datetime, carrier: str
     if actual != expected or (is_return and legs[1].departure < legs[0].arrival):
         raise ValueError('Requested itinerary mismatch')
     price = entry['price']
-    if type(price) not in (int, Decimal):
+    if (type(price) not in (int, Decimal) or entry.get('currency', 'INR') != 'INR'
+            or any(entry.get(field, 'party_total') != 'party_total' for field in ('priceBasis', 'priceScope'))):
         raise ValueError('Expected structured numerical price')
     return LiveQuote(id=entry['id'], source='live_quote', source_name='Kiwi.com', availability='available',
                      retrieved_at=retrieved, journey=request.journey, cabin=request.cabin, travellers=request.travellers,
@@ -196,23 +201,28 @@ def _local_time(value: str) -> datetime:
 def _leg(value: dict, carrier: str | None, cabins: set[str]) -> FlightLeg:
     segments = value['segments']
     if (not isinstance(segments, list) or not segments or value['cabinClass'].casefold() not in cabins
-            or value['stops'] != len(segments) - 1):
+            or type(value['stops']) is not int or value['stops'] != len(segments) - 1):
         raise ValueError('Incomplete itinerary')
     airlines = []
     flight_numbers = []
     previous_airport = value['from']
     start = _local_time(value['departureTime'])
     end = _local_time(value['arrivalTime'])
+    previous_arrival = start
     for segment in segments:
         code = segment['carrier']
         flight = segment['flightNumber'].replace(' ', '')
+        departure = _local_time(segment['departureTime'])
+        arrival = _local_time(segment['arrivalTime'])
         if (segment['from'] != previous_airport or segment['fromCountry'] != 'India' or segment['toCountry'] != 'India'
+                or departure < previous_arrival or arrival <= departure
                 or segment['cabinClass'].casefold() not in cabins or (carrier is not None and code != carrier)
                 or not re.fullmatch(r'[A-Z0-9]{2}', code) or not re.fullmatch(r'[A-Z0-9]{2,12}', flight)):
             raise ValueError('Unsupported segment')
         airlines.append(AIRLINE_NAMES.get(code, segment.get('carrierName') or code))
         flight_numbers.append(flight)
         previous_airport = segment['to']
+        previous_arrival = arrival
     if (previous_airport != value['to'] or _local_time(segments[0]['departureTime']) != start
             or _local_time(segments[-1]['arrivalTime']) != end):
         raise ValueError('Segment endpoints disagree')

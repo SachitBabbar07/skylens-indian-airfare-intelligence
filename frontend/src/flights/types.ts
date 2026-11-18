@@ -19,15 +19,20 @@ export type FlightQuery = {
   origin: string; destination: string; journey: Journey; departure_date: string;
   return_date?: string; cabin: Cabin; airline?: string; travellers: Travellers;
 };
-export type Fare = {amount: string; currency: string; basis: 'party_total'; taxes: string; fees: string};
-export type FlightLeg = {
-  origin: string; destination: string; departure: string; arrival: string; airlines: string[];
-  flight_numbers?: string[]; duration_minutes: number | null; stops: number | null;
+type EstimateContext = {
+  origin: string; destination: string; departure_date: string; return_date: string | null;
+  journey_type: Journey; passenger_count: number; cabin_class: Cabin;
+  coverage_status: 'validated' | 'unsupported' | 'unavailable';
+  source_status: {model: string; market: string}; disclaimer: string;
 };
-type PricedResult = {id: string; source_name: string; retrieved_at: string; journey: Journey; cabin: Cabin; travellers: Travellers; fare: Fare};
-export type FareResult = (PricedResult & {source: 'live_quote'; availability: 'available'; legs: FlightLeg[];
-  baggage: string | null; conditions: string | null}) | (PricedResult & {source: 'ml_estimate'});
-
+export type PricedEstimate = EstimateContext & {
+  estimation_method: 'historical_ml' | 'market_reference';
+  estimated_low: string; estimated_high: string; currency: 'INR'; price_scope: 'party_total';
+};
+export type FareEstimate = PricedEstimate | (EstimateContext & {
+  estimation_method: 'unavailable';
+  estimated_low: null; estimated_high: null; currency: null; price_scope: null;
+});
 export type SearchState = {status: 'idle'} | {status: 'loading'} |
   {status: 'error'; message: string; retryable: boolean; query: FlightQuery} |
-  {status: 'success'; results: FareResult[]; query: FlightQuery};
+  {status: 'success'; estimate: FareEstimate; query: FlightQuery};

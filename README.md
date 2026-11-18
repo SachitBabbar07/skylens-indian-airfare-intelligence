@@ -2,7 +2,7 @@
 
 SkyLens is a React and FastAPI application for Indian domestic flight search. On the Flights page, you can look up 165 Indian IATA-coded airports by city, airport name or code, swap airports and choose one-way or round-trip travel dates, travellers and cabin.
 
-**Get fare** checks a validated supervised model first. When the model cannot price the trip, SkyLens requests matching fares from Kiwi.com’s free flight-search API and displays them in the app with their source and retrieval time. The API requires no key. Airport, airline and cabin coverage depend on the fares the source returns. [Fare API](docs/API_GUIDE.md#flight-search) · [Verified fare model status](reports/supervised_fare_status.md)
+**Get estimate** returns one INR estimate for the selected trip and travelling party. SkyLens checks for an approved model with evaluated coverage first. For trips outside that coverage, it retrieves matching market observations from Kiwi.com, groups duplicate itineraries and calculates the median and middle 50% of the observed prices. A single itinerary yields one indicative amount. The source methodology appears below the estimate. [Fare API](docs/API_GUIDE.md#flight-search) · [Model and source audit](reports/supervised_fare_status.md)
 
 ## Research
 
@@ -35,7 +35,7 @@ A GitHub clone includes source, metadata and reports. Native models, raw/process
 
 ## Verification
 
-Run the Python suite with `PYTHONPATH=src`, `npm --prefix frontend test`, and `npm --prefix frontend run build`. Local checks cover the airport directory, journey validation, fare-source routing, malformed responses and price formatting. Groq contract tests use mocked SDK transport. [Initial Flights verification](reports/flight_search_verification.md)
+Run the Python suite with `PYTHONPATH=src`, `npm --prefix frontend test`, and `npm --prefix frontend run build`. Local checks cover the airport directory, journey validation, fare-source routing, malformed responses and price formatting. Offline fixtures exercise all four routing cases and the isolation of the numerical estimate from Groq. [Initial Flights verification](reports/flight_search_verification.md)
 
 ### v0.1.0 Research Edition
 

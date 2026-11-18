@@ -294,30 +294,58 @@ select { padding: 8px; border: 1px solid var(--line); border-radius: 8px; backgr
   box-shadow: 0 6px 16px #305d8a0d;
 }
 .prediction-status h2 { margin: 0 0 10px; color: var(--ink); font-size: clamp(18px, 2.5vw, 22px); letter-spacing: -.022em; }
-.flight-results { margin-top: 30px; }
-.results-header { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.results-header h2 { margin: 0 0 5px; font-size: 24px; letter-spacing: -.035em; }
-.results-header label { display: grid; gap: 4px; color: var(--muted); font-size: 13px; }
-.results-header p, .currency-note, .result-details { color: var(--muted); font-size: 13px; }
-.currency-note { margin-bottom: 10px; }
-.flight-result {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 24%);
-  gap: 16px;
-  padding: 18px;
-  margin-bottom: 12px;
+.fare-estimate {
+  margin-top: 24px;
+  padding: clamp(18px, 3vw, 32px);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 20px;
   background: #fff;
+  box-shadow: 0 6px 16px #305d8a0d;
 }
-.fare-source { margin-bottom: 10px; color: var(--blue); font-size: 13px; font-weight: 650; }
-.itinerary-leg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: center; margin: 12px 0; }
-.itinerary-leg small, .result-price span, .result-price small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
-.leg-connection { font-size: 13px; }
-.result-price { display: flex; flex-direction: column; justify-content: center; padding-left: 16px; border-left: 1px solid var(--line); }
-.result-price strong { color: var(--blue-dark); font-size: 24px; overflow-wrap: anywhere; }
-.result-itinerary details { margin-top: 10px; font-size: 13px; }
-.result-itinerary details p { margin: 6px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.estimate-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 26px;
+}
+.estimate-price h2 {
+  margin: 0 0 8px;
+  color: var(--blue);
+  font-size: 12px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.estimate-price { color: var(--muted); font-size: 14px; }
+.estimate-amount {
+  margin-bottom: 4px;
+  color: var(--ink);
+  font-size: clamp(24px, 3.3vw, 43px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+.estimate-trip {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding-left: 24px;
+  border-left: 1px solid var(--line);
+}
+.estimate-trip dt { margin-bottom: 3px; color: var(--muted); font-size: 12px; }
+.estimate-trip dd { margin: 0; font-size: 14px; font-weight: 650; }
+.estimate-dates { grid-column: 1 / -1; }
+.estimate-source {
+  margin-top: 19px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.estimate-method { margin-bottom: 2px; color: var(--blue-dark); font-weight: 650; }
 
 .flight-footer {
   display: flex;
@@ -349,6 +377,8 @@ select { padding: 8px; border: 1px solid var(--line); border-radius: 8px; backgr
   .flight-fields.has-return .route-fields { grid-column: 1 / -1; }
 }
 @media (max-width: 800px) {
+  .estimate-body { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .estimate-trip { justify-content: start; gap: 12px 25px; padding-left: 0; border-left: 0; }
   .flight-width { width: calc(100% - 44px); }
   .flight-main { padding-top: 24px; }
   .flight-hero { min-height: 386px; border-radius: 26px; }
@@ -396,8 +426,6 @@ select { padding: 8px; border: 1px solid var(--line); border-radius: 8px; backgr
   .form-actions { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: 12px; }
   .airline-field, .search-flights { width: 100%; }
   .prediction-status { padding: 18px; }
-  .flight-result { grid-template-columns: minmax(0, 1fr); }
-  .itinerary-leg { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .leg-carrier { grid-column: 1 / -1; }
-  .result-price { padding: 10px 0 0; border-top: 1px solid var(--line); border-left: 0; }
+  .estimate-trip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .estimate-dates { grid-column: auto; }
 }

@@ -43,5 +43,5 @@ export function AcquisitionStatus() {
     return () => request.abort();
   }, [retry]);
   return review ? <AcquisitionReview review={review}/> : <p className="muted" role="status">{
-    error ? <>Acquisition review unavailable. Customer prediction remains disabled. <button className="secondary" onClick={() => setRetry(n => n+1)}>Retry acquisition status</button></> : 'Loading acquisition review…'}</p>;
+    error ? <>Acquisition review unavailable. <button className="secondary" onClick={() => setRetry(n => n+1)}>Retry acquisition status</button></> : 'Loading acquisition review…'}</p>;
 }

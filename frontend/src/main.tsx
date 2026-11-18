@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import {createRoot} from 'react-dom/client';
 import {api} from './api';
 import {FlightSearchForm} from './flights/FlightSearchForm';
 import {FlightResults} from './flights/FlightResults';
@@ -7,7 +6,7 @@ import {useFlightSearch} from './flights/useFlightSearch';
 import type {Airport, SearchCapabilities} from './flights/types';
 import './flights/flights.css';
 
-function FlightApp() {
+export default function FlightApp() {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [capabilities, setCapabilities] = useState<SearchCapabilities | null>(null);
   const [loadError, setLoadError] = useState('');
@@ -48,8 +47,8 @@ function FlightApp() {
       <section className="flight-width flight-hero" aria-labelledby="flight-title">
         <img className="flight-hero-photo" src="/flights-hero.webp" alt="" fetchPriority="high"/>
         <div className="flight-hero-content">
-          <h1 id="flight-title">Predict flight fares <span>in India</span></h1>
-          <p className="flight-intro">Get a model estimate or an API fare for your trip.</p>
+          <h1 id="flight-title">Estimate flight fares <span>in India</span></h1>
+          <p className="flight-intro">See an indicative fare for your travel dates and passengers.</p>
         </div>
       </section>
       <div className="flight-search-area" id="flight-main" tabIndex={-1}>
@@ -57,11 +56,9 @@ function FlightApp() {
           onSearch={query => void search(query)} onEdit={clear}/>
         {loadError && <div className="flight-status" role="status"><p>{loadError}</p>
           <button className="small-button" type="button" onClick={() => setAttempt(value => value + 1)}>Retry connection</button></div>}
-        <FlightResults state={state} airlines={airlines} retry={retry}/>
+        <div aria-live="polite"><FlightResults state={state} airlines={airlines} retry={retry}/></div>
       </div>
     </main>
     <footer className="flight-width flight-footer"><span>SkyLens</span><span>Indian domestic flights</span><a href="/research.html">Research</a></footer>
   </div>;
 }
-
-createRoot(document.getElementById('root')!).render(<FlightApp/>);

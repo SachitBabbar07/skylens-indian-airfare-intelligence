@@ -1,6 +1,6 @@
 import {AcquisitionStatus} from './AcquisitionStatus';
 
-export const FARE_UNAVAILABLE_MESSAGE = "Fare prediction is temporarily unavailable because the training data's price definition has not yet been verified.";
+const FARE_UNAVAILABLE_MESSAGE = 'The historical training target has an unverified currency and price definition. Flights can estimate a fare from comparable market observations when available.';
 export const UNIT_LABEL = 'unverified model-output units';
 export const MISSING_EVIDENCE = [
   'Documented target currency',
@@ -34,17 +34,33 @@ export type ResearchExplanation = {
   contributions: {feature: string; value: string | number; contribution: number}[];
 };
 
-// Only a reviewed future release can add customer estimation. Neither model
-// metadata nor a claimed currency/capability flag can enable it in this release.
 export function CustomerStatus() {
   return <section className="customer-status panel" aria-labelledby="customer-status-title">
-    <span className="small-label">CUSTOMER FARE ESTIMATION / UNAVAILABLE</span>
+    <span className="small-label">HISTORICAL MODELS / RESEARCH ONLY</span>
     <h2 id="customer-status-title">Price definition awaiting verification</h2>
     <p className="status-message">{FARE_UNAVAILABLE_MESSAGE}</p>
-    <p className="muted">Required before customer use:</p>
+    <p className="muted">Evidence required for customer-facing ML predictions</p>
     <ul className="evidence-list">{MISSING_EVIDENCE.map(item => <li key={item}>{item}</li>)}</ul>
-    <button className="unavailable-button" disabled>Customer fare prediction unavailable</button>
+    <button className="unavailable-button" disabled>Historical ML fare prediction unavailable</button>
   </section>;
+}
+
+export function FlightsMethodology() {
+  return <article className="limits" aria-labelledby="flights-methodology">
+    <h3 id="flights-methodology">How Flights estimates a fare</h3>
+    <p>SkyLens gives priority to an ML model with a verified fare target and evaluated coverage for
+      the requested trip. Both saved historical models currently produce research-only outputs.</p>
+    <p>When the model cannot price a trip, the configured fare provider supplies observations.
+      The Kiwi.com integration provides itinerary and fare data. SkyLens groups comparable INR totals
+      for the requested journey, dates, cabin and travelling party, with matching tax and fee treatment.</p>
+    <p>Each distinct itinerary contributes one value, the median of its distinct quoted prices.
+      SkyLens calculates the median and the 25th and 75th percentiles across itineraries using linear
+      interpolation. Flights displays the range between those percentiles, or a single amount when
+      the endpoints coincide. The range describes the observed market. The booking price can change.</p>
+    <p>Source selection uses rules. A learned combination would require compatible historical
+      predictions, market observations and independently observed fares for evaluation.
+      Groq is a language-model service and supplies no numerical input to this calculation.</p>
+  </article>;
 }
 
 export function ResearchOverview({counts, eligibleAirports, eligibleProfiles, onResearch}: {

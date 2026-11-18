@@ -6,10 +6,7 @@ export function indiaToday() {
   return `${field('year')}-${field('month')}-${field('day')}`;
 }
 
-export function flightTime(iso: string) {
-  return new Intl.DateTimeFormat('en-IN', {timeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(new Date(iso));
-}
-
-export function flightDate(iso: string) {
-  return new Intl.DateTimeFormat('en-IN', {timeZone, weekday: 'short', day: 'numeric', month: 'short'}).format(new Date(iso));
+const travelDate = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'});
+export function flightDate(date: string) {
+  return travelDate.format(new Date(`${date}T00:00:00Z`));
 }

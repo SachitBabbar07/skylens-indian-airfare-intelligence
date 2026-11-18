@@ -1,113 +1,61 @@
-import {useState} from 'react';
-import {flightDate, flightTime} from './dates';
-import {cabinNames, passengerCount, type Airline, type Fare, type FareResult, type FlightLeg, type FlightQuery,
-  type SearchState} from './types';
+import {flightDate} from './dates';
+import {cabinNames, passengerCount, type Airline, type FlightQuery, type SearchState} from './types';
 
-type Sort = 'provider' | 'price' | 'duration' | 'departure';
+const rupees = new Intl.NumberFormat('en-IN', {
+  style: 'currency', currency: 'INR', maximumFractionDigits: 0,
+});
+const rupeesWithPaise = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR'});
 
-export function formatFare(fare: Fare) {
-  const amount = Number(fare.amount);
-  if (fare.basis !== 'party_total' || !/^[A-Z]{3}$/.test(fare.currency) || ['XXX', 'XTS'].includes(fare.currency) ||
-      !Number.isFinite(amount) || amount <= 0) return null;
-  return new Intl.NumberFormat('en-IN', {style: 'currency', currency: fare.currency,
-    currencyDisplay: fare.currency === 'INR' ? 'symbol' : 'code', maximumFractionDigits: 4}).format(amount);
+function formatAmount(amount: string) {
+  const value = Number(amount);
+  return Number.isInteger(value) ? rupees.format(value) : rupeesWithPaise.format(value);
 }
-
-export function sortResults(results: FareResult[], requested: Sort) {
-  const sameCurrency = new Set(results.map(result => result.fare.currency)).size <= 1;
-  const duration = (result: FareResult) => result.source === 'live_quote' && result.legs.every(leg => leg.duration_minutes !== null)
-    ? result.legs.reduce((sum, leg) => sum + (leg.duration_minutes ?? 0), 0) : Infinity;
-  const departure = (result: FareResult) => result.source === 'live_quote' ? Date.parse(result.legs[0].departure) : Infinity;
-  if (requested === 'price' && sameCurrency) return [...results].sort((a, b) => Number(a.fare.amount) - Number(b.fare.amount));
-  if (requested === 'duration') return [...results].sort((a, b) => duration(a) - duration(b));
-  if (requested === 'departure') return [...results].sort((a, b) => departure(a) - departure(b));
-  return results;
-}
-
-function Leg({leg, label}: {leg: FlightLeg; label?: string}) {
-  const duration = leg.duration_minutes;
-  return <div className="itinerary-leg">
-    <div className="leg-carrier">{label && <small>{label}</small>}<strong>{leg.airlines.join(' · ')}</strong>
-      {Boolean(leg.flight_numbers?.length) && <small>{leg.flight_numbers?.join(' · ')}</small>}</div>
-    <div><strong>{flightTime(leg.departure)} · {leg.origin}</strong><small>{flightDate(leg.departure)}</small></div>
-    <div className="leg-connection">
-      {duration !== null && <span>{duration >= 60 ? `${Math.floor(duration / 60)}h ` : ''}{duration % 60}m</span>}
-      {leg.stops !== null && <small>{leg.stops === 0 ? 'Non-stop' : `${leg.stops} ${leg.stops === 1 ? 'stop' : 'stops'}`}</small>}
-    </div>
-    <div><strong>{flightTime(leg.arrival)} · {leg.destination}</strong><small>{flightDate(leg.arrival)}</small></div>
-  </div>;
-}
-
-function FlightResultCard({result}: {result: FareResult}) {
-  const price = formatFare(result.fare);
-  if (!price) return <article className="flight-result"><p>The fare currency or total is unavailable.</p></article>;
-  const count = passengerCount(result.travellers);
-  const live = result.source === 'live_quote';
-  const inclusion = (name: string, status: string) => status === 'unknown' ? `${name} information unavailable` : `${name} ${status}`;
-  return <article className="flight-result">
-    <div className="result-itinerary">
-      <p className="fare-source">{live ? 'API Fare' : 'ML Estimated Fare'} · {result.source_name}</p>
-      {live && result.legs.map((leg, index) => <Leg key={`${leg.origin}-${leg.departure}`} leg={leg}
-        label={result.journey === 'round_trip' ? index === 0 ? 'Outbound' : 'Return' : undefined}/>)}
-      <p className="result-details">{cabinNames[result.cabin]} · {result.journey === 'one_way' ? 'One Way' : 'Round Trip'}
-        {' · '}Retrieved {flightDate(result.retrieved_at)}, {flightTime(result.retrieved_at)} IST</p>
-      {live && (result.baggage || result.conditions) && <details><summary>Baggage and fare conditions</summary>
-        {result.baggage && <p>{result.baggage}</p>}{result.conditions && <p>{result.conditions}</p>}
-      </details>}
-    </div>
-    <div className="result-price"><strong>{price}</strong>
-      <span>Total for {count} {count === 1 ? 'traveller' : 'travellers'}</span>
-      <small>{result.fare.taxes === 'unknown' && result.fare.fees === 'unknown' ? 'Tax and fee breakdown unavailable' :
-        `${inclusion('Taxes', result.fare.taxes)} · ${inclusion('Fees', result.fare.fees)}`}</small>
-    </div>
-  </article>;
-}
-
-const travelDate = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'});
 
 function PredictionStatus({query, airlines, message, retry}: {query: FlightQuery; airlines: Airline[]; message: string;
   retry?: () => void}) {
-  const formatDate = (date: string) => travelDate.format(new Date(`${date}T00:00:00Z`));
   const count = passengerCount(query.travellers);
   const airline = airlines.find(entry => entry.id === query.airline);
   return <section className="flight-status prediction-status" aria-labelledby="prediction-status-title" role="status">
     <h2 id="prediction-status-title">{query.origin} → {query.destination}</h2>
-    <p>{formatDate(query.departure_date)}{query.return_date && ` – ${formatDate(query.return_date)}`}
+    <p>{flightDate(query.departure_date)}{query.return_date && ` – ${flightDate(query.return_date)}`}
       {' · '}{query.journey === 'round_trip' ? 'Round trip' : 'One way'}
       {' · '}{cabinNames[query.cabin]} · {count} {count === 1 ? 'traveller' : 'travellers'}</p>
-    {airline && <p>Airline {airline.name}</p>}
+    {airline && <p>Airline preference · {airline.name}</p>}
     <p>{message}</p>
     {retry && <button type="button" className="small-button" onClick={retry}>Try again</button>}
   </section>;
 }
 
 export function FlightResults({state, airlines = [], retry}: {state: SearchState; airlines?: Airline[]; retry: () => void}) {
-  const [sort, setSort] = useState<Sort>('price');
   if (state.status === 'idle') return null;
-  if (state.status === 'loading') return <div className="flight-status" role="status">
-    Checking fare sources…
-  </div>;
+  if (state.status === 'loading') return <div className="flight-status" role="status">Checking fare sources…</div>;
   if (state.status === 'error') return <PredictionStatus query={state.query} airlines={airlines}
     message={state.message} retry={state.retryable ? retry : undefined}/>;
-  if (!state.results.length) return <PredictionStatus query={state.query} airlines={airlines}
-    message="No fares found for these exact trip settings. Try a different date or airline."/>;
-  const mixed = new Set(state.results.map(result => result.fare.currency)).size > 1;
-  const hasDuration = state.results.some(result => result.source === 'live_quote' && result.legs.every(leg => leg.duration_minutes !== null));
-  const hasDeparture = state.results.some(result => result.source === 'live_quote');
-  const activeSort = (sort === 'price' && mixed) || (sort === 'duration' && !hasDuration) ||
-    (sort === 'departure' && !hasDeparture) ? 'provider' : sort;
-  return <section className="flight-results" aria-labelledby="flight-results-title">
-    <div className="results-header"><div><h2 id="flight-results-title">{state.query.origin} → {state.query.destination}</h2>
-      <p role="status">{state.results.length} {state.results.length === 1 ? 'result' : 'results'}</p></div>
-      <label>Sort by<select value={activeSort} onChange={event => setSort(event.target.value as Sort)}>
-        {!mixed && <option value="price">Lowest fare</option>}
-        {hasDuration && <option value="duration">Shortest duration</option>}
-        {hasDeparture && <option value="departure">Departure time</option>}
-        <option value="provider">Source order</option>
-      </select></label>
+  const estimate = state.estimate;
+  if (estimate.estimation_method === 'unavailable') {
+    return <PredictionStatus query={state.query} airlines={airlines} message={estimate.disclaimer}/>;
+  }
+  const low = formatAmount(estimate.estimated_low);
+  const high = formatAmount(estimate.estimated_high);
+  return <section className="fare-estimate" aria-labelledby="estimate-title">
+    <div className="estimate-body">
+      <div className="estimate-price">
+        <h2 id="estimate-title">SkyLens estimated fare</h2>
+        <p className="estimate-amount">{low === high ? low : `${low} – ${high}`}</p>
+        <p>Total for {estimate.passenger_count} {estimate.passenger_count === 1 ? 'traveller' : 'travellers'}</p>
+      </div>
+      <dl className="estimate-trip">
+        <div><dt>Route</dt><dd>{estimate.origin} → {estimate.destination}</dd></div>
+        <div><dt>Journey</dt><dd>{estimate.journey_type === 'round_trip' ? 'Round trip' : 'One way'}</dd></div>
+        <div><dt>Cabin</dt><dd>{cabinNames[estimate.cabin_class]}</dd></div>
+        <div className="estimate-dates"><dt>Travel dates</dt><dd>{flightDate(estimate.departure_date)}
+          {estimate.return_date && ` – ${flightDate(estimate.return_date)}`}</dd></div>
+      </dl>
     </div>
-    {mixed && <p className="currency-note">Fares are shown in their original currencies.</p>}
-    {hasDeparture && <p className="currency-note">API fares can change with availability.</p>}
-    {sortResults(state.results, activeSort).map(result => <FlightResultCard key={result.id} result={result}/>)}
+    <div className="estimate-source">
+      <p className="estimate-method">{estimate.estimation_method === 'historical_ml' ?
+        'Historical ML estimate' : 'Market-based indicative estimate'}</p>
+      <p>{estimate.disclaimer}</p>
+    </div>
   </section>;
 }

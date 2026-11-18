@@ -145,15 +145,16 @@ class LiveQuote(PricedResult):
     conditions: str | None = None
 
 
-class ModelEstimate(PricedResult):
+class ValidatedModelEstimate(PricedResult):
+    """Prediction from a registered, evaluated source with a verified fare target."""
+
     source: Literal['ml_estimate']
-
-
-FareResult = Annotated[LiveQuote | ModelEstimate, Field(discriminator='source')]
-
-
-class SearchResponse(Contract):
-    results: list[FareResult]
+    origin: IATA
+    destination: IATA
+    departure_date: date
+    return_date: date | None = None
+    airline: str | None = None
+    evaluation_reference: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=256)]
 
 
 class LiveFareProvider(Protocol):
@@ -169,4 +170,4 @@ class ValidatedFareModel(Protocol):
 
     def supports_route(self, request: FlightSearch) -> bool: ...
 
-    async def search(self, request: FlightSearch) -> list[ModelEstimate]: ...
+    async def search(self, request: FlightSearch) -> list[ValidatedModelEstimate]: ...

@@ -5,17 +5,29 @@ Run `./run.ps1`. The built application is at [port 8000](http://127.0.0.1:8000);
 ## Flight search
 
 - `GET /flights/airports` lists Indian IATA-coded airport records with name, city, state and a historical evidence flag. Directory entries describe known airports. Route support comes from a registered source.
-- `GET /flights/capabilities` reports travel options for configured sources, a domestic airline preference directory, and today's date in India. `live_quotes` and `ml_estimates` are null when no source is registered. `indicative_estimates` is reserved for the optional Groq experiment. The airline directory covers carriers in the September 2026 domestic traffic report. [DGCA domestic traffic report](https://public-prd-dgca.s3.ap-south-1.amazonaws.com/InventoryList/dataReports/aviationDataStatistics/airTransport/domestic/airTraffic/traffic%20Data%20Sep%2026.pdf)
-- `POST /flights/estimate` is the Flights page endpoint. It checks for a validated supervised result first (`source=ml_estimate`) and then queries Kiwi.com if no model prices the trip (`source=live_quote`). If no source is configured, it returns HTTP 503 with `no_fare_evidence`.
-- `POST /flights/search` accepts origin and destination IATA codes, `journey` (`one_way` or `round_trip`), `departure_date`, `return_date` for round trips, `cabin` and `travellers` (`adults`, `children`, `infants`). Dates use `YYYY-MM-DD` and are validated in India Standard Time.
+- `GET /flights/capabilities` reports the travel options of registered sources, the domestic airline preference directory, and today's date in India. The legacy `indicative_estimates` field is always null.
+- `POST /flights/estimate` accepts origin and destination IATA codes, `journey` (`one_way` or `round_trip`), `departure_date`, a round-trip `return_date`, `cabin`, optional `airline`, and `travellers` with adult, child and infant counts. Dates use `YYYY-MM-DD` in India Standard Time. The deprecated `/flights/search` alias returns the same summary.
 
-`results` contains `live_quote` or `ml_estimate` records. Each price has a decimal amount, source currency, `party_total` basis, tax and fee status, cabin, exact travellers, source name and retrieval time. Live quotes also require available itineraries with matching airports and dates, named airlines and time-zone-aware times. `results: []` means a supported source completed the search and returned zero results. The API sends `Cache-Control: no-store` with fare responses.
+### Estimate contract
 
-Application errors supply `detail.code` and `detail.message`. Status 422 covers invalid or unsupported input. Status 503 reports missing provider or authentication failure. Status 429 reports quota or rate limits, 504 reports timeouts, and 502 reports provider, TLS certificate or response failures. The frozen historical models remain separate from customer fares.
+| Fields | Meaning |
+| --- | --- |
+| `estimated_low`, `estimated_median`, `estimated_high` | Decimal strings in INR for the entire party and journey. An approved model point or a single market observation produces equal bounds. |
+| `origin`, `destination`, `departure_date`, `return_date`, `journey_type`, `cabin_class`, `passenger_count` | The itinerary that was priced. |
+| `currency`, `price_scope`, `taxes`, `fees` | Returned currency, whole-party basis, and whether taxes and fees are included, excluded or unknown. |
+| `estimation_method`, `coverage_status`, `source_status` | Approved historical ML, market reference or unavailable, plus model coverage and each source's outcome. |
+| `observation_count`, `disclaimer` | Number of distinct itineraries contributing to the market result and the applicable pricing limitations. |
 
-The backend calls the [public Kiwi.com flight-search endpoint](https://www.kiwi.com/fi/pages/mcp/) without credentials. It submits airport codes, exact dates, the passenger mix, cabin and any airline preference. SkyLens accepts matching domestic itineraries and returns the source's INR total for the selected party. The source's response lacks a tax and fee breakdown. Identical searches can reuse successful results in memory for up to 60 seconds with the original retrieval time. Fares and availability can change. Booking URLs are discarded and offers are not stored as training data. Set `SKYLENS_KIWI_FARES_ENABLED=false` in the backend process environment for offline operation.
+A successful lookup with no usable observations returns HTTP 200, `estimation_method=unavailable` and null amounts. HTTP 422 identifies invalid input. HTTP 503 covers absent sources or provider authentication failure, 429 covers quotas and rate limits, 504 covers timeout, and 502 covers transport, certificate or malformed-response failures. Error bodies carry a sanitized message and code. The endpoint uses `Cache-Control: no-store`.
 
-The separate `POST /flights/experimental/groq-estimate` endpoint requires an explicit `SKYLENS_EXPERIMENTAL_GROQ=true` process setting and the existing Free plan configuration from `scripts/configure_groq.ps1`. Its outputs are marked `groq_indicative` and remain outside supervised prediction. Identical requests can reuse a range for 24 hours. [Groq rate limits](https://console.groq.com/docs/rate-limits)
+### How SkyLens calculates the estimate
+
+1. A registered, independently evaluated customer model must accept the exact route, dates, airline preference, journey, cabin and passenger mix. Its result must carry an evaluation reference and a verified INR whole-party target with known tax and fee treatment. The two historical research artifacts do not qualify.
+2. Outside approved coverage, the server requests exact-date domestic observations from Kiwi.com. It checks the returned currency, passenger counts, segments, carrier, cabin and times. The connector documents family-search prices for the entire party. Kiwi does not specify tax or fee inclusion in this response. [Provider documentation](https://www.kiwi.com/stories/kiwi-mcp-connector/)
+3. SkyLens groups observations by compatible monetary terms. Unknown inclusions can be summarized within one provider. A distinct itinerary contributes one value, the median of its distinct price variants. SkyLens returns the 25th, 50th and 75th percentiles using linear interpolation at `(n - 1) × p`. These describe the matching offers returned by the provider. They carry no calibrated probability about future booking prices. Among incompatible INR groups the largest distinct-itinerary group is used. A tie produces an unavailable result.
+4. The bounded in-memory cache keeps eligible observations for up to 60 seconds for an identical request. A validated model takes priority, including when a recent market reference exists. Both values are retained in the internal decision and compared only under matching known terms. There are zero verified paired fare targets for fitting or testing ensemble weights. [Model and source audit](../reports/supervised_fare_status.md)
+
+The market lookup needs no API key. Set `SKYLENS_KIWI_FARES_ENABLED=false` in the backend process environment for offline use. The numerical pipeline has no Groq dependency. Existing private credentials and historical generated ranges are unused. Booking links and individual offers are omitted from the estimate response.
 
 ## Customer ML capability
 
