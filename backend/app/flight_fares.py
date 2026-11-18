@@ -116,6 +116,7 @@ class FlightLeg(Contract):
     departure: AwareDatetime
     arrival: AwareDatetime
     airlines: Annotated[list[Annotated[str, StringConstraints(min_length=1, max_length=100)]], Field(min_length=1)]
+    flight_numbers: list[Annotated[str, StringConstraints(pattern=r'^[A-Z0-9]{2,12}$')]] = Field(default_factory=list)
     duration_minutes: Annotated[int, Field(strict=True, gt=0)] | None = None
     stops: Annotated[int, Field(strict=True, ge=0)] | None = None
 

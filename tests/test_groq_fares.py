@@ -68,6 +68,7 @@ def test_configured_key_alone_cannot_enable_ungrounded_customer_fares(monkeypatc
     monkeypatch.setenv('GROQ_API_KEY', FIXTURE_KEY)
     monkeypatch.setenv('GROQ_FREE_PLAN_CONFIRMED', 'true')
     monkeypatch.delenv('SKYLENS_EXPERIMENTAL_GROQ', raising=False)
+    monkeypatch.setenv('SKYLENS_KIWI_FARES_ENABLED', 'false')
     with TestClient(main.app) as client:
         assert client.get('/flights/capabilities').json()['indicative_estimates'] is None
         response = client.post('/flights/estimate', json=query)
@@ -340,7 +341,7 @@ def test_timeout_and_backend_connection_failure(app_client, query):
         raise httpx.ConnectError('diagnostic data', request=request)
 
     for handler, status in [(slow, 504), (connection_failure, 502)]:
-        client, calls = app_client(handler, timeout=0.05)
+        client, calls = app_client(handler, timeout=0.05 if status == 504 else 3)
         with client:
             response = client.post('/flights/experimental/groq-estimate', json=query)
             assert response.status_code == status

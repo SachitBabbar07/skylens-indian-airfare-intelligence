@@ -27,7 +27,8 @@ export function sortResults(results: FareResult[], requested: Sort) {
 function Leg({leg, label}: {leg: FlightLeg; label?: string}) {
   const duration = leg.duration_minutes;
   return <div className="itinerary-leg">
-    <div className="leg-carrier">{label && <small>{label}</small>}<strong>{leg.airlines.join(' · ')}</strong></div>
+    <div className="leg-carrier">{label && <small>{label}</small>}<strong>{leg.airlines.join(' · ')}</strong>
+      {Boolean(leg.flight_numbers?.length) && <small>{leg.flight_numbers?.join(' · ')}</small>}</div>
     <div><strong>{flightTime(leg.departure)} · {leg.origin}</strong><small>{flightDate(leg.departure)}</small></div>
     <div className="leg-connection">
       {duration !== null && <span>{duration >= 60 ? `${Math.floor(duration / 60)}h ` : ''}{duration % 60}m</span>}
@@ -45,18 +46,19 @@ function FlightResultCard({result}: {result: FareResult}) {
   const inclusion = (name: string, status: string) => status === 'unknown' ? `${name} information unavailable` : `${name} ${status}`;
   return <article className="flight-result">
     <div className="result-itinerary">
-      <p className="fare-source">{live ? 'Live Fare Quote' : 'ML Estimated Fare'} · {result.source_name}</p>
+      <p className="fare-source">{live ? 'API Fare' : 'ML Estimated Fare'} · {result.source_name}</p>
       {live && result.legs.map((leg, index) => <Leg key={`${leg.origin}-${leg.departure}`} leg={leg}
         label={result.journey === 'round_trip' ? index === 0 ? 'Outbound' : 'Return' : undefined}/>)}
       <p className="result-details">{cabinNames[result.cabin]} · {result.journey === 'one_way' ? 'One Way' : 'Round Trip'}
-        {live && ' · Available'} · Retrieved {flightDate(result.retrieved_at)}, {flightTime(result.retrieved_at)} IST</p>
+        {' · '}Retrieved {flightDate(result.retrieved_at)}, {flightTime(result.retrieved_at)} IST</p>
       {live && (result.baggage || result.conditions) && <details><summary>Baggage and fare conditions</summary>
         {result.baggage && <p>{result.baggage}</p>}{result.conditions && <p>{result.conditions}</p>}
       </details>}
     </div>
     <div className="result-price"><strong>{price}</strong>
       <span>Total for {count} {count === 1 ? 'traveller' : 'travellers'}</span>
-      <small>{inclusion('Taxes', result.fare.taxes)} · {inclusion('Fees', result.fare.fees)}</small>
+      <small>{result.fare.taxes === 'unknown' && result.fare.fees === 'unknown' ? 'Tax and fee breakdown unavailable' :
+        `${inclusion('Taxes', result.fare.taxes)} · ${inclusion('Fees', result.fare.fees)}`}</small>
     </div>
   </article>;
 }
@@ -83,12 +85,12 @@ export function FlightResults({state, airlines = [], retry}: {state: SearchState
   const [sort, setSort] = useState<Sort>('price');
   if (state.status === 'idle') return null;
   if (state.status === 'loading') return <div className="flight-status" role="status">
-    Checking model coverage…
+    Checking fare sources…
   </div>;
   if (state.status === 'error') return <PredictionStatus query={state.query} airlines={airlines}
     message={state.message} retry={state.retryable ? retry : undefined}/>;
   if (!state.results.length) return <PredictionStatus query={state.query} airlines={airlines}
-    message="No validated model covers this itinerary."/>;
+    message="No fares found for these exact trip settings. Try a different date or airline."/>;
   const mixed = new Set(state.results.map(result => result.fare.currency)).size > 1;
   const hasDuration = state.results.some(result => result.source === 'live_quote' && result.legs.every(leg => leg.duration_minutes !== null));
   const hasDeparture = state.results.some(result => result.source === 'live_quote');
@@ -105,6 +107,7 @@ export function FlightResults({state, airlines = [], retry}: {state: SearchState
       </select></label>
     </div>
     {mixed && <p className="currency-note">Fares are shown in their original currencies.</p>}
+    {hasDeparture && <p className="currency-note">API fares can change with availability.</p>}
     {sortResults(state.results, activeSort).map(result => <FlightResultCard key={result.id} result={result}/>)}
   </section>;
 }

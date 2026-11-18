@@ -49,7 +49,7 @@ function FlightApp() {
         <img className="flight-hero-photo" src="/flights-hero.webp" alt="" fetchPriority="high"/>
         <div className="flight-hero-content">
           <h1 id="flight-title">Predict flight fares <span>in India</span></h1>
-          <p className="flight-intro">Choose an itinerary to check model coverage and predict a fare.</p>
+          <p className="flight-intro">Get a model estimate or an API fare for your trip.</p>
         </div>
       </section>
       <div className="flight-search-area" id="flight-main" tabIndex={-1}>

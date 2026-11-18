@@ -11,6 +11,64 @@ from backend.app.flight_fares import IST, SearchSupport
 from backend.app.flight_search import load_airports, router
 
 
+def test_estimate_uses_kiwi_for_exact_carrier_when_model_has_no_coverage(client, query):
+    import asyncio
+    import json
+
+    import httpx
+
+    from backend.app.kiwi_fares import KiwiFareProvider
+
+    search = query | {'origin': 'DEL', 'destination': 'IXC', 'airline': 'indigo', 'cabin': 'economy',
+                      'travellers': {'adults': 2, 'children': 0, 'infants': 0}}
+    departure = search['departure_date']
+    segment = {'from': 'DEL', 'to': 'IXC', 'fromCountry': 'India', 'toCountry': 'India', 'carrier': '6E',
+               'cabinClass': 'Economy', 'flightNumber': '6E2147', 'departureTime': f'{departure}T11:20:00',
+               'arrivalTime': f'{departure}T12:20:00'}
+    outbound = {**segment, 'segments': [segment], 'stops': 0, 'durationSeconds': 3600}
+    offer = {'id': 'software-fixture', 'price': 13200.0, 'tripType': 'oneway', 'outbound': outbound,
+             'inbound': None, 'bookingUrl': 'https://booking.example.invalid/private'}
+    seen = []
+
+    def upstream(request):
+        assert str(request.url) == 'https://mcp.kiwi.com'
+        rpc = json.loads(request.content)
+        seen.append(rpc['method'])
+        if rpc['method'] == 'initialize':
+            return httpx.Response(200, json={'jsonrpc': '2.0', 'id': rpc['id'],
+                                           'result': {'protocolVersion': '2025-03-26'}})
+        if rpc['method'] == 'notifications/initialized':
+            return httpx.Response(202)
+        args = rpc['params']['arguments']
+        assert args['select_airlines'] == '6E' and args['cabinClass'] == 'M' and args['currency'] == 'INR'
+        assert args['adults'] == 2 and args['departureDateFlexDays'] == 0
+        assert args['departureDate'] == datetime.fromisoformat(departure).strftime('%d/%m/%Y')
+        conflicting = {**offer, 'id': 'wrong-carrier', 'price': 4000,
+                       'outbound': {**outbound, 'segments': [segment | {'carrier': 'AI'}]}}
+        structured = {'currency': 'INR', 'passengers': search['travellers'], 'error': None,
+                      'itineraries': [conflicting, offer]}
+        result = {'jsonrpc': '2.0', 'id': rpc['id'], 'result': {'structuredContent': structured, 'isError': False}}
+        return httpx.Response(200, headers={'Content-Type': 'text/event-stream'},
+                              text=f'data: {json.dumps(result)}\n\n')
+
+    provider = KiwiFareProvider(client=httpx.AsyncClient(transport=httpx.MockTransport(upstream)))
+    client.app.state.fare_service = FareService(provider=provider, provider_cache_seconds=60)
+    try:
+        response = client.post('/flights/estimate', json=search)
+        second = client.post('/flights/estimate', json=search)
+    finally:
+        asyncio.run(provider.close())
+    assert response.status_code == 200
+    assert second.json() == response.json()
+    result, = response.json()['results']
+    assert result['source'] == 'live_quote' and result['source_name'] == 'Kiwi.com'
+    assert result['fare'] == {'amount': '13200.0', 'currency': 'INR', 'basis': 'party_total',
+                              'taxes': 'unknown', 'fees': 'unknown'}
+    assert result['legs'][0]['flight_numbers'] == ['6E2147']
+    assert 'booking.example' not in response.text
+    assert seen == ['initialize', 'notifications/initialized', 'tools/call']
+
+
 @pytest.fixture
 def client():
     app = FastAPI()

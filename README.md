@@ -2,7 +2,7 @@
 
 SkyLens is a React and FastAPI application for Indian domestic flight search. On the Flights page, you can look up 165 Indian IATA-coded airports by city, airport name or code, swap airports and choose one-way or round-trip travel dates, travellers and cabin.
 
-**Predict fare** requests a price only from a supervised model validated for the selected itinerary. With no approved customer model, the page reports missing coverage. The historical models still run in Research. [Prediction API](docs/API_GUIDE.md#flight-search) · [Verified fare model status](reports/supervised_fare_status.md)
+**Get fare** checks a validated supervised model first. When the model cannot price the trip, SkyLens requests matching fares from Kiwi.com’s free flight-search API and displays them in the app with their source and retrieval time. The API requires no key. Airport, airline and cabin coverage depend on the fares the source returns. [Fare API](docs/API_GUIDE.md#flight-search) · [Verified fare model status](reports/supervised_fare_status.md)
 
 ## Research
 

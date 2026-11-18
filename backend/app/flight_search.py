@@ -75,18 +75,19 @@ async def flight_estimate(payload: FlightSearch, request: Request, response: Res
     itinerary_airports(request, payload)
     service: FareService = request.app.state.fare_service
     try:
-        model_estimate = await service.estimate_with_model(payload)
+        result = await service.search(payload)
     except FareError as error:
+        if service.provider is None and error.code in {'unconfigured', 'unsupported'}:
+            return JSONResponse(status_code=503, headers={'Cache-Control': 'no-store'}, content={'detail': {
+                'code': 'no_fare_evidence', 'message': 'No model or fare source covers this itinerary.',
+                'retryable': False,
+            }})
         return JSONResponse(status_code=error.status, headers={'Cache-Control': 'no-store'}, content={'detail': {
-            'code': error.code, 'message': 'Fare estimate temporarily unavailable. Please try again.',
-        }})
-    if model_estimate is None:
-        return JSONResponse(status_code=503, headers={'Cache-Control': 'no-store'}, content={'detail': {
-            'code': 'no_fare_evidence', 'message': 'No validated model covers this itinerary.',
-            'retryable': False,
+            'code': error.code, 'message': error.message,
+            'retryable': error.code not in {'authentication', 'quota', 'unsupported'},
         }})
     response.headers['Cache-Control'] = 'no-store'
-    return model_estimate
+    return result
 
 
 @router.post('/experimental/groq-estimate', response_model=IndicativeEstimate, tags=['Local experiments'])

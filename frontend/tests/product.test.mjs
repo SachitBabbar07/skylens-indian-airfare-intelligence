@@ -99,6 +99,22 @@ test('unrecognized estimate payloads never reach the price card', async context 
   assert.equal((await requestFlightSearch(comparisonQuery)).status, 'error');
 });
 
+test('a sourced fare displays in INR and is distinct from a supervised prediction', async context => {
+  const query = {...comparisonQuery, journey: 'one_way', return_date: undefined};
+  const listing = {...fixtureResult, source_name: 'Kiwi.com', travellers: query.travellers,
+    fare: {...fixtureFare, amount: '6880'}, legs: [{...fixtureLeg, airlines: ['IndiGo'], flight_numbers: ['6E2147']}]};
+  context.mock.method(globalThis, 'fetch', async url => {
+    assert.equal(url, '/flights/estimate');
+    return Response.json({results: [listing]});
+  });
+  const state = await requestFlightSearch(query);
+  const html = render(FlightResults, {state, retry() {}});
+  assert.match(html, /API Fare · Kiwi.com/);
+  assert.match(html, /₹6,880.*Total for 2 travellers/);
+  assert.match(html, /6E2147/);
+  assert.doesNotMatch(html, /href=|ML Estimated Fare/);
+});
+
 test('a covered trained-model result still reaches the labelled price card', async context => {
   const model = {id: 'model-fixture', source: 'ml_estimate', source_name: 'Software fixture', fare: fixtureFare,
     retrieved_at: fixtureResult.retrieved_at, journey: comparisonQuery.journey, cabin: comparisonQuery.cabin,
@@ -129,7 +145,7 @@ test('live quotes keep provenance, each itinerary and fare, and sort only compar
   assert.equal(sortResults([fixtureResult, usd], 'price')[0].id, 'quote');
   const html = render(FlightResults, {state: {status: 'success', results: [fixtureResult, usd], query: fixtureLeg}, retry() {}});
   assert.match(html, /2 results/);
-  assert.match(html, /Live Fare Quote/);
+  assert.match(html, /API Fare/);
   assert.match(html, /Total for 2 travellers/);
   assert.match(html, /original currencies/);
   assert.doesNotMatch(html, /Lowest fare/);
@@ -139,7 +155,7 @@ test('research metadata stays outside fares and unavailable states have no price
   const estimate = {...fixtureResult, source: 'ml_estimate'};
   const html = render(FlightResults, {state: {status: 'success', results: [estimate], query: fixtureLeg}, retry() {}});
   assert.match(html, /ML Estimated Fare/);
-  assert.doesNotMatch(html, /Live Fare Quote|Non-stop/);
+  assert.doesNotMatch(html, /API Fare|Non-stop/);
   for (const state of [{status: 'idle'}, {status: 'loading'}, {status: 'success', results: [], query: comparisonQuery},
     {status: 'error', message: 'Provider timed out', retryable: true, query: comparisonQuery}]) {
     const rendered = render(FlightResults, {state, retry() {}});

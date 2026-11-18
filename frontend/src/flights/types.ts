@@ -22,7 +22,7 @@ export type FlightQuery = {
 export type Fare = {amount: string; currency: string; basis: 'party_total'; taxes: string; fees: string};
 export type FlightLeg = {
   origin: string; destination: string; departure: string; arrival: string; airlines: string[];
-  duration_minutes: number | null; stops: number | null;
+  flight_numbers?: string[]; duration_minutes: number | null; stops: number | null;
 };
 type PricedResult = {id: string; source_name: string; retrieved_at: string; journey: Journey; cabin: Cabin; travellers: Travellers; fare: Fare};
 export type FareResult = (PricedResult & {source: 'live_quote'; availability: 'available'; legs: FlightLeg[];
