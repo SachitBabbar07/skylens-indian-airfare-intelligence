@@ -54,6 +54,27 @@ def test_config_uses_local_env_or_process_without_leaking_key(tmp_path, monkeypa
     assert inspect('example.ts', FIXTURE_KEY.encode()) == ['provider token']
 
 
+def test_configured_key_alone_cannot_enable_ungrounded_customer_fares(monkeypatch, tmp_path, query):
+    from backend.app import main
+
+    project = Path(__file__).resolve().parents[1]
+    (tmp_path / 'reports').mkdir()
+    (tmp_path / 'reports/airport_fare_coverage.csv').write_bytes(
+        (project / 'reports/airport_fare_coverage.csv').read_bytes())
+    monkeypatch.setattr(main, 'ROOT', tmp_path)
+    monkeypatch.setattr(main, 'ModelStore', lambda: SimpleNamespace(models={}, errors={}))
+    monkeypatch.setattr(main, 'historical_evidence', lambda _: None)
+    monkeypatch.setenv('GROQ_API_KEY', FIXTURE_KEY)
+    monkeypatch.setenv('GROQ_FREE_PLAN_CONFIRMED', 'true')
+    monkeypatch.delenv('SKYLENS_EXPERIMENTAL_GROQ', raising=False)
+    with TestClient(main.app) as client:
+        assert client.get('/flights/capabilities').json()['indicative_estimates'] is None
+        response = client.post('/flights/estimate', json=query)
+        assert response.status_code == 503
+        assert response.json()['detail']['code'] == 'no_fare_evidence'
+        assert 'estimated_low' not in response.json()
+
+
 @pytest.mark.parametrize('explicit_ca', [False, True])
 def test_windows_groq_transport_uses_system_trust_unless_ca_is_configured(monkeypatch, explicit_ca):
     from backend.app import groq_fare_estimator as provider

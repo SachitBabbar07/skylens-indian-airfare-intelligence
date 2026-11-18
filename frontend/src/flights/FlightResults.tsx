@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {flightDate, flightTime} from './dates';
-import {ESTIMATE_UNAVAILABLE, cabinNames, passengerCount, type Fare, type FareResult, type FlightLeg, type IndicativeEstimate,
+import {fareComparisonUrl} from './fareComparison';
+import {cabinNames, passengerCount, type Airline, type Fare, type FareResult, type FlightLeg, type FlightQuery,
   type SearchState} from './types';
 
 type Sort = 'provider' | 'price' | 'duration' | 'departure';
@@ -61,47 +62,40 @@ function FlightResultCard({result}: {result: FareResult}) {
   </article>;
 }
 
-const rupees = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR', maximumFractionDigits: 0});
 const travelDate = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'});
-const estimateDate = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit',
-  timeZone: 'Asia/Kolkata'});
 
-function EstimateCard({estimate}: {estimate: IndicativeEstimate}) {
-  const departure = travelDate.format(new Date(`${estimate.departure_date}T00:00:00Z`));
-  const returnDate = estimate.return_date && travelDate.format(new Date(`${estimate.return_date}T00:00:00Z`));
-  return <section className="flight-status indicative-estimate" aria-labelledby="indicative-title" aria-live="polite">
-    <h2 id="indicative-title">SkyLens Indicative Fare Estimate</h2>
-    <p className="indicative-route"><strong>{estimate.origin} → {estimate.destination}</strong> · {estimate.journey_type === 'round_trip' ? 'Round Trip' : 'One Way'}
-      {' · '}{cabinNames[estimate.cabin_class]}</p>
-    <p>Departure {departure}{returnDate && ` · Return ${returnDate}`}</p>
-    {estimate.airline_name && <p className="indicative-meta">Airline preference {estimate.airline_name}</p>}
-    <p className="indicative-price">{rupees.format(estimate.estimated_low)} – {rupees.format(estimate.estimated_high)}</p>
-    <p>Estimated total for {estimate.passenger_count} {estimate.passenger_count === 1 ? 'traveller' : 'travellers'}</p>
-    <p className="indicative-disclosure">AI-assisted estimate · Actual fares may vary.</p>
-    <p className="indicative-asof">Estimated {estimateDate.format(new Date(estimate.estimated_at))} IST</p>
+function ComparisonCard({query, airlines, message, retry}: {query: FlightQuery; airlines: Airline[]; message?: string;
+  retry?: () => void}) {
+  const formatDate = (date: string) => travelDate.format(new Date(`${date}T00:00:00Z`));
+  const count = passengerCount(query.travellers);
+  const airline = airlines.find(entry => entry.id === query.airline);
+  return <section className="flight-status fare-comparison" aria-labelledby="comparison-title" aria-live="polite">
+    <h2 id="comparison-title">{query.origin} → {query.destination}</h2>
+    <p>{formatDate(query.departure_date)}{query.return_date && ` – ${formatDate(query.return_date)}`}
+      {' · '}{query.journey === 'round_trip' ? 'Round trip' : 'One way'}
+      {' · '}{cabinNames[query.cabin]} · {count} {count === 1 ? 'traveller' : 'travellers'}</p>
+    <p>{message ?? 'SkyLens has no sourced fare for this trip. Compare prices on Google Flights.'}</p>
+    {airline && <p>Airline filter {airline.name}</p>}
+    <div className="comparison-actions">
+      <a className="comparison-link" href={fareComparisonUrl(query)} target="_blank" rel="noopener noreferrer">
+        Check current fares <span aria-hidden="true">↗</span>
+      </a>
+      {retry && <button type="button" className="small-button" onClick={retry}>Try again</button>}
+    </div>
   </section>;
 }
 
-export function FlightResults({state, unavailable, indicative = false, retry}: {state: SearchState; unavailable: boolean;
-  indicative?: boolean; retry: () => void}) {
+export function FlightResults({state, airlines = [], retry}: {state: SearchState; airlines?: Airline[]; retry: () => void}) {
   const [sort, setSort] = useState<Sort>('price');
-  if (state.status === 'idle') {
-    if (indicative) return unavailable ? <div className="flight-status" role="status">{ESTIMATE_UNAVAILABLE}</div> : null;
-    return unavailable ? <div className="flight-status" role="status">
-      <strong>Live fares unavailable</strong><p>Flight search needs a connected fare provider.</p>
-    </div> : null;
-  }
+  if (state.status === 'idle') return null;
   if (state.status === 'loading') return <div className="flight-status" role="status">
-    {indicative ? 'Generating an indicative fare estimate…' : 'Searching for available flights…'}
+    Searching for available flights…
   </div>;
-  if (state.status === 'error') return <div className="flight-status" role="alert">
-    {!indicative && <strong>Search unavailable</strong>}<p>{state.message}</p>
-    {state.retryable && <button type="button" className="small-button" onClick={retry}>Try again</button>}
-  </div>;
-  if (state.status === 'estimate') return <EstimateCard estimate={state.estimate}/>;
-  if (!state.results.length) return <div className="flight-status" role="status">
-    <strong>No flights found</strong><p>Try a different date, airport or cabin.</p>
-  </div>;
+  if (state.status === 'comparison') return <ComparisonCard query={state.query} airlines={airlines}/>;
+  if (state.status === 'error') return <ComparisonCard query={state.query} airlines={airlines}
+    message={state.message} retry={state.retryable ? retry : undefined}/>;
+  if (!state.results.length) return <ComparisonCard query={state.query} airlines={airlines}
+    message="The connected source returned no fares for this trip."/>;
   const mixed = new Set(state.results.map(result => result.fare.currency)).size > 1;
   const hasDuration = state.results.some(result => result.source === 'live_quote' && result.legs.every(leg => leg.duration_minutes !== null));
   const hasDeparture = state.results.some(result => result.source === 'live_quote');

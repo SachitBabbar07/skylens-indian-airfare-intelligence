@@ -35,13 +35,18 @@ async def lifespan(app):
         app.state.evidence=None
     logging.getLogger('uvicorn.error').info('Research startup: %d models loaded; %d model artifacts unavailable',
              len(app.state.store.models),len(app.state.store.errors))
-    app.state.groq_estimator=GroqFareEstimator(GroqSettings.load(ROOT), cache_path=ROOT / 'data/cache/indicative_fares.sqlite3')
+    experimental_groq = os.getenv('SKYLENS_EXPERIMENTAL_GROQ', '').strip().lower() == 'true'
+    app.state.groq_estimator = (
+        GroqFareEstimator(GroqSettings.load(ROOT), cache_path=ROOT / 'data/cache/indicative_fares.sqlite3')
+        if experimental_groq else None
+    )
     try:
         yield
     finally:
-        await app.state.groq_estimator.close()
+        if app.state.groq_estimator is not None:
+            await app.state.groq_estimator.close()
 
-app=FastAPI(title='SkyLens · Indian Flight Search',version='0.1.0',lifespan=lifespan,description='Indian airport search, experimental Groq fare estimates and separate historical fare research.')
+app=FastAPI(title='SkyLens · Indian Flight Search',version='0.1.0',lifespan=lifespan,description='Indian airport search, fare comparison and separate historical fare research.')
 origins=[value.strip() for value in os.getenv('SKYLENS_CORS_ORIGINS','http://127.0.0.1:5173,http://localhost:5173').split(',') if value.strip()]
 if '*' in origins:
     raise RuntimeError('SKYLENS_CORS_ORIGINS requires explicit origins; wildcard access is unsupported.')

@@ -12,9 +12,8 @@ function FlightApp() {
   const [capabilities, setCapabilities] = useState<SearchCapabilities | null>(null);
   const [loadError, setLoadError] = useState('');
   const [attempt, setAttempt] = useState(0);
-  const estimateAvailable = Boolean(capabilities?.indicative_estimates || capabilities?.ml_estimates);
-  const indicative = Boolean(capabilities?.indicative_estimates) || !capabilities?.live_quotes;
-  const {state, search, clear, retry} = useFlightSearch(indicative);
+  const airlines = capabilities?.airlines ?? [];
+  const {state, search, clear, retry} = useFlightSearch(capabilities);
 
   useEffect(() => {
     const request = new AbortController();
@@ -54,12 +53,11 @@ function FlightApp() {
         </div>
       </section>
       <div className="flight-search-area" id="flight-main" tabIndex={-1}>
-        <FlightSearchForm airports={airports} capabilities={capabilities} indicative={indicative} busy={state.status === 'loading'}
+        <FlightSearchForm airports={airports} airlines={airlines} busy={state.status === 'loading'}
           onSearch={query => void search(query)} onEdit={clear}/>
         {loadError && <div className="flight-status" role="status"><p>{loadError}</p>
           <button className="small-button" type="button" onClick={() => setAttempt(value => value + 1)}>Retry connection</button></div>}
-        {(capabilities || state.status !== 'idle') && <FlightResults state={state} indicative={indicative}
-          unavailable={indicative && !estimateAvailable} retry={retry}/>}
+        <FlightResults state={state} airlines={airlines} retry={retry}/>
       </div>
     </main>
     <footer className="flight-width flight-footer"><span>SkyLens</span><span>Indian domestic flights</span><a href="/research.html">Research</a></footer>

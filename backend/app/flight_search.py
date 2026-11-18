@@ -74,12 +74,17 @@ def flight_capabilities(request: Request, response: Response):
 async def flight_estimate(payload: FlightSearch, request: Request, response: Response):
     origin, destination = itinerary_airports(request, payload)
     service: FareService = request.app.state.fare_service
-    estimator: GroqFareEstimator = request.app.state.groq_estimator
+    estimator: GroqFareEstimator | None = getattr(request.app.state, 'groq_estimator', None)
     try:
         model_estimate = await service.estimate_with_model(payload)
         response.headers['Cache-Control'] = 'no-store'
         if model_estimate is not None:
             return model_estimate
+        if estimator is None:
+            return JSONResponse(status_code=503, headers={'Cache-Control': 'no-store'}, content={'detail': {
+                'code': 'no_fare_evidence', 'message': 'No validated fare estimate is available. Check current fares for this trip.',
+                'retryable': False,
+            }})
         estimate = await estimator.estimate(payload, flight_distance(origin['coordinates'], destination['coordinates']))
     except FareError as error:
         return JSONResponse(status_code=error.status, headers={'Cache-Control': 'no-store'}, content={'detail': {

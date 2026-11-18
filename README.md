@@ -2,7 +2,7 @@
 
 SkyLens is a React and FastAPI application for Indian domestic flight search. On the Flights page, you can look up 165 Indian IATA-coded airports by city, airport name or code, swap airports and choose one-way or round-trip travel dates, travellers and cabin.
 
-**Fare estimates use a validated trained model when it covers the trip.** For other trips, the Groq fallback can generate an indicative INR range for the full party. Successful fallback results are saved locally for 24 hours, so an identical search reuses the same estimate and timestamp across refreshes and backend restarts. The cache distinguishes airline preference, travel dates, route, cabin and party. The service withholds ranges wider than 25% of the upper bound. These ranges have no calibrated accuracy or confirmed availability. [.env.example](.env.example) · [Flight search API](docs/API_GUIDE.md#flight-search)
+**Flights displays prices only from a connected live fare provider or a validated fare model.** With neither connected, **Check current fares** opens Google Flights in INR with the selected airports, dates, cabin, travellers and airline filter. The comparison link needs no SkyLens API key or subscription. [Flight search API](docs/API_GUIDE.md#flight-search)
 
 ## Research
 
@@ -29,7 +29,7 @@ Set-Location D:\SkyLens
 
 The app binds to loopback and loads existing model artifacts at startup. Use `npm --prefix frontend run dev -- --port 5173 --strictPort` for the optional development UI. [Flights](http://127.0.0.1:8000) · [Research](http://127.0.0.1:8000/research.html) · [API health](http://127.0.0.1:8000/health)
 
-To enable indicative estimates, run `.\scripts\configure_groq.ps1` and enter the Groq Free plan key at the masked prompt. Restart the backend after configuration. The script writes an ignored local `.env` file. The backend also accepts `GROQ_API_KEY` and `GROQ_FREE_PLAN_CONFIRMED=true` together from the process environment. Optional `GROQ_MODEL` defaults to `openai/gpt-oss-20b`. Use a model available on the Free plan that supports strict JSON output. [Groq Free plan limits](https://console.groq.com/docs/rate-limits) · [Strict JSON models](https://console.groq.com/docs/structured-outputs#supported-models)
+Groq is disabled by default. The legacy endpoint can be enabled separately for local experiments. A narrow generated range cannot establish accuracy without current fare evidence. [Experimental API and configuration](docs/API_GUIDE.md#flight-search)
 
 A GitHub clone includes source, metadata and reports. Native models, raw/processed datasets, private quote evidence and backups stay outside Git. [Installation and artifact restoration](docs/INSTALLATION.md) distinguishes the submission workspace from a source-only clone.
 

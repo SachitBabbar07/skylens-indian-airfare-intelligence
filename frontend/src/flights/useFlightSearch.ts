@@ -1,48 +1,29 @@
 import {useCallback, useRef, useState} from 'react';
 import {api, ApiError} from '../api';
-import {ESTIMATE_UNAVAILABLE, passengerCount, type FareResult, type FlightQuery, type IndicativeEstimate, type SearchState} from './types';
+import {type FareResult, type FlightQuery, type SearchCapabilities, type SearchState} from './types';
 
-export async function requestFlightSearch(query: FlightQuery, indicative: boolean): Promise<SearchState> {
+export async function requestFlightSearch(query: FlightQuery, capabilities: SearchCapabilities | null): Promise<SearchState> {
+  if (!capabilities?.live_quotes && !capabilities?.ml_estimates) return {status: 'comparison', query};
   try {
-    if (indicative) {
-      const estimate = await api<IndicativeEstimate | {results: FareResult[]}>('/flights/estimate', query);
-      if ('results' in estimate) {
-        if (!Array.isArray(estimate.results) || !estimate.results.length || estimate.results.some(result => result.source !== 'ml_estimate')) {
-          throw new Error('The model response could not be read. Try again.');
-        }
-        return {status: 'success', results: estimate.results, query};
-      }
-      if (estimate.estimation_source !== 'groq_indicative' || estimate.currency !== 'INR' ||
-          !Number.isSafeInteger(estimate.estimated_low) || !Number.isSafeInteger(estimate.estimated_high) ||
-          estimate.estimated_low <= 0 || estimate.estimated_low >= estimate.estimated_high ||
-          estimate.origin !== query.origin || estimate.destination !== query.destination ||
-          estimate.journey_type !== query.journey || estimate.cabin_class !== query.cabin ||
-          estimate.departure_date !== query.departure_date || estimate.return_date !== (query.return_date ?? null) ||
-          estimate.airline !== (query.airline ?? null) || (query.airline ? !estimate.airline_name : estimate.airline_name !== null) ||
-          !Number.isFinite(Date.parse(estimate.estimated_at)) ||
-          estimate.passenger_count !== passengerCount(query.travellers)) {
-        throw new Error('The estimate response could not be read. Try again.');
-      }
-      return {status: 'estimate', estimate};
-    }
     const response = await api<{results: FareResult[]}>('/flights/search', query);
-    if (!Array.isArray(response.results)) throw new Error('The fare response could not be read. Try again.');
+    if (!Array.isArray(response.results) || response.results.some(result =>
+      result?.source !== 'live_quote' && result?.source !== 'ml_estimate')) {
+      throw new Error('The fare response could not be read. Try again.');
+    }
     return {status: 'success', results: response.results, query};
   } catch (error) {
-    const retryable = error instanceof ApiError
-      ? error.retryable ?? (!['unconfigured', 'quota', 'authentication', 'unsupported'].includes(error.code ?? '') && error.status !== 422)
-      : true;
-    let message = indicative ? ESTIMATE_UNAVAILABLE : error instanceof Error ? error.message : 'Flight search failed.';
-    if (indicative && error instanceof ApiError) {
-      if (error.code === 'no_estimate') message = 'A useful fare range is unavailable for this trip. Try a different date or airline.';
-      if (error.code === 'busy' || error.code === 'rate_limit') message = 'Fare searches are busy. Wait a moment and try again.';
-      if (error.code === 'quota') message = 'The estimate service has reached its limit. Try again later.';
+    if (error instanceof ApiError && ['unconfigured', 'unsupported'].includes(error.code ?? '')) {
+      return {status: 'comparison', query};
     }
-    return {status: 'error', message, retryable};
+    const retryable = error instanceof ApiError
+      ? error.retryable ?? (!['quota', 'authentication'].includes(error.code ?? '') && error.status !== 422)
+      : true;
+    const message = error instanceof ApiError ? error.message : 'SkyLens could not retrieve fares for this trip.';
+    return {status: 'error', message, retryable, query};
   }
 }
 
-export function useFlightSearch(indicative: boolean) {
+export function useFlightSearch(capabilities: SearchCapabilities | null) {
   const [state, setState] = useState<SearchState>({status: 'idle'});
   const active = useRef(false);
   const lastQuery = useRef<FlightQuery | null>(null);
@@ -53,11 +34,11 @@ export function useFlightSearch(indicative: boolean) {
     lastQuery.current = query;
     setState({status: 'loading'});
     try {
-      setState(await requestFlightSearch(query, indicative));
+      setState(await requestFlightSearch(query, capabilities));
     } finally {
       active.current = false;
     }
-  }, [indicative]);
+  }, [capabilities]);
 
   return {
     state, search,

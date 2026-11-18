@@ -2,10 +2,13 @@ import {useState, type FormEvent} from 'react';
 import {AirportAutocomplete} from './AirportAutocomplete';
 import {TravellerSelector} from './TravellerSelector';
 import {indiaToday} from './dates';
-import {passengerCount, type Airport, type Cabin, type FlightQuery, type Journey, type SearchCapabilities, type Travellers} from './types';
+import {passengerCount, type Airline, type Airport, type Cabin, type FlightQuery, type Journey, type Travellers} from './types';
 
-export function FlightSearchForm({airports, capabilities, indicative, busy, onSearch, onEdit}: {
-  airports: Airport[]; capabilities: SearchCapabilities | null; indicative: boolean; busy: boolean;
+const cabins: Cabin[] = ['economy', 'premium_economy', 'business', 'first'];
+const maximumTravellers = 9;
+
+export function FlightSearchForm({airports, airlines, busy, onSearch, onEdit}: {
+  airports: Airport[]; airlines: Airline[]; busy: boolean;
   onSearch: (query: FlightQuery) => void; onEdit: () => void;
 }) {
   const [journey, setJourney] = useState<Journey>('one_way');
@@ -20,22 +23,7 @@ export function FlightSearchForm({airports, capabilities, indicative, busy, onSe
   const [swapCount, setSwapCount] = useState(0);
   const today = indiaToday();
   const roundTrip = journey === 'round_trip';
-  const sources = (indicative ? [capabilities?.ml_estimates, capabilities?.indicative_estimates] :
-    [capabilities?.live_quotes, capabilities?.ml_estimates]).filter(source => source != null);
-  const journeySources = sources.filter(source => source.journeys.includes(journey));
-  const cabins = [...new Set((journeySources.length ? journeySources : sources).flatMap(source => source.cabins))];
-  const options = cabins.length ? cabins : ['economy' as const];
-  const cabin = options.includes(selectedCabin) ? selectedCabin : options[0];
-  const selectedSources = journeySources.filter(source => source.cabins.includes(cabin));
-  const airlines = (capabilities?.airlines ?? []).filter(airline =>
-    selectedSources.some(source => source.airlines?.includes(airline.id)));
   const airline = airlines.some(airline => airline.id === preferredAirline) ? preferredAirline : '';
-  const childrenAllowed = selectedSources.some(source => source.children);
-  const infantsAllowed = selectedSources.some(source => source.infants);
-  const travellers = {...party, children: childrenAllowed ? party.children : 0, infants: infantsAllowed ? party.infants : 0};
-  const maximum = selectedSources.length ? Math.max(...selectedSources.map(source => source.max_travellers)) : 9;
-  const lastDate = selectedSources.length && selectedSources.every(source => source.last_departure_date)
-    ? selectedSources.flatMap(source => source.last_departure_date ?? []).sort().at(-1) : undefined;
 
   function edited() {setError(''); onEdit();}
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -50,10 +38,10 @@ export function FlightSearchForm({airports, capabilities, indicative, busy, onSe
       setError('Choose a return date on or after departure.');
       return;
     }
-    if (passengerCount(travellers) > maximum) {setError(`Choose up to ${maximum} travellers.`); return;}
+    if (passengerCount(party) > maximumTravellers) {setError(`Choose up to ${maximumTravellers} travellers.`); return;}
     setError('');
     onSearch({origin: origin.code, destination: destination.code, journey, departure_date: departure,
-      ...(roundTrip ? {return_date: returnDate} : {}), ...(airline ? {airline} : {}), cabin, travellers});
+      ...(roundTrip ? {return_date: returnDate} : {}), ...(airline ? {airline} : {}), cabin: selectedCabin, travellers: party});
   }
 
   return <form className="flight-panel" onSubmit={submit} aria-label="Flight search" aria-busy={busy}>
@@ -78,16 +66,16 @@ export function FlightSearchForm({airports, capabilities, indicative, busy, onSe
       </div>
       <div className="date-fields">
         <div className="flight-field"><label htmlFor="departure-date">Departure</label>
-          <input id="departure-date" type="date" min={today} max={lastDate} required disabled={busy} value={departure}
+          <input id="departure-date" type="date" min={today} required disabled={busy} value={departure}
             onInput={event => {setDeparture(event.currentTarget.value);edited();}}/>
         </div>
         {roundTrip && <div className="flight-field"><label htmlFor="return-date">Return</label>
-          <input id="return-date" type="date" min={departure >= today ? departure : today} max={lastDate} required
+          <input id="return-date" type="date" min={departure >= today ? departure : today} required
             disabled={busy} value={returnDate} onInput={event => {setReturn(event.currentTarget.value);edited();}}/>
         </div>}
       </div>
-      <TravellerSelector party={travellers} cabin={cabin} cabins={options} childrenAllowed={childrenAllowed}
-        infantsAllowed={infantsAllowed} maximum={maximum} disabled={busy}
+      <TravellerSelector party={party} cabin={selectedCabin} cabins={cabins} childrenAllowed
+        infantsAllowed maximum={maximumTravellers} disabled={busy}
         onParty={value => {setParty(value);edited();}} onCabin={value => {setCabin(value);edited();}}/>
     </div>
     {error && <p className="form-error" role="alert">{error}</p>}

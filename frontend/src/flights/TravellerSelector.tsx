@@ -14,7 +14,7 @@ export function TravellerSelector({party, cabin, cabins, childrenAllowed, infant
   const counters: {field: keyof Travellers; caption: string; min: number; max: number}[] = [
     {field: 'adults', caption: 'Adults', min: Math.max(1, party.infants), max: maximum},
     ...(childrenAllowed ? [{field: 'children' as const, caption: 'Children', min: 0, max: maximum}] : []),
-    ...(infantsAllowed ? [{field: 'infants' as const, caption: 'Infants', min: 0, max: party.adults}] : []),
+    ...(infantsAllowed ? [{field: 'infants' as const, caption: 'Infants on lap', min: 0, max: party.adults}] : []),
   ];
   return <div className="traveller-field" onBlur={event => {
     if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);
