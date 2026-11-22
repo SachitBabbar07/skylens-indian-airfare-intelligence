@@ -66,7 +66,8 @@ def test_estimate_uses_kiwi_for_exact_carrier_when_model_has_no_coverage(client,
     assert result['taxes'] == result['fees'] == 'unknown'
     from decimal import Decimal
     assert Decimal(result['estimated_median']) == Decimal('13200')
-    assert result['estimated_low'] == result['estimated_high']
+    assert result['estimated_low'] is result['estimated_high'] is None
+    assert result['range_kind'] == 'limited_sample'
     assert result['observation_count'] == 1
     assert 'booking.example' not in response.text and '6E2147' not in response.text
     assert 'results' not in result and 'legs' not in result
@@ -167,7 +168,8 @@ def test_preserves_available_quotes_and_currency(client, query, round_trip):
     assert response.headers['Cache-Control'] == 'no-store'
     estimate = response.json()
     assert estimate['currency'] == 'INR' and estimate['price_scope'] == 'party_total'
-    assert estimate['estimated_low'] == estimate['estimated_high'] == '12000.50'
+    assert estimate['estimated_median'] == '12000.50'
+    assert estimate['estimated_low'] is estimate['estimated_high'] is None
     assert estimate['observation_count'] == 1
     assert estimate['taxes'] == 'included' and estimate['fees'] == 'unknown'
     assert estimate['passenger_count'] == 2 and estimate['cabin_class'] == query['cabin']

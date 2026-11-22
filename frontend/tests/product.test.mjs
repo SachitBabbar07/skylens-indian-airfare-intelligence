@@ -44,14 +44,14 @@ const marketEstimate = {estimated_low: '6120.50', estimated_median: '6500', esti
   return_date: '2027-04-10', cabin_class: 'economy', passenger_count: 2,
   estimation_method: 'market_reference', coverage_status: 'unsupported',
   source_status: {model: 'unsupported', market: 'available'}, price_scope: 'party_total', taxes: 'unknown',
-  fees: 'unknown', observation_count: 3,
+  fees: 'unknown', observation_count: 9, range_kind: 'interquartile', stop_profile: [0, 1],
   disclaimer: 'Indicative range. Tax and fee inclusion is unknown.'};
 const modelEstimate = {...marketEstimate, estimation_method: 'historical_ml', coverage_status: 'validated',
   source_status: {model: 'available', market: 'not_requested'}, estimated_low: '1234.50', estimated_median: '1234.50',
-  estimated_high: '1234.50', observation_count: 0, taxes: 'included', fees: 'included',
+  estimated_high: '1234.50', observation_count: 0, range_kind: 'point', stop_profile: null, taxes: 'included', fees: 'included',
   disclaimer: 'Historical estimate for the travelling party.'};
 const unavailableEstimate = {...marketEstimate, estimated_low: null, estimated_median: null, estimated_high: null,
-  currency: null, estimation_method: 'unavailable', source_status: {model: 'unsupported', market: 'no_observations'},
+  currency: null, estimation_method: 'unavailable', range_kind: 'unavailable', stop_profile: null, source_status: {model: 'unsupported', market: 'no_observations'},
   price_scope: null, taxes: null, fees: null, observation_count: 0, disclaimer: 'No comparable fares for these travel dates.'};
 
 test('an unsupported prediction stays in SkyLens and displays neither a price nor a booking link', async context => {
@@ -107,6 +107,8 @@ test('a market summary displays one whole-party range, trip context and source d
   assert.match(html, /SkyLens estimated fare/);
   assert.match(html, /₹6,120\.50 – ₹7,980/);
   assert.match(html, /Total for 2 travellers/);
+  assert.match(html, /Median ₹6,500/);
+  assert.match(html, /Nonstop \/ 1 stop/);
   assert.match(html, /Market-based indicative estimate/);
   for (const value of ['PNQ → DEL', 'Round trip', 'Economy', '5 Apr 2027', '10 Apr 2027', marketEstimate.disclaimer]) {
     assert.ok(html.includes(value), value);
@@ -116,8 +118,8 @@ test('a market summary displays one whole-party range, trip context and source d
 
 test('a single comparable observation displays one amount and only its outbound date', async context => {
   const oneWay = {...comparisonQuery, journey: 'one_way', return_date: undefined};
-  const response = {...marketEstimate, estimated_low: '120.75', estimated_median: '120.75',
-    estimated_high: '120.75', journey_type: 'one_way', return_date: null, observation_count: 1};
+  const response = {...marketEstimate, estimated_low: null, estimated_median: '120.75', range_kind: 'limited_sample',
+    estimated_high: null, stop_profile: [0], journey_type: 'one_way', return_date: null, observation_count: 1};
   context.mock.method(globalThis, 'fetch', async () => Response.json(response));
   const html = render(FlightResults, {state: await requestFlightSearch(oneWay), retry() {}});
   assert.equal(html.match(/₹120\.75/g)?.length, 1);
@@ -138,7 +140,8 @@ test('legacy individual offers and unrecognized numerical sources do not reach t
 });
 
 test('unusable amounts, currency, trip scope and unsupported model outputs are withheld', async context => {
-  const changes = [{estimated_low: '-1'}, {estimated_high: '6000'}, {estimated_low: 'NaN'},
+  const changes = [{estimated_median: null}, {estimated_median: '8000'}, {stop_profile: [0]},
+    {range_kind: 'limited_sample'}, {estimated_low: '-1'}, {estimated_high: '6000'}, {estimated_low: 'NaN'},
     {estimated_low: 6120.50}, {currency: 'XXX'}, {currency: 'USD'}, {currency: null},
     {price_scope: 'per_adult'}, {price_scope: undefined}, {passenger_count: 1}, {origin: 'DEL'},
     {destination: 'IXC'}, {journey_type: 'one_way'}, {return_date: null}, {departure_date: '2027-04-02'},

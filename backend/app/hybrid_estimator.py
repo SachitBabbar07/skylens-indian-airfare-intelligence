@@ -3,11 +3,11 @@
 from collections import defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timezone
 from decimal import Decimal
 from typing import Annotated, Literal
 
-from pydantic import Field, field_serializer
+from pydantic import Field, PlainSerializer
 
 from backend.app.flight_fares import (
     DOMESTIC_AIRLINES, IATA, IST, Cabin, Contract, Fare, FlightSearch, Journey, LiveQuote, ValidatedModelEstimate,
@@ -17,6 +17,10 @@ from backend.app.flight_fares import (
 CoverageStatus = Literal['validated', 'unsupported', 'unavailable']
 Treatment = Literal['included', 'excluded', 'unknown']
 Scope = Literal['party_total']
+Amount = Annotated[Decimal, PlainSerializer(lambda value: format(value, 'f'), return_type=str, when_used='json')]
+# Require at least two observations per quarter before describing the middle half
+# of a sample. This is a reporting threshold, not a coverage guarantee.
+MIN_BAND_SAMPLE = 8
 
 
 class SourceStatus(Contract):
@@ -24,10 +28,20 @@ class SourceStatus(Contract):
     market: str
 
 
+class MarketStatistics(Contract):
+    input_quote_count: int
+    selected_quote_count: int
+    observed_min: Amount
+    observed_max: Amount
+    outlier_count: int | None
+    duration_min_minutes: list[int]
+    duration_max_minutes: list[int]
+
+
 class EstimateResponse(Contract):
-    estimated_low: Decimal | None
-    estimated_median: Decimal | None
-    estimated_high: Decimal | None
+    estimated_low: Amount | None
+    estimated_median: Amount | None
+    estimated_high: Amount | None
     currency: Literal['INR'] | None
     origin: IATA
     destination: IATA
@@ -43,22 +57,23 @@ class EstimateResponse(Contract):
     taxes: Treatment | None
     fees: Treatment | None
     observation_count: Annotated[int, Field(ge=0)]
+    range_kind: Literal['point', 'limited_sample', 'interquartile', 'unavailable']
+    stop_profile: list[int] | None
+    market_statistics: MarketStatistics | None
     disclaimer: str
-
-    @field_serializer('estimated_low', 'estimated_median', 'estimated_high', when_used='json-unless-none')
-    def serialize_amount(self, amount: Decimal) -> str:
-        return format(amount, 'f')
 
 
 class MarketReference(Contract):
-    low: Decimal
+    low: Decimal | None
     median: Decimal
-    high: Decimal
+    high: Decimal | None
     currency: str
     price_scope: Scope
     taxes: Treatment
     fees: Treatment
     observation_count: int
+    stop_profile: list[int]
+    statistics: MarketStatistics
 
 
 @dataclass(frozen=True)
@@ -85,7 +100,7 @@ def select_estimate(
             if coverage_status == 'validated':
                 coverage_status = 'unavailable'
 
-    reference, comparable = _select_market(request, quotes, model_value)
+    reference, comparable = _select_market(request, quotes, model if model_value is not None else None)
     market_eligible = reference is not None and reference.currency == 'INR'
     if market_eligible:
         market_status = 'available'
@@ -95,8 +110,10 @@ def select_estimate(
         market_status = 'no_observations'
 
     observations = 0
+    stop_profile = statistics = None
     if model_value is not None:
         method = 'historical_ml'
+        range_kind = 'point'
         low = median = high = model_value.amount
         scope, taxes, fees = model_value.basis, model_value.taxes, model_value.fees
         disclaimer = 'Historical model estimate for the full party. The booking price can change.'
@@ -105,12 +122,19 @@ def select_estimate(
         low, median, high = reference.low, reference.median, reference.high
         scope, taxes, fees = reference.price_scope, reference.taxes, reference.fees
         observations = reference.observation_count
-        disclaimer = ('Indicative fare for the full party based on one observed itinerary.'
-                      if observations == 1 else
-                      'Indicative fare for the full party based on comparable observed itineraries.')
+        stop_profile, statistics = reference.stop_profile, reference.statistics
+        if low is None:
+            range_kind = 'limited_sample'
+            disclaimer = ('Full-party market reference from one observed itinerary.' if observations == 1 else
+                          f'Median full-party fare across {observations} comparable itineraries.')
+            disclaimer += ' Too few itineraries were observed to report an indicative range.'
+        else:
+            range_kind = 'interquartile'
+            disclaimer = f'The range covers the middle half of full-party fares across {observations} comparable itineraries.'
         disclaimer += ' The booking price can change.'
     else:
         method = 'unavailable'
+        range_kind = 'unavailable'
         low = median = high = scope = taxes = fees = None
         disclaimer = 'A reliable fare estimate is unavailable for this search.'
 
@@ -132,7 +156,8 @@ def select_estimate(
         return_date=request.return_date, journey_type=request.journey, passenger_count=request.travellers.total,
         cabin_class=request.cabin, estimation_method=method, coverage_status=coverage_status,
         source_status=SourceStatus(model=model_status or coverage_status, market=market_status),
-        price_scope=scope, taxes=taxes, fees=fees, observation_count=observations, disclaimer=disclaimer)
+        price_scope=scope, taxes=taxes, fees=fees, observation_count=observations, range_kind=range_kind,
+        stop_profile=stop_profile, market_statistics=statistics, disclaimer=disclaimer)
     return EstimateDecision(response, model_value, reference, comparable)
 
 
@@ -182,58 +207,118 @@ class _MarketTerms:
     source_with_unstated_terms: str | None
 
 
-def _itinerary_prices(variants: dict[tuple, set[Decimal]]) -> list[Decimal]:
-    # An optional flight number or stop count can be absent in a normalized
-    # observation. A partial record can add a price to a unique match, but
-    # cannot receive its own weight when several known flights could match.
-    identified = {key: prices.copy() for key, prices in variants.items() if None not in key}
-    partial_keys = sorted((key for key in variants if None in key), key=lambda key: key.count(None))
-    for partial in partial_keys:
-        matches = [key for key in identified if all(p is None or p == k for p, k in zip(partial, key))]
-        if len(matches) == 1:
-            identified[matches[0]].update(variants[partial])
-        elif not matches:
-            identified[partial] = variants[partial].copy()
-    return [_percentile(sorted(prices), Decimal('0.5')) for prices in identified.values()]
+@dataclass(frozen=True)
+class _Itinerary:
+    price: Decimal
+    listing_count: int
+    durations: tuple[int, ...]
 
 
-def _summarize(terms: _MarketTerms, quotes: list[LiveQuote]) -> MarketReference:
-    # Group by every leg, including the inbound schedule. IDs identify offers,
-    # and a fare change or duplicate listing does not create another itinerary.
-    schedules = defaultdict(lambda: defaultdict(set))
+def _compatible_signatures(first: tuple, second: tuple) -> bool:
+    return all(a is None or b is None or a == b for a, b in zip(first, second))
+
+
+def _resolve_schedule(variants: dict[tuple, list[tuple[_MarketTerms, Decimal]]], durations: tuple[int, ...]):
+    # A signature starts with stops in each direction, then flight numbers in
+    # each direction. A partial record may contribute to a more specific record
+    # only when all its known fields match and there is no competing identity.
+    directions = len(durations)
+    maximal = [key for key in variants if not any(
+        key != other and all(a is None or a == b for a, b in zip(key, other)) for other in variants)]
+    known = [key for key in maximal if None not in key[:directions]]
+    eligible = {key for key in known if not any(
+        other != key and _compatible_signatures(key, other) for other in known)}
+    contributors = defaultdict(list)
+    for signature, listings in variants.items():
+        if signature in eligible:
+            identity = signature
+        else:
+            matches = [key for key in maximal if _compatible_signatures(key, signature)]
+            if len(matches) != 1 or matches[0] not in eligible:
+                continue
+            identity = matches[0]
+        for terms, price in listings:
+            contributors[identity, terms].append(price)
+    for (identity, terms), prices in contributors.items():
+        yield terms, identity[:directions], _Itinerary(
+            _percentile(sorted(set(prices)), Decimal('0.5')), len(prices), durations)
+
+
+def _cohorts(request: FlightSearch, quotes: Sequence[LiveQuote]):
+    schedules = defaultdict(lambda: defaultdict(list))
     for quote in quotes:
-        schedule = tuple((leg.origin, leg.destination, leg.departure, leg.arrival,
-                          tuple(' '.join(name.casefold().split()) for name in leg.airlines))
-                         for leg in quote.legs)
-        details = tuple(field for leg in quote.legs for field in (tuple(leg.flight_numbers) or None, leg.stops))
-        schedules[schedule][details].add(quote.fare.amount)
+        if not _matches_quote(request, quote):
+            continue
+        fare = quote.fare
+        source = quote.source_name if 'unknown' in (fare.taxes, fare.fees) else None
+        terms = _MarketTerms(fare.currency, fare.basis, fare.taxes, fare.fees, source)
+        schedule = tuple(
+            (leg.origin, leg.destination, leg.departure.astimezone(timezone.utc), leg.arrival.astimezone(timezone.utc),
+             tuple(' '.join(name.casefold().split()) for name in leg.airlines))
+            for leg in quote.legs)
+        elapsed = [(arrival - departure).total_seconds() / 60 for _, _, departure, arrival, _ in schedule]
+        # Accept whole minutes rounded up or down from sub-minute timestamps.
+        if any(leg.duration_minutes is not None and abs(leg.duration_minutes - minutes) >= 1
+               for leg, minutes in zip(quote.legs, elapsed)):
+            continue
+        durations = tuple(round(minutes) for minutes in elapsed)
+        profile = tuple(leg.stops for leg in quote.legs)
+        numbers = tuple(tuple(leg.flight_numbers) or None for leg in quote.legs)
+        schedules[schedule, durations][profile + numbers].append((terms, fare.amount))
 
-    prices = sorted(price for variants in schedules.values() for price in _itinerary_prices(variants))
-    return MarketReference(low=_percentile(prices, Decimal('0.25')), median=_percentile(prices, Decimal('0.5')),
-                           high=_percentile(prices, Decimal('0.75')), observation_count=len(prices),
+    cohorts = defaultdict(list)
+    for (_, durations), variants in schedules.items():
+        for terms, profile, itinerary in _resolve_schedule(variants, durations):
+            cohorts[terms, profile].append(itinerary)
+    return cohorts
+
+
+def _summarize(terms: _MarketTerms, profile: tuple[int, ...], itineraries: list[_Itinerary],
+               input_count: int) -> MarketReference:
+    prices = sorted(itinerary.price for itinerary in itineraries)
+    low = high = outliers = None
+    if len(prices) >= MIN_BAND_SAMPLE:
+        low = _percentile(prices, Decimal('0.25'))
+        high = _percentile(prices, Decimal('0.75'))
+        # Tukey's 1.5 IQR rule flags unusual prices for diagnostics. A valid
+        # expensive/cheap itinerary still contributes to all sample statistics.
+        margin = Decimal('1.5') * (high - low)
+        outliers = sum(price < low - margin or price > high + margin for price in prices)
+    durations = list(zip(*(itinerary.durations for itinerary in itineraries)))
+    statistics = MarketStatistics(
+        input_quote_count=input_count, selected_quote_count=sum(itinerary.listing_count for itinerary in itineraries),
+        observed_min=prices[0], observed_max=prices[-1], outlier_count=outliers,
+        duration_min_minutes=[min(direction) for direction in durations],
+        duration_max_minutes=[max(direction) for direction in durations])
+    return MarketReference(low=low, median=_percentile(prices, Decimal('0.5')), high=high,
+                           observation_count=len(prices), stop_profile=list(profile), statistics=statistics,
                            currency=terms.currency, price_scope=terms.scope, taxes=terms.taxes, fees=terms.fees)
 
 
 def _select_market(request: FlightSearch, quotes: Sequence[LiveQuote],
-                   model_value: Fare | None) -> tuple[MarketReference | None, bool]:
-    groups = defaultdict(list)
-    for quote in quotes:
-        if _matches_quote(request, quote):
-            fare = quote.fare
-            source = quote.source_name if 'unknown' in (fare.taxes, fare.fees) else None
-            terms = _MarketTerms(fare.currency, fare.basis, fare.taxes, fare.fees, source)
-            groups[terms].append(quote)
+                   model: ValidatedModelEstimate | None) -> tuple[MarketReference | None, bool]:
+    groups = _cohorts(request, quotes)
     if not groups:
         return None, False
-    if model_value is not None:
-        matching = _MarketTerms(model_value.currency, model_value.basis, model_value.taxes, model_value.fees, None)
-        if matching in groups:
-            return _summarize(matching, groups[matching]), True
 
-    # This product serves verified INR totals. A foreign reference can be kept
-    # internally for source diagnostics, but is never converted or displayed.
-    eligible = {terms: observations for terms, observations in groups.items() if terms.currency == 'INR'}
-    candidates = [_summarize(terms, observations) for terms, observations in (eligible or groups).items()]
-    largest = max(reference.observation_count for reference in candidates)
-    winners = [reference for reference in candidates if reference.observation_count == largest]
-    return (winners[0] if len(winners) == 1 else None), False
+    # Foreign references may be retained for internal comparison diagnostics;
+    # only INR is ever customer-eligible. Prefer the fewest connections on each
+    # leg independent of fare. Opposing round-trip tradeoffs require abstention.
+    eligible = {key: items for key, items in groups.items() if key[0].currency == 'INR'} or groups
+    profiles = [profile for _, profile in eligible]
+    preferred = tuple(min(counts) for counts in zip(*profiles))
+    candidates = {terms: items for (terms, profile), items in eligible.items() if profile == preferred}
+    if not candidates:
+        return None, False
+    if model is not None and model.stop_profile == list(preferred):
+        fare = model.fare
+        matching = _MarketTerms(fare.currency, fare.basis, fare.taxes, fare.fees, None)
+        if matching in candidates:
+            return _summarize(matching, preferred, candidates[matching], len(quotes)), True
+
+    largest = max(map(len, candidates.values()))
+    winners = [terms for terms, items in candidates.items() if len(items) == largest]
+    if len(winners) != 1:
+        return None, False
+    terms = winners[0]
+    return _summarize(terms, preferred, candidates[terms], len(quotes)), False

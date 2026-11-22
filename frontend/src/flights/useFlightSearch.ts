@@ -16,15 +16,30 @@ function matchesEstimate(response: Partial<FareEstimate> | null, query: FlightQu
       !['validated', 'unsupported', 'unavailable'].includes(response.coverage_status ?? '') ||
       typeof response.disclaimer !== 'string' || !response.disclaimer.trim()) return false;
   if (response.estimation_method === 'unavailable') {
-    return response.estimated_low === null && response.estimated_high === null &&
+    return response.range_kind === 'unavailable' && response.estimated_median === null &&
+      response.estimated_low === null && response.estimated_high === null &&
       response.currency === null && response.price_scope === null;
   }
-  const hasSource = response.estimation_method === 'historical_ml'
-    ? response.coverage_status === 'validated' && response.source_status.model === 'available'
-    : response.estimation_method === 'market_reference' && response.source_status.market === 'available';
-  return hasSource && response.currency === 'INR' && response.price_scope === 'party_total' &&
-    validAmount(response.estimated_low) && validAmount(response.estimated_high) &&
-    Number(response.estimated_low) <= Number(response.estimated_high);
+  if (response.currency !== 'INR' || response.price_scope !== 'party_total' ||
+      !validAmount(response.estimated_median)) return false;
+  if (response.estimation_method === 'historical_ml') {
+    return response.range_kind === 'point' && response.coverage_status === 'validated' &&
+      response.source_status.model === 'available' && response.observation_count === 0 &&
+      validAmount(response.estimated_low) && validAmount(response.estimated_high) &&
+      Number(response.estimated_low) === Number(response.estimated_median) &&
+      Number(response.estimated_high) === Number(response.estimated_median);
+  }
+  const stops = response.stop_profile;
+  if (response.estimation_method !== 'market_reference' || response.source_status.market !== 'available' ||
+      !Number.isInteger(response.observation_count) || (response.observation_count ?? 0) < 1 ||
+      !Array.isArray(stops) || stops.length !== (query.journey === 'round_trip' ? 2 : 1) ||
+      !stops.every(n => Number.isInteger(n) && n >= 0)) return false;
+  if (response.range_kind === 'limited_sample') {
+    return response.estimated_low === null && response.estimated_high === null;
+  }
+  return response.range_kind === 'interquartile' && validAmount(response.estimated_low) &&
+    validAmount(response.estimated_high) && Number(response.estimated_low) <= Number(response.estimated_median) &&
+    Number(response.estimated_median) <= Number(response.estimated_high);
 }
 
 export async function requestFlightSearch(query: FlightQuery): Promise<SearchState> {

@@ -27,10 +27,12 @@ type EstimateContext = {
 };
 export type PricedEstimate = EstimateContext & {
   estimation_method: 'historical_ml' | 'market_reference';
-  estimated_low: string; estimated_high: string; currency: 'INR'; price_scope: 'party_total';
+  range_kind: 'point' | 'limited_sample' | 'interquartile'; observation_count: number;
+  stop_profile: number[] | null; estimated_median: string;
+  estimated_low: string | null; estimated_high: string | null; currency: 'INR'; price_scope: 'party_total';
 };
 export type FareEstimate = PricedEstimate | (EstimateContext & {
-  estimation_method: 'unavailable';
+  estimation_method: 'unavailable'; range_kind: 'unavailable'; estimated_median: null;
   estimated_low: null; estimated_high: null; currency: null; price_scope: null;
 });
 export type SearchState = {status: 'idle'} | {status: 'loading'} |

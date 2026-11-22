@@ -2,7 +2,7 @@
 
 SkyLens is a React and FastAPI application for Indian domestic flight search. On the Flights page, you can look up 165 Indian IATA-coded airports by city, airport name or code, swap airports and choose one-way or round-trip travel dates, travellers and cabin.
 
-**Get estimate** returns one INR estimate for the selected trip and travelling party. SkyLens checks for an approved model with evaluated coverage first. For trips outside that coverage, it retrieves matching market observations from Kiwi.com, groups duplicate itineraries and calculates the median and middle 50% of the observed prices. A single itinerary yields one indicative amount. The source methodology appears below the estimate. [Fare API](docs/API_GUIDE.md#flight-search) · [Model and source audit](reports/supervised_fare_status.md)
+**Get estimate** returns an indicative INR fare for the whole party and journey. SkyLens checks validated model coverage first. The current market estimator uses matching observations from Kiwi.com, separates nonstop and connecting itineraries, and counts each distinct itinerary once. It shows the median for a small sample and the middle 50% plus median for eight or more comparable itineraries. [Calculation and evaluation](reports/market_accuracy_evaluation.md) · [Coverage across 165 airports](reports/market_coverage.md) · [API contract](docs/API_GUIDE.md#flight-search)
 
 ## Research
 

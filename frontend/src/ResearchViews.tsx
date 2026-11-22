@@ -53,10 +53,11 @@ export function FlightsMethodology() {
     <p>When the model cannot price a trip, the configured fare provider supplies observations.
       The Kiwi.com integration provides itinerary and fare data. SkyLens groups comparable INR totals
       for the requested journey, dates, cabin and travelling party, with matching tax and fee treatment.</p>
-    <p>Each distinct itinerary contributes one value, the median of its distinct quoted prices.
-      SkyLens calculates the median and the 25th and 75th percentiles across itineraries using linear
-      interpolation. Flights displays the range between those percentiles, or a single amount when
-      the endpoints coincide. The range describes the observed market. The booking price can change.</p>
+    <p>SkyLens separates nonstop and connecting itineraries. It uses the fewest available stops
+      in each direction when a matching itinerary exists. Each distinct itinerary contributes
+      the median of its quoted prices. With fewer than eight comparable itineraries, Flights
+      shows the sample median and its limited basis. With eight or more, it also shows the middle
+      half of the observed prices. This spread describes the provider sample at lookup time.</p>
     <p>Source selection uses rules. A learned combination would require compatible historical
       predictions, market observations and independently observed fares for evaluation.
       Groq is a language-model service and supplies no numerical input to this calculation.</p>

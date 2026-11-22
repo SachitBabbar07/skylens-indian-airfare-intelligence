@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Annotated, Literal, Protocol
 from zoneinfo import ZoneInfo
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, StringConstraints, field_validator, model_validator
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, StringConstraints, ValidationInfo, field_validator, model_validator
 
 
 IST = ZoneInfo('Asia/Kolkata')
@@ -60,10 +60,12 @@ class FlightSearch(Contract):
         return airline
 
     @model_validator(mode='after')
-    def validate_journey(self):
+    def validate_journey(self, info: ValidationInfo):
         if self.origin == self.destination:
             raise ValueError('Choose different origin and destination airports.')
-        if self.departure_date < datetime.now(IST).date():
+        # Offline audits validate against the capture date. HTTP bodies cannot supply validation context.
+        as_of_date = (info.context or {}).get('as_of_date') or datetime.now(IST).date()
+        if self.departure_date < as_of_date:
             raise ValueError('Departure date must be today or later in India.')
         if self.journey == 'round_trip':
             if self.return_date is None or self.return_date < self.departure_date:
@@ -154,7 +156,17 @@ class ValidatedModelEstimate(PricedResult):
     departure_date: date
     return_date: date | None = None
     airline: str | None = None
+    # Supplied by a reviewed adapter when evaluation establishes a specific
+    # number of connections for every direction of its fare target.
+    stop_profile: list[Annotated[int, Field(strict=True, ge=0)]] | None = None
     evaluation_reference: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=256)]
+
+    @model_validator(mode='after')
+    def validate_stop_profile(self):
+        directions = 2 if self.journey == 'round_trip' else 1
+        if self.stop_profile is not None and len(self.stop_profile) != directions:
+            raise ValueError('The reviewed stop profile must cover every journey direction.')
+        return self
 
 
 class LiveFareProvider(Protocol):

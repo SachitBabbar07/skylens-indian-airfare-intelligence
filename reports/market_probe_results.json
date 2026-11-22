@@ -1,0 +1,272 @@
+[
+  {
+    "origin": "BOM",
+    "destination": "BLR",
+    "departure_date": "2026-11-26",
+    "return_date": null,
+    "journey_type": "one_way",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 1,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:15:44.292489+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "available"
+    },
+    "observation_count": 15,
+    "currency": "INR",
+    "estimation_method": "market_reference",
+    "reason": null,
+    "normalized_offer_count": 15,
+    "range_kind": "interquartile",
+    "stop_profile": [
+      0
+    ],
+    "estimated_low": "6929.000",
+    "estimated_median": "6975.0",
+    "estimated_high": "7142.000"
+  },
+  {
+    "origin": "BOM",
+    "destination": "BLR",
+    "departure_date": "2026-12-03",
+    "return_date": "2026-12-06",
+    "journey_type": "round_trip",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 2,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:15:51.036482+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "available"
+    },
+    "observation_count": 15,
+    "currency": "INR",
+    "estimation_method": "market_reference",
+    "reason": null,
+    "normalized_offer_count": 15,
+    "range_kind": "interquartile",
+    "stop_profile": [
+      0,
+      0
+    ],
+    "estimated_low": "27184.000",
+    "estimated_median": "27213.0",
+    "estimated_high": "27505.999950"
+  },
+  {
+    "origin": "CCU",
+    "destination": "IXB",
+    "departure_date": "2026-12-05",
+    "return_date": "2026-12-09",
+    "journey_type": "round_trip",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 1,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:16:04.796834+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "available"
+    },
+    "observation_count": 15,
+    "currency": "INR",
+    "estimation_method": "market_reference",
+    "reason": null,
+    "normalized_offer_count": 15,
+    "range_kind": "interquartile",
+    "stop_profile": [
+      0,
+      0
+    ],
+    "estimated_low": "15626.500",
+    "estimated_median": "15692.0",
+    "estimated_high": "15903.500"
+  },
+  {
+    "origin": "DEL",
+    "destination": "IXC",
+    "departure_date": "2026-11-26",
+    "return_date": null,
+    "journey_type": "one_way",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 1,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:12:36.490696+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "available"
+    },
+    "observation_count": 7,
+    "currency": "INR",
+    "estimation_method": "market_reference",
+    "reason": null,
+    "normalized_offer_count": 15,
+    "range_kind": "limited_sample",
+    "stop_profile": [
+      0
+    ],
+    "estimated_low": null,
+    "estimated_median": "6830.0",
+    "estimated_high": null
+  },
+  {
+    "origin": "GAU",
+    "destination": "IMF",
+    "departure_date": "2026-12-02",
+    "return_date": null,
+    "journey_type": "one_way",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 1,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:16:08.837833+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "available"
+    },
+    "observation_count": 3,
+    "currency": "INR",
+    "estimation_method": "market_reference",
+    "reason": null,
+    "normalized_offer_count": 15,
+    "range_kind": "limited_sample",
+    "stop_profile": [
+      0
+    ],
+    "estimated_low": null,
+    "estimated_median": "8429.0",
+    "estimated_high": null
+  },
+  {
+    "origin": "IXA",
+    "destination": "JAI",
+    "departure_date": "2026-12-03",
+    "return_date": null,
+    "journey_type": "one_way",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 1,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:16:14.743780+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "available"
+    },
+    "observation_count": 3,
+    "currency": "INR",
+    "estimation_method": "market_reference",
+    "reason": null,
+    "normalized_offer_count": 15,
+    "range_kind": "limited_sample",
+    "stop_profile": [
+      1
+    ],
+    "estimated_low": null,
+    "estimated_median": "15123.0",
+    "estimated_high": null
+  },
+  {
+    "origin": "IXB",
+    "destination": "CCU",
+    "departure_date": "2026-12-01",
+    "return_date": null,
+    "journey_type": "one_way",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 1,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:16:00.764791+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "available"
+    },
+    "observation_count": 1,
+    "currency": "INR",
+    "estimation_method": "market_reference",
+    "reason": null,
+    "normalized_offer_count": 15,
+    "range_kind": "limited_sample",
+    "stop_profile": [
+      0
+    ],
+    "estimated_low": null,
+    "estimated_median": "9438.0",
+    "estimated_high": null
+  },
+  {
+    "origin": "MAA",
+    "destination": "CJB",
+    "departure_date": "2026-11-28",
+    "return_date": null,
+    "journey_type": "one_way",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 2,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:15:55.856424+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "available"
+    },
+    "observation_count": 4,
+    "currency": "INR",
+    "estimation_method": "market_reference",
+    "reason": null,
+    "normalized_offer_count": 9,
+    "range_kind": "limited_sample",
+    "stop_profile": [
+      1
+    ],
+    "estimated_low": null,
+    "estimated_median": "54288.00",
+    "estimated_high": null
+  },
+  {
+    "origin": "SLV",
+    "destination": "IXC",
+    "departure_date": "2026-12-07",
+    "return_date": null,
+    "journey_type": "one_way",
+    "cabin_class": "economy",
+    "airline": null,
+    "adults": 1,
+    "children": 0,
+    "infants": 0,
+    "checked_at": "2026-11-19T04:16:20.069699+00:00",
+    "provider": "Kiwi.com",
+    "source_status": {
+      "model": "unsupported",
+      "market": "no_observations"
+    },
+    "observation_count": 0,
+    "currency": null,
+    "estimation_method": "unavailable",
+    "reason": "no_observations",
+    "normalized_offer_count": 0,
+    "range_kind": "unavailable",
+    "stop_profile": null,
+    "estimated_low": null,
+    "estimated_median": null,
+    "estimated_high": null
+  }
+]
